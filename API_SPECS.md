@@ -6,6 +6,26 @@ blogging engine / app.
 # OIDC Authentication 
 All OIDC authentication is handled by the external OIDC provider.
 All providers must support PKCE as it is the only supported flow.
+
+## Configuring Providers
+OIDC providers are configured via environment variables.
+
+You need to set the following environment variables to configure an OIDC provider:
+- `OIDC_<PROVIDER_NAME>_URL`: URL identifier of the OIDC provider (example: `https://accounts.google.com`)
+- `OIDC_<PROVIDER_NAME>_CLIENT`: Client ID for OIDC provider
+- `OIDC_<PROVIDER_NAME>_SECRET`: Client secret for OIDC provider
+where `<PROVIDER_NAME>` is the name of the provider (e.g. `GOOGLE`).
+
+User can then login via `/login/<PROVIDER_NAME>`
+
+Example for Google:
+```bash
+OIDC_GOOGLE_URL="https://accounts.google.com"
+OIDC_GOOGLE_CLIENT="..."
+OIDC_GOOGLE_SECRET="..."
+```
+User can then login via `/login/google` or `/login/GOOGLE` (case-insensitive)
+
 # Objects
 ## Users
 
