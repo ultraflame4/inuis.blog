@@ -3,6 +3,9 @@ This are specifications for a backend of a supersimple
 blogging engine / app.
 
 
+# OIDC Authentication 
+All OIDC authentication is handled by the external OIDC provider.
+All providers must support PKCE as it is the only supported flow.
 # Objects
 ## Users
 
