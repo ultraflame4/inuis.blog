@@ -19,7 +19,7 @@ func main() {
   	}
     ctx := context.Background()
     _ = ctx;
-    db.AutoMigrate(&models.User{})
+    models.Migrate(db)
     fmt.Println("Auto migrated database.")
 
 	router := routers.InitRouter(db)
