@@ -188,7 +188,9 @@ func (a *ApiRoute) AcceptOAuthCallback(c *gin.Context){
 		return
 	} else {
 		// Fetch identity
-		identity, err := gorm.G[models.UserIdentity](a.db).Where("subject = ? AND issuer = ?").First(c.Request.Context())
+		identity, err := gorm.G[models.UserIdentity](a.db).
+			Where("subject = ? AND issuer = ?", userInfo.Subject, conf.Issuer).
+			First(c.Request.Context())
 		if err != nil {
 		   if errors.Is(err, gorm.ErrRecordNotFound){
 				// User with this email exists. But does not have this identity registered.
@@ -206,7 +208,7 @@ func (a *ApiRoute) AcceptOAuthCallback(c *gin.Context){
 			return
 		}
 		// Continue to get user object
-
+		log.Printf("Found user identity: %s %s (sub: %s)\n", identity.Email, identity.Issuer, identity.Subject)
 		user := identity.User
 		log.Println("User logged in: " + user.Username)
 	}
