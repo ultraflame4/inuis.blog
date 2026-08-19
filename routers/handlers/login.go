@@ -159,6 +159,7 @@ func (a *ApiRoute) AcceptOAuthCallback(c *gin.Context){
 	}
 
 	if len(existing) == 0 {
+		log.Println("Creating new user for email: " + userInfo.Email)
 		// Create new user
 		email_parts := strings.SplitN(userInfo.Email, "@", 2)
 		discriminator_hash := sha256.Sum256([]byte(email_parts[1]))
