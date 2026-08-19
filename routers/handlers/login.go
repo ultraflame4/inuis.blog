@@ -189,6 +189,7 @@ func (a *ApiRoute) AcceptOAuthCallback(c *gin.Context){
 	} else {
 		// Fetch identity
 		identity, err := gorm.G[models.UserIdentity](a.db).
+			Preload("User", nil).
 			Where("subject = ? AND issuer = ?", userInfo.Subject, conf.Issuer).
 			First(c.Request.Context())
 		if err != nil {
