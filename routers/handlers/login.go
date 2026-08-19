@@ -2,10 +2,14 @@ package handlers
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/base64"
+	"io"
 	"log"
+	"net/http"
 	"os"
 	"strings"
-
+	"time"
 	"github.com/coreos/go-oidc"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
@@ -62,10 +66,43 @@ func RegisterLoginHandlers(router *gin.RouterGroup){
 }
 
 
+func randString(nByte int) (string, error) {
+	b := make([]byte, nByte)
+	if _, err := io.ReadFull(rand.Reader, b); err != nil {
+		return "", err
+	}
+	return base64.RawURLEncoding.EncodeToString(b), nil
+}
+
+func setCallbackCookie(ctx *gin.Context, name, value string) {
+	c := &http.Cookie{
+		Name:     name,
+		Value:    value,
+		MaxAge:   int(time.Hour.Seconds()),
+		Secure:   false, // false for now
+		HttpOnly: true,
+	}
+	ctx.SetCookieData(c)
+}
 func loginFlow(c *gin.Context) {
-	// oidc_name := c.Param("oidc")
+	oidc_name := strings.ToUpper(c.Param("oidc"))
 	// oidc_url := os.Getenv("OIDC_"+oidc_name+"_URL")
 	// client_id := os.Getenv("OIDC_"+oidc_name+"_CLIENT")
+	state, err := randString(16)
+	if err != nil {
+		c.AbortWithStatus(500)
+		return
+	}
+	setCallbackCookie(c, "state", state)
 
+	config, ok := oauthConfigs[oidc_name]
+	if !ok{
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
+			"error": "Unknown OIDC Provider",
+		})
+		return
+	}
+
+	c.Redirect(http.StatusFound, config.Config.AuthCodeURL(state))
 
 }
