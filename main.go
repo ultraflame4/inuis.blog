@@ -22,6 +22,6 @@ func main() {
     db.AutoMigrate(&models.User{})
     fmt.Println("Auto migrated database.")
 
-	router := routers.InitRouter()
+	router := routers.InitRouter(db)
 	router.Run(utils.GetServerAddress()) // listens on 0.0.0.0:8080 by default
 }

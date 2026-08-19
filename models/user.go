@@ -15,6 +15,10 @@ type UserIdentity struct {
 	UserId uint
 	User User
 	Email *string `gorm:"index"`
-	Provider string
-	ProviderUserId string `gorm:"uniqueIndex"`
+	Issuer string
+	Subject string `gorm:"uniqueIndex"`
+}
+
+func FindOrCreateUserIdentity(){
+
 }

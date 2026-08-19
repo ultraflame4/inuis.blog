@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -14,8 +15,10 @@ import (
 
 	"github.com/coreos/go-oidc"
 	"github.com/gin-gonic/gin"
+	"github.com/teenyblog/models"
 	"github.com/teenyblog/utils"
 	"golang.org/x/oauth2"
+	"gorm.io/gorm"
 )
 
 type OidcProvider struct {
@@ -70,10 +73,6 @@ func RegisterOIDCProviders(ctx context.Context) {
 
 }
 
-func RegisterLoginHandlers(router *gin.RouterGroup){
-	router.GET("/login/:oidc", loginFlow)
-	router.GET("/oauth2/:oidc/callback", acceptOAuthCallback)
-}
 
 
 func randString(nByte int) (string, error) {
@@ -94,7 +93,7 @@ func setCallbackCookie(ctx *gin.Context, name, value string) {
 	}
 	ctx.SetCookieData(c)
 }
-func loginFlow(c *gin.Context) {
+func (*ApiRoute) LoginFlow(c *gin.Context) {
 	oidc_name := strings.ToUpper(c.Param("oidc"))
 	config, ok := oauthConfigs[oidc_name]
 	if !ok{
@@ -115,7 +114,7 @@ func loginFlow(c *gin.Context) {
 
 }
 
-func acceptOAuthCallback(c *gin.Context){
+func (a *ApiRoute) AcceptOAuthCallback(c *gin.Context){
 	oidc_name := strings.ToUpper(c.Param("oidc"))
 	conf, ok := oauthConfigs[oidc_name]
 	if !ok{
@@ -148,10 +147,45 @@ func acceptOAuthCallback(c *gin.Context){
 		return
 	}
 
+	// Find existing identities with this email.
+	existingCount, err := gorm.G[models.UserIdentity](a.db).Where("email = ?", userInfo.Email).Count(c.Request.Context(), "subject")
+	if err != nil{
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"error" : err.Error(),
+		})
+	}
+
+	if existingCount == 0 {
+		// Create new account
+
+	}
+	else {
+		// Fetch identity
+		identity, err := gorm.G[models.UserIdentity](a.db).Where("subject = ? AND issuer = ?").First(c.Request.Context())
+		if err != nil {
+		   if errors.Is(err, gorm.ErrRecordNotFound){
+				// Add identity to user
+				_ = 0;
+			} else {
+				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+					"error" : "Failed to fetch user identity: " + err.Error(),
+				})
+			}
+			return
+		}
+		// Continue to get user object
+
+		user := identity.User
+	}
+
+
+
+
 	resp := struct {
 		OAuth2Token *oauth2.Token
 		UserInfo    *oidc.UserInfo
 	}{oauth2Token, userInfo}
+
 	c.JSON(http.StatusOK, resp);
 
 }
