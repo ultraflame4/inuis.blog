@@ -174,7 +174,7 @@ func (a *ApiRoute) AcceptOAuthCallback(c *gin.Context){
 			Subject: userInfo.Subject,
 			Email:  &userInfo.Email,
 			Issuer: conf.Issuer,
-			UserId: user.ID,
+			UserID: user.ID,
 		})
 
 		// Create session
