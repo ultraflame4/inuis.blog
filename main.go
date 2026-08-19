@@ -6,6 +6,7 @@ import (
 
 	"github.com/teenyblog/models"
 	"github.com/teenyblog/routers"
+	"github.com/teenyblog/utils"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -22,5 +23,5 @@ func main() {
     fmt.Println("Auto migrated database.")
 
 	router := routers.InitRouter()
-	router.Run() // listens on 0.0.0.0:8080 by default
+	router.Run(utils.GetServerAddress()) // listens on 0.0.0.0:8080 by default
 }
