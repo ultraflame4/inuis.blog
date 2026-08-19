@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -25,6 +26,7 @@ type OidcProvider struct {
 	Verifier* oidc.IDTokenVerifier
 	Config   oauth2.Config
 	Provider* oidc.Provider
+	Issuer string
 }
 
 var oauthConfigs map[string]OidcProvider
@@ -62,6 +64,7 @@ func RegisterOIDCProviders(ctx context.Context) {
 				Verifier: verifier,
 				Config:   config,
 				Provider: provider,
+				Issuer: oidc_url,
 			}
 
 			log.Println("Registered provider for oidc name " + oidc_name)
@@ -148,24 +151,52 @@ func (a *ApiRoute) AcceptOAuthCallback(c *gin.Context){
 	}
 
 	// Find existing identities with this email.
-	existingCount, err := gorm.G[models.UserIdentity](a.db).Where("email = ?", userInfo.Email).Count(c.Request.Context(), "subject")
+	existing, err := gorm.G[models.UserIdentity](a.db).Where("email = ?", userInfo.Email).Find(c.Request.Context())
 	if err != nil{
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"error" : err.Error(),
 		})
 	}
 
-	if existingCount == 0 {
-		// Create new account
+	if len(existing) == 0 {
+		// Create new user
+		email_parts := strings.SplitN(userInfo.Email, "@", 2)
+		discriminator_hash := sha256.Sum256([]byte(email_parts[1]))
+		discriminator := base64.RawURLEncoding.EncodeToString(discriminator_hash[:])[:4]
+		// Create user
+		user := models.User{
+			Username: email_parts[0] + "_" + discriminator,
+		}
+		gorm.G[models.User](a.db).Create(c.Request.Context(), &user)
+		// Attach identity
+		gorm.G[models.UserIdentity](a.db).Create(c.Request.Context(), &models.UserIdentity{
+			Subject: userInfo.Subject,
+			Email:  &userInfo.Email,
+			Issuer: conf.Issuer,
+			UserId: user.ID,
+		})
 
-	}
-	else {
+		// Create session
+
+		resp := struct {
+			OAuth2Token *oauth2.Token
+			UserInfo    *oidc.UserInfo
+		}{oauth2Token, userInfo}
+
+		c.JSON(http.StatusOK, resp);
+		return
+	} else {
 		// Fetch identity
 		identity, err := gorm.G[models.UserIdentity](a.db).Where("subject = ? AND issuer = ?").First(c.Request.Context())
 		if err != nil {
 		   if errors.Is(err, gorm.ErrRecordNotFound){
-				// Add identity to user
-				_ = 0;
+				// User with this email exists. But does not have this identity registered.
+				// Should reject oauth, ask user to login with correct identity first.
+				// then connect provider when logged in
+				c.AbortWithStatusJSON(http.StatusConflict, gin.H{
+					"error" : "User with email " + userInfo.Email + " already exists, but does not have this identity registered!",
+				})
+				return
 			} else {
 				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 					"error" : "Failed to fetch user identity: " + err.Error(),
@@ -176,6 +207,7 @@ func (a *ApiRoute) AcceptOAuthCallback(c *gin.Context){
 		// Continue to get user object
 
 		user := identity.User
+		log.Println("User logged in: " + user.Username)
 	}
 
 
