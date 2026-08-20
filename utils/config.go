@@ -19,3 +19,7 @@ func GetServerAddress() string {
 
 	return fmt.Sprintf("%s:%s",host,port)
 }
+
+func GetDataDirectory() string{
+	return getEnv("DATA_DIR", "/data")
+}
