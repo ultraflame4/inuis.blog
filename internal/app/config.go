@@ -1,4 +1,4 @@
-package utils
+package app
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ func getEnv(key, fallback string) string {
 }
 
 
-func GetServerAddress() string {
+func ServerAddress() string {
 	host := getEnv("HOST", "localhost")
 	port := getEnv("PORT", "8080")
 

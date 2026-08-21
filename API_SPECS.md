@@ -12,8 +12,8 @@ OIDC providers are configured via environment variables.
 
 You need to set the following environment variables to configure an OIDC provider:
 - `OIDC_<PROVIDER_NAME>_URL`: URL identifier of the OIDC provider (example: `https://accounts.google.com`)
-- `OIDC_<PROVIDER_NAME>_CLIENT`: Client ID for OIDC provider
-- `OIDC_<PROVIDER_NAME>_SECRET`: Client secret for OIDC provider
+- `OIDC_<PROVIDER_NAME>_CLIENT_ID`: Client ID for OIDC provider
+- `OIDC_<PROVIDER_NAME>_CLIENT_SECRET`: Client secret for OIDC provider
 where `<PROVIDER_NAME>` is the name of the provider (e.g. `GOOGLE`).
 
 User can then login via `/login/<PROVIDER_NAME>`
