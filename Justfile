@@ -4,5 +4,12 @@ export DATA_DIR := "./data"
 _:
     just --list
 
-dev:
-    go run .
+[parallel]
+dev: dev-server dev-client
+
+dev-server:
+    go run . 
+
+[working-directory("./client")]
+dev-client:
+    npm run dev
