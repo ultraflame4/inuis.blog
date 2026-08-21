@@ -59,7 +59,7 @@ func RegisterOIDCProviders(ctx context.Context) {
 
 			log.Println("Registered provider for oidc name " + oidc_name)
 			log.Println("Callback url for oidc '" + oidc_name + "' is " + config.RedirectURL)
-			log.Println("Login url for oidc '" + oidc_name + "' is " + fmt.Sprintf("http://%s/api/login/%s", server_addr, strings.ToLower(oidc_name)))
+			log.Println("Login url for oidc '" + oidc_name + "' is " + fmt.Sprintf("http://%s/api/oauth2/%s/login", server_addr, strings.ToLower(oidc_name)))
 
 
 		}
