@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/teenyblog/internal/app"
 	"github.com/teenyblog/routers/handlers"
+	"github.com/teenyblog/routers/middlewares"
 	"gorm.io/gorm"
 )
 
@@ -21,6 +22,10 @@ func InitRouter(db *gorm.DB) *gin.Engine {
 	}
 	{
 		_api.POST("/user/login", apiroutes.LoginUser)
+
+		_api_me := _api.Group("/me")
+		_api_me.Use(middlewares.CurrentUser(db))
+		_api_me.GET("/", apiroutes.CurrentUser)
 	}
 
 	return r

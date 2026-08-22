@@ -20,10 +20,9 @@ func ResetSessions(db *gorm.DB, ctx context.Context) error {
 	return err
 }
 
-
 // Delete expired sessions
 func ExpireSessions(db *gorm.DB, ctx context.Context) error {
-	max_age := SessionMaxAge();
+	max_age := SessionMaxAge()
 	now := time.Now()
 	min_start := now.Add(-time.Duration(max_age) * time.Second)
 	// Any session started before min_start is expired
@@ -57,4 +56,17 @@ func RevokeSession(db *gorm.DB, ctx context.Context, sessionToken string) error 
 		return nil
 	}
 	return err
+}
+
+// Returns the session for the given token, or nil if not found.
+// 
+// This will also preload the user associated with the session.
+func GetSession(db *gorm.DB, ctx context.Context, sessionToken string) *models.UserSession {
+	session, err := gorm.G[models.UserSession](db).
+		Preload("User", nil).
+		Where("token = ?", sessionToken).First(ctx)
+	if err != nil {
+		return nil
+	}
+	return &session
 }
