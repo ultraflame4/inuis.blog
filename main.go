@@ -21,6 +21,8 @@ func main() {
     _ = ctx;
     models.Migrate(db)
     fmt.Println("Auto migrated database.")
+    app.ResetSessions(db, ctx)
+    fmt.Println("Cleared all user sessions.")
 
 	router := routers.InitRouter(db)
 	router.Run(app.ServerAddress()) // listens on 0.0.0.0:8080 by default

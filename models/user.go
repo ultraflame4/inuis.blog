@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -18,4 +20,12 @@ type UserIdentity struct {
 	Email *string `gorm:"index"`
 	Issuer string
 	Subject string `gorm:"uniqueIndex"`
+}
+
+type UserSession struct {
+	ID        uint `gorm:"primarykey"`
+	Token string `gorm:"uniqueIndex"`
+	UserID uint
+	User User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	CreatedAt time.Time
 }

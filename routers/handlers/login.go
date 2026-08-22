@@ -149,6 +149,8 @@ func (a *ApiRoute) AcceptOAuthCallback(c *gin.Context) {
 		})
 	}
 
+
+	var user models.User;
 	if len(existing) == 0 {
 		log.Println("Creating new user for email: " + userInfo.Email)
 		// Create new user
@@ -156,7 +158,7 @@ func (a *ApiRoute) AcceptOAuthCallback(c *gin.Context) {
 		discriminator_hash := sha256.Sum256([]byte(email_parts[1]))
 		discriminator := base64.RawURLEncoding.EncodeToString(discriminator_hash[:])[:4]
 		// Create user
-		user := models.User{
+		user = models.User{
 			Username: email_parts[0] + "_" + discriminator,
 		}
 		gorm.G[models.User](a.db).Create(c.Request.Context(), &user)
@@ -167,16 +169,8 @@ func (a *ApiRoute) AcceptOAuthCallback(c *gin.Context) {
 			Issuer:  conf.Issuer,
 			UserID:  user.ID,
 		})
+		log.Println("Created user: " + user.Username)
 
-		// Create session
-
-		resp := struct {
-			OAuth2Token *oauth2.Token
-			UserInfo    *oidc.UserInfo
-		}{oauth2Token, userInfo}
-
-		c.JSON(http.StatusOK, resp)
-		return
 	} else {
 		// Fetch identity
 		identity, err := gorm.G[models.UserIdentity](a.db).
@@ -201,14 +195,28 @@ func (a *ApiRoute) AcceptOAuthCallback(c *gin.Context) {
 		}
 		// Continue to get user object
 		log.Printf("Found user identity: %s %s (sub: %s)\n", identity.Email, identity.Issuer, identity.Subject)
-		user := identity.User
-		log.Println("User logged in: " + user.Username)
+		user = identity.User
+	}
+
+	log.Println("Creating session for user: " + user.Username)
+	// Create user session
+
+	session, err := app.CreateSession(a.db, c.Request.Context(), user.ID)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to create session: " + err.Error(),
+		})
+		return
 	}
 
 	resp := struct {
 		OAuth2Token *oauth2.Token
 		UserInfo    *oidc.UserInfo
-	}{oauth2Token, userInfo}
+		User        *models.User
+		Session     *models.UserSession
+	}{oauth2Token, userInfo, &user, session}
+
+	c.SetCookie("session_token",string(session.Token), app.SessionMaxAge(), "", "", false, true);
 
 	c.JSON(http.StatusOK, resp)
 
