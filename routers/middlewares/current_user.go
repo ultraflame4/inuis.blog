@@ -19,8 +19,8 @@ func CurrentUser(db *gorm.DB) gin.HandlerFunc {
 			return
 		}
 		if session := app.GetSession(db, c.Request.Context(), sid); session != nil {
-			user := session.User
-			c.Set("user", user)
+			s := *session
+			c.Set("user_session", s)
 			c.Next()
 			return
 		}

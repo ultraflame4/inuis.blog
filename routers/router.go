@@ -21,11 +21,10 @@ func InitRouter(db *gorm.DB) *gin.Engine {
 		_api.GET("/oidc/:oidc/callback", apiroutes.AcceptOAuthCallback)
 	}
 	{
-		_api.POST("/user/login", apiroutes.LoginUser)
-
-		_api_me := _api.Group("/me")
-		_api_me.Use(middlewares.CurrentUser(db))
-		_api_me.GET("/", apiroutes.CurrentUser)
+		_me := _api.Group("/me")
+		_me.Use(middlewares.CurrentUser(db))
+		_me.GET("/", apiroutes.CurrentUser)
+		_me.GET("/logout", apiroutes.LogoutCurrentUser)
 	}
 
 	return r

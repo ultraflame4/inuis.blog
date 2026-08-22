@@ -51,6 +51,8 @@ Login
 `/user/login`
 Login for MFA
 `/user/login/2fa`
+Login OIDC
+`/oidc/<oidc_name>/login`
 Create User
 `/user/new`
 Reset Password 
@@ -58,11 +60,11 @@ Reset Password
 
 ## Current User Session
 Logout
-`/user/logout`
+`/me/logout`
 Delete account
 `/user/delete`
 Query current session
-`/user`
+`/me`
 Query posts for current session.
 `/user/posts`
 

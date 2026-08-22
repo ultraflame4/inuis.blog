@@ -16,6 +16,6 @@ export const load: LayoutLoad = async (event) => {
     const user_resp = await fetchUser(event);
 
     return {
-        user: user_resp["user"]
+        user: user_resp?.["user"] as any | null | undefined
     }
 };
