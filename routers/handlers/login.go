@@ -198,9 +198,17 @@ func (a *ApiRoute) AcceptOAuthCallback(c *gin.Context) {
 		user = identity.User
 	}
 
-	log.Println("Creating session for user: " + user.Username)
-	// Create user session
 
+	// Revoke any existings session from same browser / cookie
+	if existing_session, err := c.Cookie("session_token"); err == nil {
+		log.Println("Revoking existing session with token: " + existing_session)
+
+		if err := app.RevokeSession(a.db, ctx, existing_session); err != nil {
+			log.Println("Failed to revoke existing session: " + err.Error())
+		}
+	}
+	// Create user session
+	log.Println("Creating session for user: " + user.Username)
 	session, err := app.CreateSession(a.db, c.Request.Context(), user.ID)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{

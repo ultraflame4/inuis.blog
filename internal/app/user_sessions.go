@@ -51,3 +51,10 @@ func DeleteSession(db *gorm.DB, ctx context.Context, sessionID uint) error {
 	err := db.WithContext(ctx).Delete(&session).Error
 	return err
 }
+func RevokeSession(db *gorm.DB, ctx context.Context, sessionToken string) error {
+	count, err := gorm.G[models.UserSession](db).Where("token = ?", sessionToken).Delete(ctx)
+	if count == 0 {
+		return nil
+	}
+	return err
+}
