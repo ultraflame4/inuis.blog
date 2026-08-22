@@ -11,6 +11,10 @@ type User struct {
 	Username string
 }
 
+func (u *User) IsDeleted() bool {
+	return u.DeletedAt.Valid
+}
+
 // User identity across different OIDCs
 type UserIdentity struct {
 	gorm.Model

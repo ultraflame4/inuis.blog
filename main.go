@@ -21,7 +21,7 @@ func main() {
     _ = ctx;
     models.Migrate(db)
     slog.Info("Auto migrated database.")
-    app.ResetSessions(db, ctx)
+    app.ExpireSessions(db, ctx)
     slog.Info("Cleared all user sessions.")
 
 	router := routers.InitRouter(db)
