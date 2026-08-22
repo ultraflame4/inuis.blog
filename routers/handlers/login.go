@@ -156,7 +156,7 @@ func (a *ApiRoute) AcceptOAuthCallback(c *gin.Context) {
 		// Create new user
 		email_parts := strings.SplitN(userInfo.Email, "@", 2)
 		discriminator_hash := sha256.Sum256([]byte(email_parts[1]))
-		discriminator := base64.RawURLEncoding.EncodeToString(discriminator_hash[:])[:4]
+		discriminator := base64.RawURLEncoding.EncodeToString(discriminator_hash[:])[:8]
 		// Create user
 		user = models.User{
 			Username: email_parts[0] + "_" + discriminator,
