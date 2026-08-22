@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"log/slog"
 
 	"github.com/teenyblog/internal/app"
 	"github.com/teenyblog/models"
@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	fmt.Println("Connecting to database...");
+	slog.Info("Connecting to database...");
  	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
   	if err != nil {
 	    panic("failed to connect database")
@@ -20,9 +20,9 @@ func main() {
     ctx := context.Background()
     _ = ctx;
     models.Migrate(db)
-    fmt.Println("Auto migrated database.")
+    slog.Info("Auto migrated database.")
     app.ResetSessions(db, ctx)
-    fmt.Println("Cleared all user sessions.")
+    slog.Info("Cleared all user sessions.")
 
 	router := routers.InitRouter(db)
 	router.Run(app.ServerAddress()) // listens on 0.0.0.0:8080 by default

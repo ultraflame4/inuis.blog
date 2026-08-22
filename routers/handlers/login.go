@@ -5,7 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"errors"
-	"log"
+	"log/slog"
 	"net/http"
 	"strings"
 	"time"
@@ -152,7 +152,7 @@ func (a *ApiRoute) AcceptOAuthCallback(c *gin.Context) {
 
 	var user models.User;
 	if len(existing) == 0 {
-		log.Println("Creating new user for email: " + userInfo.Email)
+		slog.Info("Creating new user for email: " + userInfo.Email)
 		// Create new user
 		email_parts := strings.SplitN(userInfo.Email, "@", 2)
 		discriminator_hash := sha256.Sum256([]byte(email_parts[1]))
@@ -169,8 +169,7 @@ func (a *ApiRoute) AcceptOAuthCallback(c *gin.Context) {
 			Issuer:  conf.Issuer,
 			UserID:  user.ID,
 		})
-		log.Println("Created user: " + user.Username)
-
+		slog.Info("Created user: " + user.Username)
 	} else {
 		// Fetch identity
 		identity, err := gorm.G[models.UserIdentity](a.db).
@@ -194,21 +193,21 @@ func (a *ApiRoute) AcceptOAuthCallback(c *gin.Context) {
 			return
 		}
 		// Continue to get user object
-		log.Printf("Found user identity: %s %s (sub: %s)\n", identity.Email, identity.Issuer, identity.Subject)
+		slog.Info("Found user identity: %s %s (sub: %s)\n", identity.Email, identity.Issuer, identity.Subject)
 		user = identity.User
 	}
 
 
 	// Revoke any existings session from same browser / cookie
 	if existing_session, err := c.Cookie("session_token"); err == nil {
-		log.Println("Revoking existing session with token: " + existing_session)
+		slog.Debug("Revoking existing session with token: " + existing_session)
 
 		if err := app.RevokeSession(a.db, ctx, existing_session); err != nil {
-			log.Println("Failed to revoke existing session: " + err.Error())
+			slog.Error("Failed to revoke existing session: " + err.Error())
 		}
 	}
 	// Create user session
-	log.Println("Creating session for user: " + user.Username)
+	slog.Debug("Creating session for user: " + user.Username)
 	session, err := app.CreateSession(a.db, c.Request.Context(), user.ID)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{

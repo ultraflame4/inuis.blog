@@ -3,7 +3,7 @@ package app
 import (
 	"context"
 	"fmt"
-	"log"
+	"log/slog"
 	"os"
 	"strings"
 
@@ -36,7 +36,7 @@ func RegisterOIDCProviders(ctx context.Context) {
 			provider, err := oidc.NewProvider(ctx, oidc_url)
 			if err != nil {
 
-				log.Println("Failed to create provider for " + oidc_name + ":\n\t", err.Error())
+				slog.Error("Failed to create provider for " + oidc_name + ":\n\t", err.Error())
 				continue
 			}
 			oidcConfig := oidc.Config{
@@ -57,9 +57,9 @@ func RegisterOIDCProviders(ctx context.Context) {
 				Issuer: oidc_url,
 			}
 
-			log.Println("Registered provider for oidc name " + oidc_name)
-			log.Println("Callback url for oidc '" + oidc_name + "' is " + config.RedirectURL)
-			log.Println("Login url for oidc '" + oidc_name + "' is " + fmt.Sprintf("http://%s/api/oauth2/%s/login", server_addr, strings.ToLower(oidc_name)))
+			slog.Info("Registered provider for oidc name " + oidc_name)
+			slog.Info("Login url for oidc '" + oidc_name + "' is " + fmt.Sprintf("http://%s/api/oauth2/%s/login", server_addr, strings.ToLower(oidc_name)))
+			slog.Info("Callback url for oidc '" + oidc_name + "' is " + config.RedirectURL)
 
 
 		}
