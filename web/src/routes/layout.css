@@ -1,0 +1,26 @@
+@import 'tailwindcss';
+
+@layer base {
+
+
+    .classic *,
+    .classic {
+        font-family: revert;
+        font-weight: revert;
+        font-size: revert;
+        text-decoration: revert;
+        @apply my-4
+    }
+
+    main.classic {
+        @apply mx-4
+    }
+
+    hr {
+        @apply my-4
+    }
+}
+
+nav>a {
+    text-decoration: revert;
+}

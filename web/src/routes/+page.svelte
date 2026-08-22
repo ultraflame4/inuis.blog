@@ -1,5 +1,5 @@
 
-<main>
+<main class="classic">
     <h2>A tiny, no-nonsense, fast blogging platform</h2>
     <h3>No trackers, minimal JavaScript and some CSS</h3>
     <nav>
