@@ -10,7 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/coreos/go-oidc"
 	"github.com/gin-gonic/gin"
 	"github.com/teenyblog/internal/app"
 	"github.com/teenyblog/models"
@@ -216,16 +215,17 @@ func (a *ApiRoute) AcceptOAuthCallback(c *gin.Context) {
 		return
 	}
 
-	resp := struct {
-		OAuth2Token *oauth2.Token
-		UserInfo    *oidc.UserInfo
-		User        *models.User
-		Session     *models.UserSession
-	}{oauth2Token, userInfo, &user, session}
+	// resp := struct {
+	// 	OAuth2Token *oauth2.Token
+	// 	UserInfo    *oidc.UserInfo
+	// 	User        *models.User
+	// 	Session     *models.UserSession
+	// }{oauth2Token, userInfo, &user, session}
 
 	c.SetCookie("session_token",string(session.Token), app.SessionMaxAge(), "", "", false, true);
 
-	c.JSON(http.StatusOK, resp)
+	// c.JSON(http.StatusOK, resp)
+	c.Redirect(http.StatusFound, "/me")
 
 }
 
