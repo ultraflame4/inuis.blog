@@ -18,7 +18,7 @@ import (
 	"gorm.io/gorm"
 )
 
-
+// Set secure cookies
 func setCallbackCookie(ctx *gin.Context, name, value string) {
 	c := &http.Cookie{
 		Name:     name,
@@ -29,10 +29,18 @@ func setCallbackCookie(ctx *gin.Context, name, value string) {
 	}
 	ctx.SetCookieData(c)
 }
-func (*ApiRoute) LoginFlow(c *gin.Context) {
+
+// Generate PKCE challenge from verifier
+func pkceChallenge(verifier string) string {
+	sum := sha256.Sum256([]byte(verifier))
+	return base64.RawURLEncoding.EncodeToString(sum[:])
+}
+
+// Handlers
+func (*ApiRoute) StartOauthLoginFlow(c *gin.Context) {
 	oidc_name := strings.ToUpper(c.Param("oidc"))
 	config, ok := app.GetOidcProvider(oidc_name)
-	if !ok{
+	if !ok {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
 			"error": "Unknown OIDC Provider",
 		})
@@ -44,50 +52,100 @@ func (*ApiRoute) LoginFlow(c *gin.Context) {
 		c.AbortWithStatus(500)
 		return
 	}
+
+	if len(config.Config.ClientSecret) == 0 {
+		// No client secret. Default to pkce
+		pkceVerifier, err := app.RandString(32)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+				"error": "Failed to generate PKCE verifier: " + err.Error(),
+			})
+			return
+		}
+		setCallbackCookie(c, "pkceVerifier", pkceVerifier)
+		challenge := pkceChallenge(pkceVerifier)
+		c.Redirect(http.StatusFound,
+			config.Config.AuthCodeURL(state,
+			oauth2.SetAuthURLParam("code_challenge", challenge),
+				oauth2.SetAuthURLParam("code_challenge_method", "S256"),
+			))
+
+	}
 	setCallbackCookie(c, "state", state)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to generate PKCE verifier: " + err.Error(),
+		})
+		return
+	}
 
 	c.Redirect(http.StatusFound, config.Config.AuthCodeURL(state))
 
 }
 
-func (a *ApiRoute) AcceptOAuthCallback(c *gin.Context){
+
+func (a *ApiRoute) AcceptOAuthCallback(c *gin.Context) {
 	oidc_name := strings.ToUpper(c.Param("oidc"))
 	conf, ok := app.GetOidcProvider(oidc_name)
-	if !ok{
+	if !ok {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
 			"error": "Unknown OIDC Provider",
 		})
 		return
 	}
-	state, err := c.Cookie("state")
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error": "state not found",
-		})
-		return
-	}
-	_ = state
+
 	ctx := context.Background()
-	oauth2Token, err := conf.Config.Exchange(ctx, c.Query("code"))
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to exchange token: " + err.Error(),
-		})
-		return
+
+	
+	var oauth2Token *oauth2.Token
+	if verifier , err := c.Cookie("pkceVerifier"); err == nil {
+		token, err := conf.Config.Exchange(
+			ctx,
+			c.Query("code"),
+			oauth2.SetAuthURLParam("code_verifier", verifier),
+		)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+				"error": "Failed to exchange token: " + err.Error(),
+			})
+			return
+		}
+		oauth2Token = token
+	} else {
+		state, err := c.Cookie("state")
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+				"error": "state not found",
+			})
+			return
+		}
+		_ = state
+	
+		token, err := conf.Config.Exchange(ctx, c.Query("code"))
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+				"error": "Failed to exchange token: " + err.Error(),
+			})
+			return
+		}
+		oauth2Token = token
 	}
+	
+
 	userInfo, err := conf.Provider.UserInfo(ctx, oauth2.StaticTokenSource(oauth2Token))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error" : "Failed to get userinfo: " + err.Error(),
+			"error": "Failed to get userinfo: " + err.Error(),
 		})
 		return
 	}
 
 	// Find existing identities with this email.
 	existing, err := gorm.G[models.UserIdentity](a.db).Where("email = ?", userInfo.Email).Find(c.Request.Context())
-	if err != nil{
+	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error" : err.Error(),
+			"error": err.Error(),
 		})
 	}
 
@@ -105,9 +163,9 @@ func (a *ApiRoute) AcceptOAuthCallback(c *gin.Context){
 		// Attach identity
 		gorm.G[models.UserIdentity](a.db).Create(c.Request.Context(), &models.UserIdentity{
 			Subject: userInfo.Subject,
-			Email:  &userInfo.Email,
-			Issuer: conf.Issuer,
-			UserID: user.ID,
+			Email:   &userInfo.Email,
+			Issuer:  conf.Issuer,
+			UserID:  user.ID,
 		})
 
 		// Create session
@@ -117,7 +175,7 @@ func (a *ApiRoute) AcceptOAuthCallback(c *gin.Context){
 			UserInfo    *oidc.UserInfo
 		}{oauth2Token, userInfo}
 
-		c.JSON(http.StatusOK, resp);
+		c.JSON(http.StatusOK, resp)
 		return
 	} else {
 		// Fetch identity
@@ -126,17 +184,17 @@ func (a *ApiRoute) AcceptOAuthCallback(c *gin.Context){
 			Where("subject = ? AND issuer = ?", userInfo.Subject, conf.Issuer).
 			First(c.Request.Context())
 		if err != nil {
-		   if errors.Is(err, gorm.ErrRecordNotFound){
+			if errors.Is(err, gorm.ErrRecordNotFound) {
 				// User with this email exists. But does not have this identity registered.
 				// Should reject oauth, ask user to login with correct identity first.
 				// then connect provider when logged in
 				c.AbortWithStatusJSON(http.StatusConflict, gin.H{
-					"error" : "User with email " + userInfo.Email + " already exists, but does not have this identity registered!",
+					"error": "User with email " + userInfo.Email + " already exists, but does not have this identity registered!",
 				})
 				return
 			} else {
 				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-					"error" : "Failed to fetch user identity: " + err.Error(),
+					"error": "Failed to fetch user identity: " + err.Error(),
 				})
 			}
 			return
@@ -147,14 +205,11 @@ func (a *ApiRoute) AcceptOAuthCallback(c *gin.Context){
 		log.Println("User logged in: " + user.Username)
 	}
 
-
-
-
 	resp := struct {
 		OAuth2Token *oauth2.Token
 		UserInfo    *oidc.UserInfo
 	}{oauth2Token, userInfo}
 
-	c.JSON(http.StatusOK, resp);
+	c.JSON(http.StatusOK, resp)
 
 }

@@ -16,7 +16,7 @@ func InitRouter(db *gorm.DB) *gin.Engine {
 	_api := r.Group("/api")
 	{
 		_api := _api.Group("/oauth2")
-		_api.GET("/:oidc/login", apiroutes.LoginFlow)
+		_api.GET("/:oidc/login", apiroutes.StartOauthLoginFlow)
 		_api.GET("/:oidc/callback", apiroutes.AcceptOAuthCallback)
 	}
 	{

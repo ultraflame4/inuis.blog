@@ -4,6 +4,8 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"io"
+
+	"github.com/gin-gonic/gin"
 )
 
 func RandString(nByte int) (string, error) {
@@ -12,4 +14,9 @@ func RandString(nByte int) (string, error) {
 		return "", err
 	}
 	return base64.RawURLEncoding.EncodeToString(b), nil
+}
+
+func HasCookie(c *gin.Context, key string) bool {
+	_, err := c.Cookie(key)
+	return err == nil
 }
