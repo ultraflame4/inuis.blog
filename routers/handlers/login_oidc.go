@@ -228,3 +228,9 @@ func (a *ApiRoute) AcceptOAuthCallback(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 
 }
+
+
+func (a *ApiRoute) ListLoginProviders(c *gin.Context) {
+	providers := app.GetProviders()
+	c.JSON(http.StatusOK, providers)
+}

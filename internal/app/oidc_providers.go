@@ -43,10 +43,11 @@ func RegisterOIDCProviders(ctx context.Context) {
 				ClientID: client_id,
 			}
 			verifier := provider.Verifier(&oidcConfig)
+			redirectURL := fmt.Sprintf("http://%s/api/oidc/%s/callback", server_addr, strings.ToLower(oidc_name))
 			config := oauth2.Config{
 				ClientID:  client_id,
 				ClientSecret: os.Getenv("OIDC_" + oidc_name + "_CLIENT_SECRET"),
-				RedirectURL: fmt.Sprintf("http://%s/api/oauth2/%s/callback", server_addr, strings.ToLower(oidc_name)) ,
+				RedirectURL: redirectURL,
 				Endpoint: provider.Endpoint(),
 				Scopes: []string{oidc.ScopeOpenID, "profile", "email"},
 			}
@@ -58,7 +59,7 @@ func RegisterOIDCProviders(ctx context.Context) {
 			}
 
 			slog.Info("Registered provider for oidc name " + oidc_name)
-			slog.Info("Login url for oidc '" + oidc_name + "' is " + fmt.Sprintf("http://%s/api/oauth2/%s/login", server_addr, strings.ToLower(oidc_name)))
+			slog.Info("Login url for oidc '" + oidc_name + "' is " + fmt.Sprintf("http://%s/api/oidc/%s/login", server_addr, strings.ToLower(oidc_name)))
 			slog.Info("Callback url for oidc '" + oidc_name + "' is " + config.RedirectURL)
 
 
@@ -68,7 +69,17 @@ func RegisterOIDCProviders(ctx context.Context) {
 }
 
 
+// Get GetOidcProvider by name. Case insensitive.
 func GetOidcProvider(name string) (OidcProvider, bool) {
-	provider, ok := loadedProviders[name]
+	provider, ok := loadedProviders[strings.ToUpper(name)]
 	return provider, ok
+}
+
+// Return list of oidc provider names
+func GetProviders()  []string {
+	names := make([]string, 0, len(loadedProviders))
+	for name, _ := range loadedProviders {
+		names = append(names, strings.ToLower(name))
+	}
+	return names
 }

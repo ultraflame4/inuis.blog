@@ -8,3 +8,4 @@ func (*ApiRoute) LoginUser(c *gin.Context){
 		"message": "Not implemented",
 	})
 }
+
