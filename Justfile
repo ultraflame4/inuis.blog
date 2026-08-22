@@ -10,6 +10,6 @@ dev: dev-server dev-client
 dev-server:
     go run . 
 
-[working-directory("./client")]
+[working-directory("./web")]
 dev-client:
     npm run dev
