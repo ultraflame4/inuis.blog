@@ -21,6 +21,22 @@ func ServerAddress() string {
 	return fmt.Sprintf("%s:%s",host,port)
 }
 
+// Returns the public server address to use.
+// 
+// Defaults to the server address if not set.
+// 
+// This is useful if the traffic coming into the server is being proxied.
+// 
+// Any redirects or callbacks should use this address. Instead of the server address so that the user
+// is redirected to the proxy address instead of the server address.
+// ```example
+// // Using vite proxy. All oauth2 callbacks will be redirected to `localhost:5173`, which is then proxied to the server address `localhost:8080`.
+// PROXIED_ADDR=localhost:5173
+// ```
+func PublicServerAddr() string {
+	return getEnv("PROXIED_ADDR", ServerAddress())
+}
+
 func GetDataDirectory() string{
 	return getEnv("DATA_DIR", "/data")
 }
