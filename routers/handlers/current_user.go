@@ -13,7 +13,7 @@ import (
 )
 
 func (*ApiHandler) CurrentUser(c *gin.Context) {
-	user, _ := currentSession(c)
+	user, _ := meta.GetSession(c)
 
 	c.JSON(200, gin.H{
 		"status":  200,
@@ -23,7 +23,7 @@ func (*ApiHandler) CurrentUser(c *gin.Context) {
 }
 
 func (a *ApiHandler) Logout(c *gin.Context) {
-	_, session := currentSession(c)
+	_, session := meta.GetSession(c)
 
 	c.SetCookie("session_token", "", -1, "/", "", false, true)
 	app.DeleteSession(a.db, c.Request.Context(), session.ID)
@@ -35,7 +35,7 @@ func (a *ApiHandler) ListPosts(c *gin.Context) {
 
 	ctx := c.Request.Context()
 	pageQuery := meta.GetPagination(c)
-	user, _ := currentSession(c)
+	user, _ := meta.GetSession(c)
 	db := a.db
 
 
@@ -102,7 +102,7 @@ func (a *ApiHandler) GetPost(c *gin.Context) {
 }
 
 func (a *ApiHandler) PublishPost(c *gin.Context) {
-	user, _ := currentSession(c)
+	user, _ := meta.GetSession(c)
 	post_id := c.Param("id")
 	make_public := c.Query("public") == "true"
 	db := a.db
@@ -127,7 +127,7 @@ func (a *ApiHandler) PublishPost(c *gin.Context) {
 
 func (a *ApiHandler) SavePost(c *gin.Context) {
 	db := a.db
-	user, _ := currentSession(c)
+	user, _ := meta.GetSession(c)
 
 	post_id := c.Query("id")
 	var post models.Post
