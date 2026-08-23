@@ -8,56 +8,78 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/teenyblog/internal/app"
 	"github.com/teenyblog/models"
+	"github.com/teenyblog/routers/meta"
 	"gorm.io/gorm"
 )
 
-
-func (*ApiHandler) CurrentUser(c *gin.Context){
+func (*ApiHandler) CurrentUser(c *gin.Context) {
 	user, _ := currentSession(c)
-	
+
 	c.JSON(200, gin.H{
-		"status": 200,
+		"status":  200,
 		"message": "OK",
-		"user": user,
+		"user":    user,
 	})
 }
 
 func (a *ApiHandler) Logout(c *gin.Context) {
 	_, session := currentSession(c)
-	
+
 	c.SetCookie("session_token", "", -1, "/", "", false, true)
-	app.DeleteSession(a.db, c.Request.Context(), session.ID);
-	
-	
+	app.DeleteSession(a.db, c.Request.Context(), session.ID)
+
 	c.Redirect(http.StatusFound, "/")
 }
 
 func (a *ApiHandler) ListPosts(c *gin.Context) {
+
+	ctx := c.Request.Context()
+	pageQuery := meta.GetPagination(c)
 	user, _ := currentSession(c)
 	db := a.db
 
-	posts, err := gorm.G[models.Post](db).Where("user_id = ?", user.ID).Find(c.Request.Context())
+
+	sql := gorm.G[models.Post](db).
+		Where("user_id = ?", user.ID);
+
+	total_count, err := sql.Count(ctx, "ID")
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 
-	summaries := make([]_SummarisedPost, 0, len(posts))
+	posts, err := sql.
+		Limit(pageQuery.Limit).
+		Offset( pageQuery.Offset()).
+		Find(c.Request.Context())
+
+	
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	type Response struct {
+		meta.PageMeta
+		Items []meta.PostSummary `json:"items"`
+	}
+	
+	summaries := make([]meta.PostSummary, 0, len(posts))
 	for _, post := range posts {
-		summaries = append(summaries, _SummarisedPost{
+		summaries = append(summaries, meta.PostSummary{
 			Model:   post.Model,
 			Title:   post.Title,
 			Summary: post.Summary,
+			AllowPublic: post.AllowPublic,
 		})
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"items": summaries,
+	c.JSON(http.StatusOK, Response{
+		PageMeta: meta.CreatePageMeta(pageQuery, int(total_count)),
+		Items:    summaries,
 	})
-	
+
 }
-
-
 
 // Get a private post by id. Note that this also works for public posts.
 func (a *ApiHandler) GetPost(c *gin.Context) {
@@ -76,9 +98,8 @@ func (a *ApiHandler) GetPost(c *gin.Context) {
 	c.AbortWithStatusJSON(404, gin.H{
 		"error": "Cannot find post with id:" + post_id,
 	})
-	
-}
 
+}
 
 func (a *ApiHandler) PublishPost(c *gin.Context) {
 	user, _ := currentSession(c)
@@ -98,50 +119,47 @@ func (a *ApiHandler) PublishPost(c *gin.Context) {
 	}
 
 	c.AbortWithStatusJSON(404, gin.H{
-		"status": "error",
+		"status":  "error",
 		"message": "Cannot find post with id:" + post_id,
 	})
-	
+
 }
 
 func (a *ApiHandler) SavePost(c *gin.Context) {
 	db := a.db
 	user, _ := currentSession(c)
 
-	post_id := c.Query("id");
+	post_id := c.Query("id")
 	var post models.Post
 
-	
 	title := ""
 	content := c.PostForm("content")
 	body := c.PostForm("content")
-	
+
 	// Remove the first line of the content. (Treated as title)
 	if i := strings.IndexByte(body, '\n'); i >= 0 {
 		title = content[:i]
-        body =  body[i+1:]
-    }
+		body = body[i+1:]
+	}
 
-    title = strings.TrimPrefix(title, "#")
-    title = strings.TrimSpace(title)
-    
+	title = strings.TrimPrefix(title, "#")
+	title = strings.TrimSpace(title)
 
-    // Generate summary from body
-    summary_len := 100
-    summary_body := strings.ReplaceAll(body, "\n",  "")
-    summary :=  summary_body[0:min(len(summary_body), summary_len)]
-    summary = strings.TrimSpace(summary)
-	
+	// Generate summary from body
+	summary_len := 100
+	summary_body := strings.ReplaceAll(body, "\n", "")
+	summary := summary_body[0:min(len(summary_body), summary_len)]
+	summary = strings.TrimSpace(summary)
 
 	post = models.Post{
-		UserID: user.ID,
+		UserID:  user.ID,
 		Summary: summary,
 		Content: content,
-		Title: title,
+		Title:   title,
 	}
 
 	if post_id != "" {
-		post_id, err := strconv.ParseUint(post_id, 10, 32);
+		post_id, err := strconv.ParseUint(post_id, 10, 32)
 		if err != nil {
 			c.AbortWithStatusJSON(404, gin.H{
 				"error": "Post not found",
@@ -158,7 +176,7 @@ func (a *ApiHandler) SavePost(c *gin.Context) {
 			})
 			return
 		}
-		
+
 		post.ID = uint(post_id)
 		err = db.Save(&post).Error
 		if err != nil {
@@ -181,6 +199,6 @@ func (a *ApiHandler) SavePost(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"status": "success",
-		"post": post,
+		"post":   post,
 	})
 }

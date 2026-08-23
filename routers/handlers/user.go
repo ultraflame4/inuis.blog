@@ -5,14 +5,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/teenyblog/models"
+	"github.com/teenyblog/routers/meta"
 	"gorm.io/gorm"
 )
 
-type _SummarisedPost struct {
-	gorm.Model
-	Title string
-	Summary string
-}
 
 func (a *ApiHandler) ListUserPublicPosts(c *gin.Context) {
 	user_id := c.Param("user_id")
@@ -24,12 +20,13 @@ func (a *ApiHandler) ListUserPublicPosts(c *gin.Context) {
 		return
 	}
 
-	summaries := make([]_SummarisedPost, 0, len(posts))
+	summaries := make([]meta.PostSummary, 0, len(posts))
 	for _, post := range posts {
-		summaries = append(summaries, _SummarisedPost{
+		summaries = append(summaries, meta.PostSummary{
 			Model:   post.Model,
 			Title:   post.Title,
 			Summary: post.Summary,
+			AllowPublic: post.AllowPublic,
 		})
 	}
 
