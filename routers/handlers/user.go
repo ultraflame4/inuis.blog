@@ -11,16 +11,26 @@ import (
 
 
 func (a *ApiHandler) ListUserPublicPosts(c *gin.Context) {
-	user_id := c.Param("user_id")
 	db := a.db
+	user_id := c.Param("user_id")
+	pageQuery := meta.GetPagination(c)
+	ctx := c.Request.Context()
 
-	posts, err := gorm.G[models.Post](db).Where("user_id = ? AND allow_public = true", user_id).Find(c.Request.Context())
+	sql := gorm.G[models.Post](db).Where("user_id = ? AND allow_public = true", user_id)
+	total_count, err := sql.Count(ctx, "ID")
+	posts, err := sql.Find(ctx)
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 
 	summaries := make([]meta.PostSummary, 0, len(posts))
+
+	type Response struct {
+		meta.PageMeta
+		Posts []meta.PostSummary `json:"posts"`
+	}
+	
 	for _, post := range posts {
 		summaries = append(summaries, meta.PostSummary{
 			Model:   post.Model,
@@ -30,8 +40,9 @@ func (a *ApiHandler) ListUserPublicPosts(c *gin.Context) {
 		})
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"posts": summaries,
+	c.JSON(http.StatusOK, Response{
+		PageMeta: meta.CreatePageMeta(pageQuery, int(total_count)),
+		Posts: summaries,
 	})
 	
 }

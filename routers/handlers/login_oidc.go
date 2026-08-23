@@ -140,12 +140,15 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 		return
 	}
 
+	// ---- Get / Create user
+
+
+	
 	// Find existing identities with this email.
 	existing, err := gorm.G[models.UserIdentity](a.db).Where("email = ?", userInfo.Email).Find(c.Request.Context())
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		c.AbortWithStatus(http.StatusInternalServerError);
+		return
 	}
 
 
@@ -160,15 +163,27 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 		user = models.User{
 			Username: email_parts[0] + "_" + discriminator,
 		}
-		gorm.G[models.User](a.db).Create(c.Request.Context(), &user)
-		// Attach identity
-		gorm.G[models.UserIdentity](a.db).Create(c.Request.Context(), &models.UserIdentity{
-			Subject: userInfo.Subject,
-			Email:   &userInfo.Email,
-			Issuer:  conf.Issuer,
-			UserID:  user.ID,
-		})
+		if err := a.db.Transaction(func (tx *gorm.DB) error {
+			if err := gorm.G[models.User](tx).Create(c.Request.Context(), &user); err != nil {
+				return err
+			}
+			// Attach identity
+			identity := models.UserIdentity{
+				Subject: userInfo.Subject,
+				Email:   &userInfo.Email,
+				Issuer:  conf.Issuer,
+				UserID:  user.ID,
+			}
+			if err := gorm.G[models.UserIdentity](tx).Create(c.Request.Context(), &identity); err != nil {
+				return err
+			}
+			return nil
+		}); err != nil {
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
 		slog.Info("Created user: " + user.Username)
+
 	} else {
 		// Fetch identity
 		identity, err := gorm.G[models.UserIdentity](a.db).
