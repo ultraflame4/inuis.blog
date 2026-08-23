@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/teenyblog/internal/app"
 	"github.com/teenyblog/models"
+	"gorm.io/gorm"
 )
 
 
@@ -30,6 +31,32 @@ func (a *ApiHandler) Logout(c *gin.Context) {
 	
 	c.Redirect(http.StatusFound, "/")
 }
+
+func (a *ApiHandler) ListPosts(c *gin.Context) {
+	user, _ := currentSession(c)
+	db := a.db
+
+	posts, err := gorm.G[models.Post](db).Where("user_id = ?", user.ID).Find(c.Request.Context())
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	summaries := make([]_SummarisedPost, 0, len(posts))
+	for _, post := range posts {
+		summaries = append(summaries, _SummarisedPost{
+			Model:   post.Model,
+			Title:   post.Title,
+			Summary: post.Summary,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"posts": summaries,
+	})
+	
+}
+
 
 
 // Get a private post by id. Note that this also works for public posts.

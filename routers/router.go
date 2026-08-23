@@ -27,6 +27,7 @@ func InitRouter(db *gorm.DB) *gin.Engine {
 		_me.GET("/logout", handlers.Logout)
 		_me.POST("/posts/save", handlers.SavePost)
 		_me.GET("/posts/:id", handlers.GetPost)
+		_me.GET("/posts", handlers.ListPosts)
 		_me.POST("/posts/:id/publish", handlers.PublishPost)
 	}
 	{
