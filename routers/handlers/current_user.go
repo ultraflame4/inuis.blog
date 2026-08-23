@@ -122,13 +122,15 @@ func (a *ApiHandler) SavePost(c *gin.Context) {
         body =  body[i+1:]
     }
 
-    summary_len := 100
-    if len(body) < summary_len {
-        summary_len = len(body)
-    }
+    title = strings.TrimPrefix(title, "#")
+    title = strings.TrimSpace(title)
     
+
     // Generate summary from body
-    summary :=  strings.ReplaceAll(body, "\n",  "")[0:summary_len]
+    summary_len := 100
+    summary_body := strings.ReplaceAll(body, "\n",  "")
+    summary :=  summary_body[0:min(len(summary_body), summary_len)]
+    summary = strings.TrimSpace(summary)
 	
 
 	post = models.Post{

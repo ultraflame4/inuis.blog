@@ -43,7 +43,8 @@
 						unsaved_changes = true;
 						updateTitle(update.view);
 					}
-				})
+				}),
+				EditorView.lineWrapping
 			]
 		});
 
@@ -111,14 +112,22 @@
 <main class="page-content-height grid gap-2 p-4" style="grid-template-rows: auto 1fr auto;">
 	<div class="flex items-center gap-1">
 		<h2 class="font-bold">Title: {title}</h2>
+		<div class="ml-auto"></div>
+		<span class="mx-2 text-sm" class:font-bold={unsaved_changes}>
+		    {#if unsaved_changes}
+				[Unsaved changes]
+			{:else}
+				[Up to date]
+			{/if}
+		</span>
 		<button
-			class="classic ml-auto"
+			class="classic"
 			class:hidden={!showPreview}
 			onclick={() => (showPreview = false)}
 		>
 			View Editor
 		</button>
-		<button class="classic ml-auto" class:hidden={showPreview} onclick={() => (showPreview = true)}>
+		<button class="classic" class:hidden={showPreview} onclick={() => (showPreview = true)}>
 			View Preview
 		</button>
 		<button class="classic" disabled={saving_post != null} onclick={save_post}>Save</button>
@@ -129,10 +138,11 @@
 			<button class="classic" disabled={publishing_post != null} onclick={()=>publish_post(false)}>Make Private</button>
 		{/if}
 	</div>
-	<div id="editor" class:hidden={showPreview}>
+	<div id="editor" class:hidden={showPreview} class="w-full overflow-hidden">
 		<style>
 			.cm-editor {
 				height: 100%;
+				width: 100%;
 				border: 1px solid silver;
 			}
 		</style>
