@@ -5,10 +5,11 @@
 	import { markdown } from '@codemirror/lang-markdown';
 	import { headingPlugin } from '$lib/editor';
 	import { jsonFormdata } from '$lib/utils';
+	import { goto } from '$app/navigation';
 
 	const { data } = $props()
 
-	const post_id = data.post_id
+	let post_id = $state(data.post_id)
 	
 	let showPreview = $state(false);
 	let unsaved_changes = $state(post_id == null);
@@ -72,6 +73,9 @@
 			if (resp.ok) {
 				unsaved_changes = false;
 				saving_post = null;
+				const data = await resp.json();
+				post_id = data.post.ID;
+				goto(`/me/editor?post_id=${post_id}`);
 			}
 			
 		}
