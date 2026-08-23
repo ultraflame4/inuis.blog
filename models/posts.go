@@ -15,5 +15,5 @@ type Post struct {
 	// Author of the post
 	User User
 	// Can the post be viewed by the public
-	Published bool
+	AllowPublic bool
 }

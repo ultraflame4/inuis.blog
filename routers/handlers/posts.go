@@ -12,13 +12,13 @@ import (
 // Public unprotected api
 //
 // Get post for non-authenticated users
-func (a *ApiHandler) PublicGetPost(c *gin.Context) {
+func (a *ApiHandler) GetPublicPost(c *gin.Context) {
 	post_id := c.Param("id")
 	db := a.db
 
 	var post models.Post
 	err := db.First(&post, post_id).Error
-	if err == nil && post.Published {
+	if err == nil && post.AllowPublic {
 		c.JSON(http.StatusOK, gin.H{
 			"post": post,
 		})
@@ -26,8 +26,7 @@ func (a *ApiHandler) PublicGetPost(c *gin.Context) {
 	}
 
 	c.AbortWithStatusJSON(404, gin.H{
-		"status": "error",
-		"message": "Cannot find post with id:" + post_id,
+		"error": "Cannot find post with id: " + post_id,
 	})
 }
 
@@ -55,11 +54,14 @@ func (a *ApiHandler) GetUserPost(c *gin.Context) {
 func (a *ApiHandler) PublishUserPost(c *gin.Context) {
 	user, _ := currentSession(c)
 	post_id := c.Param("id")
+	make_public := c.Query("public") == "true"
 	db := a.db
 
 	var post models.Post
 	err := db.First(&post, post_id).Error
 	if err == nil && post.UserID == user.ID {
+		post.AllowPublic = make_public
+		db.Save(&post)
 		c.JSON(http.StatusOK, gin.H{
 			"message": "success",
 		})
@@ -111,8 +113,7 @@ func (a *ApiHandler) SavePost(c *gin.Context) {
 		post_id, err := strconv.ParseUint(post_id, 10, 32);
 		if err != nil {
 			c.AbortWithStatusJSON(404, gin.H{
-				"status": "error",
-				"message": "Post not found",
+				"error": "Post not found",
 			})
 			return
 		}
@@ -122,8 +123,7 @@ func (a *ApiHandler) SavePost(c *gin.Context) {
 		err = db.First(&existingPost, post_id).Error
 		if err != nil || existingPost.UserID != user.ID {
 			c.AbortWithStatusJSON(404, gin.H{
-				"status": "error",
-				"message": "Post not found",
+				"error": "Post not found",
 			})
 			return
 		}
@@ -132,9 +132,8 @@ func (a *ApiHandler) SavePost(c *gin.Context) {
 		err = db.Save(&post).Error
 		if err != nil {
 			c.AbortWithStatusJSON(404, gin.H{
-				"status": "error",
-				"message": "Failed to save post",
-				"error": err.Error(),
+
+				"error": "Failed to save post :" + err.Error(),
 			})
 			return
 		}
@@ -142,9 +141,8 @@ func (a *ApiHandler) SavePost(c *gin.Context) {
 		err := db.Create(&post).Error
 		if err != nil {
 			c.AbortWithStatusJSON(404, gin.H{
-				"status": "error",
-				"message": "Failed to save post.",
-				"error": err.Error(),
+
+				"error": "Failed to save post :" + err.Error(),
 			})
 			return
 		}

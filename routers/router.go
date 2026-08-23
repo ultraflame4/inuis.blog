@@ -27,11 +27,11 @@ func InitRouter(db *gorm.DB) *gin.Engine {
 		_me.GET("/logout", handlers.LogoutCurrentUser)
 		_me.POST("/posts/save", handlers.SavePost)
 		_me.GET("/posts/:id", handlers.GetUserPost)
-		_me.POST("/posts/:id/publish", handlers.GetUserPost)
+		_me.POST("/posts/:id/publish", handlers.PublishUserPost)
 	}
 	{
 		_posts := _api.Group("/posts")
-		_posts.GET("/:id", handlers.PublicGetPost)
+		_posts.GET("/:id", handlers.GetPublicPost)
 	}
 
 	return r

@@ -10,6 +10,7 @@
 	const { data } = $props()
 
 	let post_id = $state(data.post_id)
+	let published = $state(data.published);
 	
 	let showPreview = $state(false);
 	let unsaved_changes = $state(post_id == null);
@@ -54,6 +55,7 @@
 	});
 
 	let saving_post = $state<Promise<void> | null>(null);
+	let publishing_post = $state<Promise<void> | null>(null);
 
 	async function save_post() {
 		async function _save_post() {
@@ -84,6 +86,25 @@
 		}
 		await saving_post;
 	}
+
+	async function publish_post(make_public: boolean) {
+		async function _publish_post() {
+			await save_post();
+			const url = new URL(`/api/me/posts/${post_id}/publish`, window.location.origin);
+			url.searchParams.set('public', ''+make_public);
+			const resp = await fetch(url, {
+				method: 'POST',
+			});
+			if (resp.ok) {
+			    published = make_public;
+				publishing_post = null;
+			}
+		}
+		if (publishing_post == null) {
+			publishing_post = _publish_post();
+		}
+		await publishing_post;
+	}
 </script>
 
 <svelte:window on:beforeunload={warn_unsaved} />
@@ -101,7 +122,12 @@
 			View Preview
 		</button>
 		<button class="classic" disabled={saving_post != null} onclick={save_post}>Save</button>
-		<button class="classic">Publish</button>
+
+		{#if !published}
+			<button class="classic" disabled={publishing_post != null} onclick={()=>publish_post(true)}>Publish</button>
+		{:else}
+			<button class="classic" disabled={publishing_post != null} onclick={()=>publish_post(false)}>Make Private</button>
+		{/if}
 	</div>
 	<div id="editor" class:hidden={showPreview}>
 		<style>
