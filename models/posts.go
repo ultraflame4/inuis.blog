@@ -8,9 +8,8 @@ type Post struct {
 	Title   string
 	// Generated summary of post. (First few lines of the post)
 	Summary string
-	// File location of the post content. (File is assumed to be markdown)
-	FileLocation string
-
+	// Contents of the post in markdown. This also includes the post title.
+	Content string
 	// Author id of the post
 	UserID uint
 	// Author of the post

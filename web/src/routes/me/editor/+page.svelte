@@ -4,10 +4,16 @@
 	import { highlightSpecialChars } from '@codemirror/view';
 	import { markdown } from '@codemirror/lang-markdown';
 	import { headingPlugin } from '$lib/editor';
+	import { jsonFormdata } from '$lib/utils';
 
+	const { data } = $props()
+
+	const post_id = data.post_id
+	
 	let showPreview = $state(false);
-	let unsaved_changes = $state(true);
+	let unsaved_changes = $state(post_id == null);
 	let title = $state('');
+	let view = $state<EditorView | null>(null);
 
 	const warn_unsaved = (e: BeforeUnloadEvent) => {
 		if (unsaved_changes) {
@@ -22,9 +28,9 @@
 			title = t.trim();
 		}
 
-		let view = new EditorView({
+		view = new EditorView({
 			parent: document.getElementById('editor') ?? undefined,
-			doc: '# Example post title\nSome text content',
+			doc: data.content,
 			extensions: [
 				basicSetup,
 				highlightSpecialChars(),
@@ -32,7 +38,8 @@
 				headingPlugin(),
 				EditorView.updateListener.of((update) => {
 					if (update.docChanged) {
-						updateTitle(view);
+						unsaved_changes = true;
+						updateTitle(update.view);
 					}
 				})
 			]
@@ -41,7 +48,7 @@
 		updateTitle(view);
 
 		return () => {
-			view.destroy();
+			view?.destroy();
 		};
 	});
 
@@ -49,6 +56,23 @@
 
 	async function save_post() {
 		async function _save_post() {
+		    if (!view) return
+			const url = new URL(`/api/me/posts/save`, window.location.origin);
+			if (post_id) url.searchParams.set('id', post_id);
+
+			console.log(url.toString());
+			const resp = await fetch(url, {
+				method: 'POST',
+				body: jsonFormdata({
+					content: view.state.doc.toString(),
+				}),
+				
+			});
+
+			if (resp.ok) {
+				unsaved_changes = false;
+				saving_post = null;
+			}
 			
 		}
 		if (saving_post == null) {

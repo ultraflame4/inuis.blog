@@ -4,6 +4,8 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"io"
+	"regexp"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,4 +21,9 @@ func RandString(nByte int) (string, error) {
 func HasCookie(c *gin.Context, key string) bool {
 	_, err := c.Cookie(key)
 	return err == nil
+}
+func Slugify(s string) string {
+    s = strings.ToLower(s)
+    s = regexp.MustCompile(`[^a-z0-9]+`).ReplaceAllString(s, "-")
+    return strings.Trim(s, "-")
 }
