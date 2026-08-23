@@ -36,7 +36,7 @@ func pkceChallenge(verifier string) string {
 }
 
 // Handlers
-func (*ApiRoute) StartOauthLoginFlow(c *gin.Context) {
+func (*ApiHandler) StartOauthLoginFlow(c *gin.Context) {
 	oidc_name := strings.ToUpper(c.Param("oidc"))
 	config, ok := app.GetOidcProvider(oidc_name)
 	if !ok {
@@ -84,7 +84,7 @@ func (*ApiRoute) StartOauthLoginFlow(c *gin.Context) {
 }
 
 
-func (a *ApiRoute) AcceptOAuthCallback(c *gin.Context) {
+func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 	oidc_name := strings.ToUpper(c.Param("oidc"))
 	conf, ok := app.GetOidcProvider(oidc_name)
 	if !ok {
@@ -230,7 +230,7 @@ func (a *ApiRoute) AcceptOAuthCallback(c *gin.Context) {
 }
 
 
-func (a *ApiRoute) ListLoginProviders(c *gin.Context) {
+func (a *ApiHandler) ListLoginProviders(c *gin.Context) {
 	providers := app.GetProviders()
 	c.JSON(http.StatusOK, providers)
 }

@@ -2,12 +2,12 @@ package handlers
 
 import "gorm.io/gorm"
 
-type ApiRoute struct {
+type ApiHandler struct {
 	db *gorm.DB
 }
 
-func NewApiHandler(db *gorm.DB) ApiRoute{
-	return ApiRoute {
+func NewApiHandler(db *gorm.DB) ApiHandler{
+	return ApiHandler {
 		db: db,
 	}
 }

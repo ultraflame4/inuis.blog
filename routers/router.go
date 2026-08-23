@@ -13,18 +13,19 @@ import (
 func InitRouter(db *gorm.DB) *gin.Engine {
 	app.RegisterOIDCProviders(context.Background())
 	r := gin.Default()
-	apiroutes := handlers.NewApiHandler(db)
+	handlers := handlers.NewApiHandler(db)
 	_api := r.Group("/api")
 	{
-		_api.GET("/oidc/providers", apiroutes.ListLoginProviders)
-		_api.GET("/oidc/:oidc/login", apiroutes.StartOauthLoginFlow)
-		_api.GET("/oidc/:oidc/callback", apiroutes.AcceptOAuthCallback)
+		_api.GET("/oidc/providers", handlers.ListLoginProviders)
+		_api.GET("/oidc/:oidc/login", handlers.StartOauthLoginFlow)
+		_api.GET("/oidc/:oidc/callback", handlers.AcceptOAuthCallback)
 	}
 	{
 		_me := _api.Group("/me")
 		_me.Use(middlewares.CurrentUser(db))
-		_me.GET("/", apiroutes.CurrentUser)
-		_me.GET("/logout", apiroutes.LogoutCurrentUser)
+		_me.GET("/", handlers.CurrentUser)
+		_me.GET("/logout", handlers.LogoutCurrentUser)
+		_me.POST("/posts/new", handlers.CreatePost)
 	}
 
 	return r

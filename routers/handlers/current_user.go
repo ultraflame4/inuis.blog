@@ -16,7 +16,7 @@ func currentSession(c *gin.Context) (models.User, models.UserSession) {
 }
 
 
-func (*ApiRoute) CurrentUser(c *gin.Context){
+func (*ApiHandler) CurrentUser(c *gin.Context){
 	user, _ := currentSession(c)
 	
 	c.JSON(200, gin.H{
@@ -26,7 +26,7 @@ func (*ApiRoute) CurrentUser(c *gin.Context){
 	})
 }
 
-func (a *ApiRoute) LogoutCurrentUser(c *gin.Context) {
+func (a *ApiHandler) LogoutCurrentUser(c *gin.Context) {
 	_, session := currentSession(c)
 	
 	c.SetCookie("session_token", "", -1, "/", "", false, true)
