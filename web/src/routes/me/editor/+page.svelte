@@ -7,26 +7,33 @@
 
 	let showPreview = $state(false);
 	let title = $state('');
-	let view = $state<EditorView | null>(null);
+	
 	onMount(() => {
-		view = new EditorView({
+		function updateTitle(view: EditorView) {
+			let t = view.state.doc.lineAt(0).text
+			t = t.startsWith('#') ? t.slice(1) : t;
+			title = t.trim();
+		}
+	
+		let view = new EditorView({
 			parent: document.getElementById('editor') ?? undefined,
-			doc: '# Your title here\nSome text content',
-			extensions: [basicSetup, highlightSpecialChars(), markdown({}), headingPlugin()]
+			doc: '# Example post title\nSome text content',
+			extensions: [basicSetup, highlightSpecialChars(), markdown({}), headingPlugin(), 
+			EditorView.updateListener.of((update) => {
+				if (update.docChanged) {
+					updateTitle(view);
+				}
+			})]
 		});
 
+		updateTitle(view);
+
 		return () => {
-			view?.destroy();
+			view.destroy();
 		};
 	});
 
-	$effect(() => {
-		if (view) {
-			let t = view.state.doc.lineAt(0).text
-			title = t.startsWith('#') ? t.slice(1) : t;
-			
-		}
-	});
+
 </script>
 
 <main class="page-content-height grid gap-2 p-4" style="grid-template-rows: auto 1fr auto;">
