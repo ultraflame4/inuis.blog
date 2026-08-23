@@ -52,7 +52,7 @@ func (a *ApiHandler) ListPosts(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"posts": summaries,
+		"items": summaries,
 	})
 	
 }

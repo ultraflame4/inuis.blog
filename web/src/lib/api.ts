@@ -1,0 +1,30 @@
+
+export namespace api {
+
+    export interface Paginated<T> {
+        items: T[];
+        page: number;
+        total_pages: number;
+    }
+
+    export interface User {
+        ID: string;
+        Username: string;
+        CreatedAt: string;
+        DeletedAt: string;
+        UpdatedAt: string;
+
+    }
+
+    export type FetchLike = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
+
+    export async function listPosts(f: FetchLike): Promise<Paginated<any>> {
+        const resp = await f('/api/me/posts');
+        if (!resp.ok) {
+            console.error("Failed to fetch user posts. \nStatus: " + resp.status, "\nBody:\n" + await resp.text())
+            throw new Error('Failed to fetch user posts');
+        }
+        const user_posts: Paginated<any> = await resp.json();
+        return user_posts;
+    }
+}

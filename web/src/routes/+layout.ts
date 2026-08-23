@@ -2,6 +2,7 @@
 import type { LoadEvent } from '@sveltejs/kit';
 import type { LayoutLoad } from './$types';
 import type { Nullish } from '$lib/utils';
+import type { api } from '$lib/api';
 
 
 async function fetchUser(event: LoadEvent) {
