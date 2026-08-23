@@ -9,7 +9,7 @@ export const load: PageLoad = async (e) => {
     let content = '# Example post title\nSome text content'
     if (!nullish(post_id)) {
 
-        const resp = await e.fetch(`/api/posts/${post_id}`);
+        const resp = await e.fetch(`/api/me/posts/${post_id}`);
         if (resp.ok) {
             const data = await resp.json();
             content = data.post.Content;

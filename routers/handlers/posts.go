@@ -9,27 +9,71 @@ import (
 	"github.com/teenyblog/models"
 )
 
-func (a *ApiHandler) GetPost(c *gin.Context) {
+// Public unprotected api
+//
+// Get post for non-authenticated users
+func (a *ApiHandler) PublicGetPost(c *gin.Context) {
 	post_id := c.Param("id")
 	db := a.db
 
 	var post models.Post
 	err := db.First(&post, post_id).Error
-	if err != nil {
-		c.AbortWithStatusJSON(404, gin.H{
-			"status": "error",
-			"message": "Cannot find post with id:" + post_id,
+	if err == nil && post.Published {
+		c.JSON(http.StatusOK, gin.H{
+			"post": post,
 		})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"post": post,
+
+	c.AbortWithStatusJSON(404, gin.H{
+		"status": "error",
+		"message": "Cannot find post with id:" + post_id,
+	})
+}
+
+func (a *ApiHandler) GetUserPost(c *gin.Context) {
+	post_id := c.Param("id")
+	db := a.db
+
+	var post models.Post
+	err := db.First(&post, post_id).Error
+	if err == nil {
+		c.JSON(http.StatusOK, gin.H{
+			"post": post,
+		})
+		return
+	}
+
+	c.AbortWithStatusJSON(404, gin.H{
+		"status": "error",
+		"message": "Cannot find post with id:" + post_id,
 	})
 	
 }
 
 
-func (a *ApiHandler) CreatePost(c *gin.Context) {
+func (a *ApiHandler) PublishUserPost(c *gin.Context) {
+	user, _ := currentSession(c)
+	post_id := c.Param("id")
+	db := a.db
+
+	var post models.Post
+	err := db.First(&post, post_id).Error
+	if err == nil && post.UserID == user.ID {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "success",
+		})
+		return
+	}
+
+	c.AbortWithStatusJSON(404, gin.H{
+		"status": "error",
+		"message": "Cannot find post with id:" + post_id,
+	})
+	
+}
+
+func (a *ApiHandler) SavePost(c *gin.Context) {
 	db := a.db
 	user, _ := currentSession(c)
 
@@ -68,18 +112,18 @@ func (a *ApiHandler) CreatePost(c *gin.Context) {
 		if err != nil {
 			c.AbortWithStatusJSON(404, gin.H{
 				"status": "error",
-				"message": "Unknown post id",
+				"message": "Post not found",
 			})
 			return
 		}
 
-		// Check if post exists
+		// Check if post exists and belongs to the user
 		var existingPost models.Post
 		err = db.First(&existingPost, post_id).Error
-		if err != nil {
+		if err != nil || existingPost.UserID != user.ID {
 			c.AbortWithStatusJSON(404, gin.H{
 				"status": "error",
-				"message": "Unknown post id",
+				"message": "Post not found",
 			})
 			return
 		}
