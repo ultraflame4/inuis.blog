@@ -8,7 +8,7 @@ import (
 
 type User struct {
 	gorm.Model
-	Username string `json:"name"`
+	Username string
 }
 
 func (u *User) IsDeleted() bool {

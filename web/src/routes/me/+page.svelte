@@ -6,6 +6,6 @@
 
 </script>
 <main class="classic">
-    <p>How is life, {data.user.name}?</p>
-    <a href="/me/posts/new">Create Post</a>
+    <p>How is life, {data.user.Username}?</p>
+    <a href="/me/editor">Create Post</a>
 </main>

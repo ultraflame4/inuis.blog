@@ -11,7 +11,9 @@
         text-decoration: revert;
         @apply my-4
     }
-
+    button.classic, input.classic {
+        all: revert
+    }
     main.classic {
         @apply mx-4
     }
@@ -26,3 +28,16 @@
     }
 }
 
+:root {
+    --navbar-height: calc(13 * var(--spacing));
+}
+
+.page-content-height {
+    min-height: calc(100vh - var(--navbar-height));
+}
+
+.cm-md-heading{
+    font-family: revert;
+    font-weight: revert;
+    font-size: revert;
+}
