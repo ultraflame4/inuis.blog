@@ -11,7 +11,9 @@ All providers must support PKCE as it is the only supported flow.
 OIDC providers are configured via environment variables.
 
 You need to set the following environment variables to configure an OIDC provider:
-- `OIDC_<PROVIDER_NAME>_URL`: URL identifier of the OIDC provider (example: `https://accounts.google.com`)
+- `OIDC_<PROVIDER_NAME>_URL`: URL of the OIDC provider. This is used to get the oidc address.
+  - Example: `https://accounts.google.com` will resolve to `https://accounts.google.com/.well-known/openid-configuration`
+  - DO NOT PUT the DISCOVERY address! Use the portion WITHOUT `/.well-known/openid_configuration`!
 - `OIDC_<PROVIDER_NAME>_CLIENT_ID`: Client ID for OIDC provider
 - `OIDC_<PROVIDER_NAME>_CLIENT_SECRET`: Client secret for OIDC provider
 where `<PROVIDER_NAME>` is the name of the provider (e.g. `GOOGLE`).
