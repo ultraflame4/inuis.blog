@@ -238,7 +238,7 @@ func (a *ApiHandler) UserDisconnectOidcProvider(c *gin.Context) {
 	conf, ok := app.GetOidcProvider(provider)
 	if !ok {
 		c.AbortWithStatusJSON(404, gin.H{
-			"error": "OIDC provider not found",
+			"error": "OIDC provider " + provider + " not found",
 		})
 		return
 	}
