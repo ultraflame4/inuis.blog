@@ -4,15 +4,19 @@
 	import { onMount } from "svelte";
 
    	let providers: string[] = $state([]);
+   	let added_providers: string[] = $state([]);
 
 	async function loadProviders() {
 		const res = await fetch('/api/oidc/providers');
+		const res2 = await fetch('/api/me/oidc-providers');
 
 		if (!res.ok) {
 			throw new Error('Failed to load providers');
 		}
 
 		providers = await res.json();
+		const res2_ = await res2.json();
+		added_providers = res2_["providers"];
 	}
 
 	onMount(() => {
@@ -32,7 +36,13 @@
     <ul class="space-y-2">
         {#each providers as p}
             <li>
-                <OidcLoginButton provider_id={p} intent={"add_identity"} prefix="Connect to" />
+                {#if added_providers.includes(p)}
+                    <OidcLoginButton
+                        class="text-green-700"
+                        provider_id={p} intent={"add_identity"} prefix="Connected" disabled />
+                {:else}
+                    <OidcLoginButton provider_id={p} intent={"add_identity"} prefix="Connect to" />
+                {/if}
             </li>
         {/each}
     </ul>

@@ -53,7 +53,7 @@ func (a *ApiHandler) ListPosts(c *gin.Context) {
 		Offset( pageQuery.Offset()).
 		Find(c.Request.Context())
 
-	
+
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -63,7 +63,7 @@ func (a *ApiHandler) ListPosts(c *gin.Context) {
 		meta.PageMeta
 		Items []meta.PostSummary `json:"items"`
 	}
-	
+
 	summaries := make([]meta.PostSummary, 0, len(posts))
 	for _, post := range posts {
 		summaries = append(summaries, meta.PostSummary{
@@ -200,5 +200,28 @@ func (a *ApiHandler) SavePost(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"status": "success",
 		"post":   post,
+	})
+}
+
+func (a *ApiHandler) ListConnectedOidcProviders(c *gin.Context) {
+	user, _ := meta.GetSession(c)
+
+	existing, err := gorm.G[models.UserIdentity](a.db).Where("user_id = ?", user.ID).Find(c.Request.Context())
+	if err != nil {
+		c.AbortWithStatusJSON(500, gin.H{
+			"error": "Failed to retrieve connected OIDC providers: " + err.Error(),
+		})
+		return
+	}
+
+	var providers[] string
+	for _, value := range existing {
+		provider_name := strings.ToLower(app.FindProviderName(value.Issuer))
+		providers = append(providers, provider_name)
+	}
+
+	c.JSON(200, gin.H{
+		"status": "success",
+		"providers": providers,
 	})
 }

@@ -3,12 +3,16 @@
 		provider_id: string;
 		intent?: string;
 		prefix?: string;
+		disabled?: boolean;
+		class?: string;
 	}
-	const { provider_id, intent, prefix}: Props = $props();
+	const { provider_id, intent, prefix, disabled, class: className}: Props = $props();
+
 	const provider = provider_id.toLowerCase();
 
 
 	function getHref(): string {
+		if (disabled) return '';
     	let href = `/api/oidc/${provider}/login`;
     	const searchParams = new URLSearchParams();
     	if (intent) {
@@ -20,7 +24,8 @@
 
 <a
 	href={getHref()}
-	class="block w-48 rounded-lg p-2 text-center font-semibold ring"
+	class="block w-48 rounded-lg p-2 text-center font-semibold ring {className}"
+	class:opacity-75={disabled}
 >
 	{ prefix ?? "Sign in with"}
 	<span class="capitalize">{provider}</span>
