@@ -27,7 +27,7 @@ func InitRouter(db *gorm.DB) *gin.Engine {
 		_me.GET("/", handlers.CurrentUser)
 		_me.GET("/logout", handlers.Logout)
 		_me.GET("/oidc-providers", handlers.ListConnectedOidcProviders)
-		_me.GET("/oidc-providers/:provider", handlers.UserDisconnectOidcProvider)
+		_me.GET("/oidc/:provider/disconnect", handlers.UserDisconnectOidcProvider)
 		_me.POST("/posts/save", handlers.SavePost)
 		_me.GET("/posts/:id", handlers.GetPost)
 		_me.GET("/posts", handlers.ListPosts)
