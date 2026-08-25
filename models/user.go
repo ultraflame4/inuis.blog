@@ -18,7 +18,10 @@ func (u *User) IsDeleted() bool {
 
 // User identity across different OIDCs
 type UserIdentity struct {
-	gorm.Model
+	ID        uint `gorm:"primarykey"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+
 	UserID uint
 	// Auto delete user identity when user is deleted
 	User User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
