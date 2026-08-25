@@ -21,6 +21,7 @@ type OidcProvider struct {
 
 var loadedProviders map[string]OidcProvider
 func RegisterOIDCProviders(ctx context.Context) {
+	logger := slog.With("logger", "register_oidc")
 	server_addr := GetConfig().PublicServerAddr()
 
 	loadedProviders = make(map[string]OidcProvider)
@@ -36,7 +37,7 @@ func RegisterOIDCProviders(ctx context.Context) {
 			provider, err := oidc.NewProvider(ctx, oidc_url)
 			if err != nil {
 
-				slog.Error("Failed to create provider for " + oidc_name + ":\n\t", err.Error())
+				logger.Error("Failed to create provider for " + oidc_name + ":\n\t", err.Error())
 				continue
 			}
 			oidcConfig := oidc.Config{
@@ -58,9 +59,9 @@ func RegisterOIDCProviders(ctx context.Context) {
 				Issuer: oidc_url,
 			}
 
-			slog.Info("Registered provider for oidc name " + oidc_name)
-			slog.Info("Login url for oidc '" + oidc_name + "' is " + fmt.Sprintf("http://%s/api/oidc/%s/login", server_addr, strings.ToLower(oidc_name)))
-			slog.Info("Callback url for oidc '" + oidc_name + "' is " + config.RedirectURL)
+			slog.Info("Registered oidc provider", "name", oidc_name)
+			slog.Info(oidc_name,"login",fmt.Sprintf("http://%s/api/oidc/%s/login", server_addr, strings.ToLower(oidc_name)))
+			slog.Info(oidc_name,"callback",config.RedirectURL)
 
 
 		}
