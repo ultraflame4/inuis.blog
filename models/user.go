@@ -1,7 +1,9 @@
 package models
 
 import (
+	"context"
 	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -43,4 +45,8 @@ func (s *UserSession) IsElevated() bool {
 		return false
 	}
 	return time.Since(*s.ElevatedAt) < 30*time.Second
+}
+
+func (s *UserSession) ElevateNow(db *gorm.DB, ctx context.Context) {
+	db.WithContext(ctx).Model(s).Update("elevated_at", time.Now())
 }

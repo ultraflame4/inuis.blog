@@ -160,14 +160,16 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 	intent, _ := c.Cookie("intent")
 	// User wants to add a new identity
 	const IntentAddIdentity = "add_identity"
+	const IntentElevate = "elevate"
 
 	var user models.User
 
-	if intent == IntentAddIdentity {
+	switch intent {
+	case IntentAddIdentity:
 		// Cant add identity if the user is not logged in.
 		sid, _ := c.Cookie(middlewares.COOKIE_SESSION_TOKEN)
 		session := app.GetSession(a.db, c.Request.Context(), sid)
-		if session == nil{
+		if session == nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"error": "User not logged in.",
 			})
@@ -191,6 +193,19 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/success?reason=add_identity&provider="+oidc_name)
 		return
 
+	case IntentElevate:
+		// Cant elevate if the user is not logged in.
+		sid, _ := c.Cookie(middlewares.COOKIE_SESSION_TOKEN)
+		session := app.GetSession(a.db, c.Request.Context(), sid)
+		if session == nil {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"error": "User not logged in.",
+			})
+			return
+		}
+		session.ElevateNow(a.db, c.Request.Context())
+		c.Redirect(http.StatusFound, "/success?reason=session_elevated")
+		return
 	}
 
 	if len(existing) == 0 {

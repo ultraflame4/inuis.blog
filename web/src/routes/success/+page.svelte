@@ -6,7 +6,8 @@
     const reason = queries.get("reason")
 
     const reason_descriptions: Record<string, string> = {
-        "add_identity": `You have connected your ${queries.get("provider") ?? 'error'} identity to your account!`
+        "add_identity": `You have connected your ${queries.get("provider") ?? 'error'} identity to your account!`,
+        "session_elevated": `You have elevated your session!`,
     }
 
     const desc_lines = reason_descriptions[reason]?.split("\n") ?? ["WHAT DID YOU DO??"]
