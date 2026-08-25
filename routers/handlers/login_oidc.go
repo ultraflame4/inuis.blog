@@ -53,6 +53,10 @@ func (*ApiHandler) StartOauthLoginFlow(c *gin.Context) {
 		c.AbortWithStatus(500)
 		return
 	}
+	setCallbackCookie(c, "state", state)
+
+	intent := c.Query("intent")
+	setCallbackCookie(c, "intent", intent)
 
 	if len(config.Config.ClientSecret) == 0 {
 		// No client secret. Default to pkce
@@ -70,20 +74,16 @@ func (*ApiHandler) StartOauthLoginFlow(c *gin.Context) {
 				oauth2.SetAuthURLParam("code_challenge", challenge),
 				oauth2.SetAuthURLParam("code_challenge_method", "S256"),
 			))
-
+		return
 	} else {
 		// Not pkce flow. remove set pkce cookie to false
 		// Use to prevent conflicts when switching provider flows.
 		setCallbackCookie(c, "pkceVerifier", "false")
+
+		c.Redirect(http.StatusFound, config.Config.AuthCodeURL(state))
+		return
 	}
-
-	setCallbackCookie(c, "state", state)
-
-	intent := c.Query("intent")
-	setCallbackCookie(c, "intent", intent)
-
-	c.Redirect(http.StatusFound, config.Config.AuthCodeURL(state))
-
+	// Nothing below here. Requests are fully handled in if-else statement
 }
 
 func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
