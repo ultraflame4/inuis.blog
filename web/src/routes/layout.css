@@ -21,7 +21,7 @@
     hr {
         @apply my-4
     }
-    
+
     nav>a {
         text-decoration: revert;
         color: revert
