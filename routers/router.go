@@ -27,6 +27,8 @@ func InitRouter(db *gorm.DB) *gin.Engine {
 		_me.GET("/", handlers.CurrentUser)
 		_me.GET("/logout", handlers.Logout)
 		_me.GET("/oidc-providers", handlers.ListConnectedOidcProviders)
+		// Disabled until we have elevated permissions implemented
+		// _me.DELETE("/oidc-providers/:provider", handlers.UserDisconnectOidcProvider)
 		_me.POST("/posts/save", handlers.SavePost)
 		_me.GET("/posts/:id", handlers.GetPost)
 		_me.GET("/posts", handlers.ListPosts)

@@ -38,9 +38,8 @@ func (a *ApiHandler) ListPosts(c *gin.Context) {
 	user, _ := meta.GetSession(c)
 	db := a.db
 
-
 	sql := gorm.G[models.Post](db).
-		Where("user_id = ?", user.ID);
+		Where("user_id = ?", user.ID)
 
 	total_count, err := sql.Count(ctx, "ID")
 	if err != nil {
@@ -50,9 +49,8 @@ func (a *ApiHandler) ListPosts(c *gin.Context) {
 
 	posts, err := sql.
 		Limit(pageQuery.Limit).
-		Offset( pageQuery.Offset()).
+		Offset(pageQuery.Offset()).
 		Find(c.Request.Context())
-
 
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
@@ -67,9 +65,9 @@ func (a *ApiHandler) ListPosts(c *gin.Context) {
 	summaries := make([]meta.PostSummary, 0, len(posts))
 	for _, post := range posts {
 		summaries = append(summaries, meta.PostSummary{
-			Model:   post.Model,
-			Title:   post.Title,
-			Summary: post.Summary,
+			Model:       post.Model,
+			Title:       post.Title,
+			Summary:     post.Summary,
 			AllowPublic: post.AllowPublic,
 		})
 	}
@@ -214,14 +212,40 @@ func (a *ApiHandler) ListConnectedOidcProviders(c *gin.Context) {
 		return
 	}
 
-	var providers[] string
+	var providers []string
 	for _, value := range existing {
 		provider_name := strings.ToLower(app.FindProviderName(value.Issuer))
 		providers = append(providers, provider_name)
 	}
 
 	c.JSON(200, gin.H{
-		"status": "success",
+		"status":    "success",
 		"providers": providers,
+	})
+}
+
+func (a *ApiHandler) UserDisconnectOidcProvider(c *gin.Context) {
+	user, _ := meta.GetSession(c)
+	provider := c.Param("oidc")
+	// TODO: Check for elevated permissions
+
+	conf, ok := app.GetOidcProvider(provider)
+	if !ok {
+		c.AbortWithStatusJSON(404, gin.H{
+			"error": "OIDC provider not found",
+		})
+		return
+	}
+
+	err := conf.RemoveFromUser(a.db, c.Request.Context(), user.ID)
+	if err != nil {
+		c.AbortWithStatusJSON(500, gin.H{
+			"error": "Failed to remove OIDC provider: " + err.Error(),
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"status": "success",
 	})
 }

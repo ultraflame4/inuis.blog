@@ -6,9 +6,10 @@ import (
 	"log/slog"
 	"os"
 	"strings"
-
 	"github.com/coreos/go-oidc"
+	"github.com/teenyblog/models"
 	"golang.org/x/oauth2"
+	"gorm.io/gorm"
 )
 
 
@@ -91,4 +92,12 @@ func GetProviders()  []string {
 		names = append(names, strings.ToLower(name))
 	}
 	return names
+}
+
+
+// Remove this OidcProvider from the user
+func (p *OidcProvider) RemoveFromUser(db *gorm.DB, ctx context.Context, userID uint) error {
+	issuer := p.Issuer
+	_, err := gorm.G[models.UserIdentity](db).Where("user_id = ? AND issuer = ?", userID, issuer).Delete(ctx)
+	return err
 }
