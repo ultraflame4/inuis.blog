@@ -5,15 +5,22 @@ _:
     just --list
 
 [parallel]
-dev: _dev-server-proxied dev-client
+dev: _dev-server-proxied (client "dev")
 
 [env("PROXIED_ADDR", "localhost:5173")]
 _dev-server-proxied:
     go run .
 
-dev-server:
+server:
     go run .
 
 [working-directory("./web")]
-dev-client:
-    npm run dev
+client *args:
+    npm run {{args}}
+
+
+configure: _configure_client
+
+[working-directory("./web")]
+_configure_client:
+    npm install
