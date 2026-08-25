@@ -9,10 +9,10 @@ dev: _dev-server-proxied dev-client
 
 [env("PROXIED_ADDR", "localhost:5173")]
 _dev-server-proxied:
-    go run . 
-    
+    go run .
+
 dev-server:
-    go run . 
+    go run .
 
 [working-directory("./web")]
 dev-client:
