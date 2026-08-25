@@ -25,5 +25,5 @@ func main() {
     slog.Info("Cleared all user sessions.")
 
 	router := routers.InitRouter(db)
-	router.Run(app.ServerAddress()) // listens on 0.0.0.0:8080 by default
+	router.Run(app.GetConfig().ServerAddress()) // listens on 0.0.0.0:8080 by default
 }

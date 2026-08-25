@@ -21,7 +21,7 @@ type OidcProvider struct {
 
 var loadedProviders map[string]OidcProvider
 func RegisterOIDCProviders(ctx context.Context) {
-	server_addr := PublicServerAddr()
+	server_addr := GetConfig().PublicServerAddr()
 
 	loadedProviders = make(map[string]OidcProvider)
 	for _, env := range os.Environ() {

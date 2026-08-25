@@ -96,7 +96,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 
 	ctx := context.Background()
 
-	
+
 	var oauth2Token *oauth2.Token
 	if verifier , err := c.Cookie("pkceVerifier"); err == nil {
 		token, err := conf.Config.Exchange(
@@ -120,7 +120,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 			return
 		}
 		_ = state
-	
+
 		token, err := conf.Config.Exchange(ctx, c.Query("code"))
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
@@ -130,7 +130,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 		}
 		oauth2Token = token
 	}
-	
+
 
 	userInfo, err := conf.Provider.UserInfo(ctx, oauth2.StaticTokenSource(oauth2Token))
 	if err != nil {
@@ -143,7 +143,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 	// ---- Get / Create user
 
 
-	
+
 	// Find existing identities with this email.
 	existing, err := gorm.G[models.UserIdentity](a.db).Where("email = ?", userInfo.Email).Find(c.Request.Context())
 	if err != nil {
@@ -237,7 +237,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 	// 	Session     *models.UserSession
 	// }{oauth2Token, userInfo, &user, session}
 
-	c.SetCookie("session_token",string(session.Token), app.SessionMaxAge(), "", "", false, true);
+	c.SetCookie("session_token",string(session.Token), a.config.MaxSessionAge, "", "", false, true);
 
 	// c.JSON(http.StatusOK, resp)
 	c.Redirect(http.StatusFound, "/me")
