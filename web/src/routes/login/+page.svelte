@@ -1,4 +1,5 @@
 <script lang="ts">
+	import OidcLoginButton from '$lib/OidcLoginButton.svelte';
 	import { onMount } from 'svelte';
 
 	let providers: string[] = $state([]);
@@ -27,13 +28,7 @@
 			<ul class="flex flex-col gap-2">
 				{#each providers as provider}
 					<li class="block">
-						<a
-							href="/api/oidc/{provider}/login"
-							class="font-semibold ring p-2 block w-full text-center rounded-lg min-w-48"
-						>
-						    Sign in with 
-							<span class="capitalize">{provider}</span>
-						</a>
+						<OidcLoginButton provider_id={provider} />
 					</li>
 				{/each}
 			</ul>
