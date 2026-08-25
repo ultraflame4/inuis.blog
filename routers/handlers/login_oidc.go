@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"strings"
@@ -65,7 +66,7 @@ func (*ApiHandler) StartOauthLoginFlow(c *gin.Context) {
 		challenge := pkceChallenge(pkceVerifier)
 		c.Redirect(http.StatusFound,
 			config.Config.AuthCodeURL(state,
-			oauth2.SetAuthURLParam("code_challenge", challenge),
+				oauth2.SetAuthURLParam("code_challenge", challenge),
 				oauth2.SetAuthURLParam("code_challenge_method", "S256"),
 			))
 
@@ -83,7 +84,6 @@ func (*ApiHandler) StartOauthLoginFlow(c *gin.Context) {
 
 }
 
-
 func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 	oidc_name := strings.ToUpper(c.Param("oidc"))
 	conf, ok := app.GetOidcProvider(oidc_name)
@@ -96,9 +96,8 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 
 	ctx := context.Background()
 
-
 	var oauth2Token *oauth2.Token
-	if verifier , err := c.Cookie("pkceVerifier"); err == nil {
+	if verifier, err := c.Cookie("pkceVerifier"); err == nil {
 		token, err := conf.Config.Exchange(
 			ctx,
 			c.Query("code"),
@@ -131,7 +130,6 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 		oauth2Token = token
 	}
 
-
 	userInfo, err := conf.Provider.UserInfo(ctx, oauth2.StaticTokenSource(oauth2Token))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
@@ -142,17 +140,14 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 
 	// ---- Get / Create user
 
-
-
 	// Find existing identities with this email.
 	existing, err := gorm.G[models.UserIdentity](a.db).Where("email = ?", userInfo.Email).Find(c.Request.Context())
 	if err != nil {
-		c.AbortWithStatus(http.StatusInternalServerError);
+		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 
-
-	var user models.User;
+	var user models.User
 	if len(existing) == 0 {
 		slog.Info("Creating new user for email: " + userInfo.Email)
 		// Create new user
@@ -163,7 +158,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 		user = models.User{
 			Username: email_parts[0] + "_" + discriminator,
 		}
-		if err := a.db.Transaction(func (tx *gorm.DB) error {
+		if err := a.db.Transaction(func(tx *gorm.DB) error {
 			if err := gorm.G[models.User](tx).Create(c.Request.Context(), &user); err != nil {
 				return err
 			}
@@ -195,9 +190,18 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 				// User with this email exists. But does not have this identity registered.
 				// Should reject oauth, ask user to login with correct identity first.
 				// then connect provider when logged in
-				c.AbortWithStatusJSON(http.StatusConflict, gin.H{
-					"error": "User with email " + userInfo.Email + " already exists, but does not have this identity registered!",
-				})
+				// c.AbortWithStatusJSON(http.StatusConflict, gin.H{
+				// 	"error": "User with email " + userInfo.Email + " already exists, but does not have this identity registered!",
+				// })
+				var allowed_providers strings.Builder
+				for idx, value := range existing {
+					provider_name := strings.ToLower(app.FindProviderName(value.Issuer))
+					if idx != 0 {
+						allowed_providers.WriteByte(',')
+					}
+					allowed_providers.WriteString(provider_name)
+				}
+				c.Redirect(http.StatusFound, fmt.Sprintf("/login-failure?reason=bad_identity&allowed=%s", allowed_providers.String()))
 				return
 			} else {
 				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
@@ -210,7 +214,6 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 		slog.Info("Found user identity: %s %s (sub: %s)\n", identity.Email, identity.Issuer, identity.Subject)
 		user = identity.User
 	}
-
 
 	// Revoke any existings session from same browser / cookie
 	if existing_session, err := c.Cookie("session_token"); err == nil {
@@ -237,13 +240,12 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 	// 	Session     *models.UserSession
 	// }{oauth2Token, userInfo, &user, session}
 
-	c.SetCookie("session_token",string(session.Token), a.config.MaxSessionAge, "", "", false, true);
+	c.SetCookie("session_token", string(session.Token), a.config.MaxSessionAge, "", "", false, true)
 
 	// c.JSON(http.StatusOK, resp)
 	c.Redirect(http.StatusFound, "/me")
 
 }
-
 
 func (a *ApiHandler) ListLoginProviders(c *gin.Context) {
 	providers := app.GetProviders()

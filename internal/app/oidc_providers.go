@@ -20,11 +20,18 @@ type OidcProvider struct {
 }
 
 var loadedProviders map[string]OidcProvider
+var issuer2ProviderName map[string]string
+
+func FindProviderName(issuer_url string) string{
+	return issuer2ProviderName[issuer_url]
+}
+
 func RegisterOIDCProviders(ctx context.Context) {
 	logger := slog.With("logger", "register_oidc")
 	server_addr := GetConfig().PublicServerAddr()
 
 	loadedProviders = make(map[string]OidcProvider)
+	issuer2ProviderName = make(map[string]string)
 	for _, env := range os.Environ() {
 		parts := strings.SplitN(env, "=", 2)
 		key := parts[0]
@@ -52,6 +59,7 @@ func RegisterOIDCProviders(ctx context.Context) {
 				Endpoint: provider.Endpoint(),
 				Scopes: []string{oidc.ScopeOpenID, "profile", "email"},
 			}
+			issuer2ProviderName[oidc_url] = oidc_name
 			loadedProviders[oidc_name] = OidcProvider{
 				Verifier: verifier,
 				Config:   config,
