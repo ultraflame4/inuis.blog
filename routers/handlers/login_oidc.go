@@ -169,7 +169,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 		session := app.GetSession(a.db, c.Request.Context(), sid)
 		if session == nil{
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"error": "User not logged in."
+				"error": "User not logged in.",
 			})
 			return
 		}
