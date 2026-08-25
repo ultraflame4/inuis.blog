@@ -104,6 +104,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 		return
 	}
 	if state != c.Query("state") {
+		// slog.Warn(fmt.Sprintf("Expected state %s got state %s", state, c.Query("state")))
 		setCallbackCookie(c, "state", "-")
 		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
 			"error": "state mismatched!",
