@@ -8,12 +8,14 @@ import (
 	"gorm.io/gorm"
 )
 
+const COOKIE_SESSION_TOKEN string = "session_token"
+
 // This middleware sets checks for the current user and sets it on the context
 //
 // If the user is not authenticated, it responds with a 401 Unauthorized status
 func CurrentUser(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		sid, err := c.Cookie("session_token")
+		sid, err := c.Cookie(COOKIE_SESSION_TOKEN)
 		if err != nil || sid == "" {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
 			return
@@ -25,6 +27,6 @@ func CurrentUser(db *gorm.DB) gin.HandlerFunc {
 			return
 		}
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Session is invalid or has expired"})
-		
+
 	}
 }

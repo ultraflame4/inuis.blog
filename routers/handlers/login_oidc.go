@@ -14,6 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/teenyblog/internal/app"
 	"github.com/teenyblog/models"
+	"github.com/teenyblog/routers/middlewares"
 	"golang.org/x/oauth2"
 	"gorm.io/gorm"
 )
@@ -114,7 +115,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 	ctx := context.Background()
 
 	var oauth2Token *oauth2.Token
-	if verifier, err := c.Cookie("pkceVerifier"); err == nil && verifier != "false"{
+	if verifier, err := c.Cookie("pkceVerifier"); err == nil && verifier != "false" {
 		token, err := conf.Config.Exchange(
 			ctx,
 			c.Query("code"),
@@ -128,7 +129,6 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 		}
 		oauth2Token = token
 	} else {
-
 
 		token, err := conf.Config.Exchange(ctx, c.Query("code"))
 		if err != nil {
@@ -157,7 +157,42 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 		return
 	}
 
+	intent, _ := c.Cookie("intent")
+	// User wants to add a new identity
+	const IntentAddIdentity = "add_identity"
+
 	var user models.User
+
+	if intent == IntentAddIdentity {
+		// Cant add identity if the user is not logged in.
+		sid, _ := c.Cookie(middlewares.COOKIE_SESSION_TOKEN)
+		session := app.GetSession(a.db, c.Request.Context(), sid)
+		if session == nil{
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"error": "User not logged in."
+			})
+			return
+		}
+
+		user := session.User
+		// Attach identity
+		identity := models.UserIdentity{
+			Subject: userInfo.Subject,
+			Email:   &userInfo.Email,
+			Issuer:  conf.Issuer,
+			UserID:  user.ID,
+		}
+		if err := gorm.G[models.UserIdentity](tx).Create(c.Request.Context(), &identity); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+				"error": "Failed to add identity. Error: " + err.Error()
+			})
+			return
+		}
+		c.Redirect(http.StatusFound, "/success")
+		return
+
+	}
+
 	if len(existing) == 0 {
 		slog.Info("Creating new user for email: " + userInfo.Email)
 		// Create new user

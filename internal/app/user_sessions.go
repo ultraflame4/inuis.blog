@@ -62,6 +62,9 @@ func RevokeSession(db *gorm.DB, ctx context.Context, sessionToken string) error 
 //
 // This will also preload the user associated with the session.
 func GetSession(db *gorm.DB, ctx context.Context, sessionToken string) *models.UserSession {
+	if len(sessionToken) == 0{
+		return nil
+	}
 	session, err := gorm.G[models.UserSession](db).
 		Preload("User", nil).
 		Where("token = ?", sessionToken).First(ctx)
