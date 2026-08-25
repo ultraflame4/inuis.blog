@@ -182,7 +182,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 			Issuer:  conf.Issuer,
 			UserID:  user.ID,
 		}
-		if err := gorm.G[models.UserIdentity](tx).Create(c.Request.Context(), &identity); err != nil {
+		if err := gorm.G[models.UserIdentity](a.db).Create(c.Request.Context(), &identity); err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 				"error": "Failed to add identity. Error: " + err.Error(),
 			})
