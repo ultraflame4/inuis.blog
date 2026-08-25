@@ -10,7 +10,7 @@
         "session_elevated": `You have elevated your session!`,
     }
 
-    const desc_lines = reason_descriptions[reason]?.split("\n") ?? ["WHAT DID YOU DO??"]
+    const desc_lines = reason_descriptions[reason ?? '']?.split("\n") ?? ["WHAT DID YOU DO??"]
 </script>
 <main class="p-4 space-y-4">
     <h2 class="classic text-center">
