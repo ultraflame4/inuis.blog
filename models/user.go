@@ -31,4 +31,16 @@ type UserSession struct {
 	UserID uint
 	User User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	CreatedAt time.Time
+	// If not null, time of which session was elevated.
+	// Elevated session only lasts for 30seconds.
+	// Elevated sessions allow user to perform more risky actions.
+	// To elevate a session, use is required to sign in again.
+	ElevatedAt *time.Time `gorm:"default:null"`
+}
+
+func (s *UserSession) IsElevated() bool {
+	if s.ElevatedAt == nil {
+		return false
+	}
+	return time.Since(*s.ElevatedAt) < 30*time.Second
 }
