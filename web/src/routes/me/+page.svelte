@@ -7,9 +7,12 @@
 
 </script>
 <main class="classic">
-    <p>How is life, {data.user.Username}?</p>
-    <nav>
-        <a href="/me/editor">Create Post</a>
+    <p class="text-lg">Hello <span class="italic">{data.user.Username}</span>, writing today?</p>
+    <nav class="ring px-4 flex gap-3">
+        <a href="/me/editor">New Post</a>
+        <div class="mr-auto my-0"></div>
+        <a href="/me/change-username">Change Username</a>
+        <a href="/me/settings/login">Login Settings</a>
     </nav>
 
     <h2>Your Posts</h2>
@@ -26,7 +29,7 @@
                             &nbsp;|&nbsp;
                             Updated {humanizeDate(post.UpdatedAt)}
                         </span>
-                        
+
                     </div>
                 </div>
             </li>

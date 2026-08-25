@@ -188,7 +188,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 			})
 			return
 		}
-		c.Redirect(http.StatusFound, "/success")
+		c.Redirect(http.StatusFound, "/success?reason=add_identity&provider="+oidc_name)
 		return
 
 	}
