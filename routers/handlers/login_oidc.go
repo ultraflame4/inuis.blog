@@ -70,6 +70,9 @@ func (*ApiHandler) StartOauthLoginFlow(c *gin.Context) {
 				oauth2.SetAuthURLParam("code_challenge_method", "S256"),
 			))
 
+	} else {
+		// Not pkce flow. remove set pkce cookie to false
+		setCallbackCookie(c, "pkceVerifier", "false")
 	}
 	setCallbackCookie(c, "state", state)
 
@@ -97,7 +100,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 	ctx := context.Background()
 
 	var oauth2Token *oauth2.Token
-	if verifier, err := c.Cookie("pkceVerifier"); err == nil {
+	if verifier, err := c.Cookie("pkceVerifier"); err == nil && verifier != "false"{
 		token, err := conf.Config.Exchange(
 			ctx,
 			c.Query("code"),
@@ -105,7 +108,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 		)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-				"error": "Failed to exchange token: " + err.Error(),
+				"error": "(PKCE) Failed to exchange token: " + err.Error(),
 			})
 			return
 		}
