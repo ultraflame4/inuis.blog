@@ -225,9 +225,15 @@ func (a *ApiHandler) ListConnectedOidcProviders(c *gin.Context) {
 }
 
 func (a *ApiHandler) UserDisconnectOidcProvider(c *gin.Context) {
-	user, _ := meta.GetSession(c)
+	user, s := meta.GetSession(c)
 	provider := c.Param("oidc")
-	// TODO: Check for elevated permissions
+	// Check for elevated session
+	if !s.IsElevated() {
+		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
+			"error": "Elevated session required",
+		})
+		return
+	}
 
 	conf, ok := app.GetOidcProvider(provider)
 	if !ok {
