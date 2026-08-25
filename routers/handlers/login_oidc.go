@@ -80,9 +80,8 @@ func (*ApiHandler) StartOauthLoginFlow(c *gin.Context) {
 	setCallbackCookie(c, "state", state)
 
 	intent := c.Query("intent")
-	if intent != "" {
-		setCallbackCookie(c, "intent", intent)
-	}
+	setCallbackCookie(c, "intent", intent)
+
 	c.Redirect(http.StatusFound, config.Config.AuthCodeURL(state))
 
 }
