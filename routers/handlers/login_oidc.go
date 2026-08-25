@@ -72,17 +72,11 @@ func (*ApiHandler) StartOauthLoginFlow(c *gin.Context) {
 
 	} else {
 		// Not pkce flow. remove set pkce cookie to false
+		// Use to prevent conflicts when switching provider flows.
 		setCallbackCookie(c, "pkceVerifier", "false")
 	}
+
 	setCallbackCookie(c, "state", state)
-
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to generate PKCE verifier: " + err.Error(),
-		})
-		return
-	}
-
 	c.Redirect(http.StatusFound, config.Config.AuthCodeURL(state))
 
 }
@@ -93,6 +87,21 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 	if !ok {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
 			"error": "Unknown OIDC Provider",
+		})
+		return
+	}
+
+	state, err := c.Cookie("state")
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"error": "state not found",
+		})
+		return
+	}
+	if state != c.Query("state") {
+		setCallbackCookie(c, "state", "-")
+		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
+			"error": "state mismatched!",
 		})
 		return
 	}
@@ -114,14 +123,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 		}
 		oauth2Token = token
 	} else {
-		state, err := c.Cookie("state")
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-				"error": "state not found",
-			})
-			return
-		}
-		_ = state
+
 
 		token, err := conf.Config.Exchange(ctx, c.Query("code"))
 		if err != nil {
