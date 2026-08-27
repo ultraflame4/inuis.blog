@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 	"strings"
@@ -99,6 +100,7 @@ func (a *ApiHandler) GetPost(c *gin.Context) {
 
 }
 
+// Also used to make post private / unpublish post
 func (a *ApiHandler) PublishPost(c *gin.Context) {
 	user, _ := meta.GetSession(c)
 	post_id := c.Param("id")
@@ -123,6 +125,36 @@ func (a *ApiHandler) PublishPost(c *gin.Context) {
 
 }
 
+func (a* ApiHandler) DeletePost(c *gin.Context){
+	user, _ := meta.GetSession(c)
+	db := a.db;
+	post_id := c.Param("id")
+	var post models.Post
+
+	err := db.Transaction(func(tx *gorm.DB) error {
+		err := tx.First(&post, post_id).Error
+		if err != nil { return err}
+		if post.UserID != user.ID {
+			return errors.New("post does not belong to user")
+		}
+
+
+		return tx.Delete(post).Error
+	})
+
+	if err == nil{
+		c.JSON(http.StatusOK, gin.H{
+			"message": "success",
+		})
+		return
+	}
+
+	c.AbortWithStatusJSON(404, gin.H{
+		"status":  "error",
+		"message": "Cannot find post with id:" + post_id,
+	})
+}
+
 func (a *ApiHandler) SavePost(c *gin.Context) {
 	db := a.db
 	user, _ := meta.GetSession(c)
@@ -133,13 +165,16 @@ func (a *ApiHandler) SavePost(c *gin.Context) {
 	title := ""
 	content := c.PostForm("content")
 	body := c.PostForm("content")
-
 	// Remove the first line of the content. (Treated as title)
 	if i := strings.IndexByte(body, '\n'); i >= 0 {
 		title = content[:i]
 		body = body[i+1:]
+	} else {
+		// If i == -1. Means no newlines. The entire content is the first line.
+		title = strings.Clone(content)
+		// Also means that body has no content
+		body = ""
 	}
-
 	title = strings.TrimPrefix(title, "#")
 	title = strings.TrimSpace(title)
 
