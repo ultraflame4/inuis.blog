@@ -11,10 +11,12 @@
         This is a minimal, self-hostable blogging platform for developers, writers, and anyone else who wants to share their thoughts, in a fast and simple way.
     </p>
     <h2>Features</h2>
-    <p>
-        Features include:
-    </p>
-    <ul>
+    <ul id="features">
+        <style>
+            #features li::before {
+                content: "- ";
+            }
+        </style>
         <li>Self-hostable</li>
         <li>Discover Feed</li>
         <li>Private posts</li>
@@ -29,6 +31,6 @@
     <p>
         Hence, I decided to write my own version in <a href="https://go.dev">Go</a> + <a href="https://svelte.dev">Svelte</a>,
         and also added a little style so we aren't completely stuck in the 90s.
-    
+
     </p>
 </main>

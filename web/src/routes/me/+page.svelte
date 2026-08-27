@@ -23,7 +23,7 @@
                 <div class="my-0">
                     <a href="/me/editor?post_id={post.ID}">{post.Title}</a>
                     <p class="my-1 text-sm">{post.Summary}...</p>
-                    <div >
+                    <div class="mb-0">
                         <span class="text-xs text-gray-500">
                             Created {humanizeDate(post.CreatedAt)}
                             &nbsp;|&nbsp;
