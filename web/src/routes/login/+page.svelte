@@ -3,12 +3,9 @@
 	import OidcLoginButton from '$lib/OidcLoginButton.svelte';
 	import { onMount } from 'svelte';
 
-	let providers: string[] = $state([]);
+	const { data } = $props();
+	const providers = $derived(data['providers'])
 
-
-	onMount(async () => {
-		providers = await api.fetchProviders(fetch);
-	});
 </script>
 
 <div class="flex w-full">

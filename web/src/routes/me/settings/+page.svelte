@@ -9,26 +9,9 @@
 
 	
 	const { data } = $props()
-   	let providers: string[] = $state([]);
-   	let added_providers: string[] = $state([]);
-
-	async function loadProviders() {
-		const res = await fetch('/api/oidc/providers');
-		const res2 = await fetch('/api/me/oidc-providers');
-
-		if (!res.ok) {
-			throw new Error('Failed to load providers');
-		}
-
-		providers = await res.json();
-		const res2_ = await res2.json();
-		added_providers = res2_["providers"];
-	}
-
-	onMount(() => {
-		loadProviders();
-	});
-
+   	
+   	const added_providers: string[] = $derived(data['connected_providers']);
+   	const providers: string[] = $derived(data['providers']);
 
 	async function disconnectProvider(p: string) {
 		if (!confirm("Are you sure you want to disconnect this provider?")) return;
@@ -37,7 +20,7 @@
 			return;
 		}
 		await api.disconnectOidcProvider(fetch, p);
-		location.reload()
+		invalidateAll();
 	}
 
 

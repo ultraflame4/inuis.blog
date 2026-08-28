@@ -78,4 +78,16 @@ export namespace api {
             throw new Error('Failed to update username');
         }
     }
+
+    export async function fetchConnectedProviders(f: FetchLike) {
+        const res = await f('/api/me/oidc-providers');
+
+        if (!res.ok) {
+            throw new Error('Failed to load connectedproviders');
+        }
+        const data = await res.json()
+        return data['providers'] as string[];
+    }
+
+
 }
