@@ -9,6 +9,10 @@ export namespace app {
      * Returns true if session was elevated successfully
      */
     export async function elevateSession(): Promise<boolean> {
+
+        const c = await api.fetchSession(fetch)
+        if (c.is_elevated) return true;
+
         const child = window.open("/me/elevate", undefined, "popup=true")
         if (!child) {
             throw new Error("Failed to open elevation popup")
