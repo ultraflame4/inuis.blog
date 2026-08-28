@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"slices"
 	"strings"
 	"time"
 
@@ -152,6 +153,10 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 
 	// Find existing identities with this email.
 	existing, err := gorm.G[models.UserIdentity](a.db).Where("email = ?", userInfo.Email).Find(c.Request.Context())
+	existing_issuers := make([]string, 0, len(existing))
+	for _, e := range existing {
+		existing_issuers = append(existing_issuers, e.Issuer)
+	}
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -208,6 +213,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 		return
 	}
 
+	// No identities with this email found. Create a new user.
 	if len(existing) == 0 {
 		slog.Info("Creating new user for email: " + userInfo.Email)
 		// Create new user
@@ -247,21 +253,50 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 			First(c.Request.Context())
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				// User with this email exists. But does not have this identity registered.
-				// Should reject oauth, ask user to login with correct identity first.
-				// then connect provider when logged in
-				// c.AbortWithStatusJSON(http.StatusConflict, gin.H{
-				// 	"error": "User with email " + userInfo.Email + " already exists, but does not have this identity registered!",
-				// })
+				// Here we already know there is a user with this email.
+				
+				// There is a technically an edge case here where the user has identity registered, but not with the same subject
+				// AKA their subject for the identity has changed somehow. (eg. IDP changed but using same domain)
+				// We are going to ignore this edge case and treat it as a "bad_identity" error.
+
+				// Try get expected identity for this user via issuer, from the list of user's existing identities
+				ident_idx := slices.Index(existing_issuers, conf.Issuer)
+				// If not found, return "bad_identity" error.
+				if ident_idx == -1 {
+					var allowed_providers strings.Builder
+					for idx, value := range existing {
+						provider_name := strings.ToLower(app.FindProviderName(value.Issuer))
+						if idx != 0 {
+							allowed_providers.WriteByte(',')
+						}
+						allowed_providers.WriteString(provider_name)
+					}
+
+					// Identity not registered.
+					// Should reject oauth, ask user to login with correct identity first, then connect provider when logged in
+					c.Redirect(http.StatusFound, fmt.Sprintf("/login-failure?reason=bad_identity&allowed=%s&email=%s", allowed_providers.String(), userInfo.Email))
+					return
+				}
+				// Edge case here, the user has this identity registered but with a different subject.
+				// Should reject oauth, and return "bad_subject" error.
+
+				// Retrieve the user's existing identity for this issuer
+				identity := existing[ident_idx]
+				
 				var allowed_providers strings.Builder
 				for idx, value := range existing {
+					// Skip the current provider, as it's subject field is now non-working
+					if value.Issuer == conf.Issuer {
+						continue
+					}
 					provider_name := strings.ToLower(app.FindProviderName(value.Issuer))
 					if idx != 0 {
 						allowed_providers.WriteByte(',')
 					}
 					allowed_providers.WriteString(provider_name)
 				}
-				c.Redirect(http.StatusFound, fmt.Sprintf("/login-failure?reason=bad_identity&allowed=%s&email=%s", allowed_providers.String(), userInfo.Email))
+
+				c.Redirect(http.StatusFound, fmt.Sprintf("/login-failure?reason=bad_subject&expected=%s&received=%s&email=%s&allowed=%s", identity.Subject, userInfo.Subject, userInfo.Email, allowed_providers.String()))
 				return
 			} else {
 				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
