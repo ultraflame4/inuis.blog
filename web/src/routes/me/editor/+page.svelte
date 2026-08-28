@@ -10,11 +10,11 @@
 
 	const { data } = $props()
 
-	let post_id = $state(data.post_id)
-	let published = $state(data.published);
+	let post_id = $derived(data.post_id)
+	let published = $derived(data.published);
 	
 	let showPreview = $state(false);
-	let unsaved_changes = $state(post_id == null);
+	let unsaved_changes = $derived(post_id == null);
 	let title = $state('');
 	let view = $state<EditorView | null>(null);
 
