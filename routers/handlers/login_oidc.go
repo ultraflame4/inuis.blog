@@ -261,7 +261,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 					}
 					allowed_providers.WriteString(provider_name)
 				}
-				c.Redirect(http.StatusFound, fmt.Sprintf("/login-failure?reason=bad_identity&allowed=%s", allowed_providers.String()))
+				c.Redirect(http.StatusFound, fmt.Sprintf("/login-failure?reason=bad_identity&allowed=%s&email=%s", allowed_providers.String(), userInfo.Email))
 				return
 			} else {
 				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{

@@ -6,11 +6,15 @@
     const fail_reason = queries.get("reason") ?? "unknown"
     const allowed_providers = queries.get("allowed")?.split(",")
 
-    const reason_descriptions: Record<string, string> = {
-        "bad_identity": "The identity you are using is not connected to your account!\nPlease login with these providers first!"
+    const reason_descriptions: Record<string, ()=> string> = {
+        "bad_identity": () => `
+        Found Account (email: ${queries.get("email")})
+        Identity you are using is not connected to the your account!
+        Please login with these providers first!
+        `
     }
 
-    const desc_lines = reason_descriptions[fail_reason].split("\n")
+    const desc_lines = reason_descriptions[fail_reason]().split("\n")
 </script>
 <main class="p-4 space-y-4">
     <h2 class="classic text-center">
