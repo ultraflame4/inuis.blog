@@ -80,7 +80,7 @@
 
     <h2 class="text-xl font-bold">Advanced Options</h2>
     <ul class="classic">
-        <li class="text-danger"><a href="/api/me/logout">Logout Everywhere</a></li>
+        <li class="text-danger"><a href="/api/me/logout/all">Logout Everywhere</a></li>
         <li class="text-danger"><a href="/todo">Delete Account</a></li>
     </ul>
 </main>

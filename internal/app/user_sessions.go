@@ -50,6 +50,16 @@ func DeleteSession(db *gorm.DB, ctx context.Context, sessionID uint) error {
 	err := db.WithContext(ctx).Delete(&session).Error
 	return err
 }
+/**
+ * Revokes all of the given user's sessions, deleting them from the database.
+ */
+func RevokeAllSessions(db *gorm.DB, ctx context.Context, userID uint) error {
+	count, err := gorm.G[models.UserSession](db).Where("user_id = ?", userID).Delete(ctx)
+	if count == 0 {
+		return nil
+	}
+	return err
+}
 
 /**
  * Revokes the session token (and associated session), deleting it from the database.

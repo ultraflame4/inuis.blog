@@ -33,6 +33,15 @@ func (a *ApiHandler) Logout(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/")
 }
 
+
+func (a *ApiHandler) LogoutEverywhere(c *gin.Context) {
+	user, _ := meta.GetSession(c)
+
+	app.RevokeAllSessions(a.db, c.Request.Context(), user.ID)
+	c.SetCookie("session_token", "", -1, "/", "", false, true)
+	c.Redirect(http.StatusFound, "/")
+}
+
 func (a *ApiHandler) ListPosts(c *gin.Context) {
 
 	ctx := c.Request.Context()
