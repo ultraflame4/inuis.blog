@@ -314,7 +314,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 	if existing_session, err := c.Cookie("session_token"); err == nil {
 		slog.Debug("Revoking existing session with token: " + existing_session)
 
-		if err := app.RevokeSession(a.db, ctx, existing_session); err != nil {
+		if err := app.RevokeSessionToken(a.db, ctx, existing_session); err != nil {
 			slog.Error("Failed to revoke existing session: " + err.Error())
 		}
 	}
