@@ -45,7 +45,7 @@ export namespace api {
         }
         const data = await response.json();
         const user: User = data.user;
-        const is_elevated = data.is_elevated;
+        const is_elevated = data.session_elevated;
         return { user, is_elevated };
     }
 
@@ -57,5 +57,13 @@ export namespace api {
         }
 
         return await res.json() as string[];
+    }
+
+    export async function disconnectOidcProvider(f: FetchLike, provider: string) {
+        const resp = await f(`/api/me/oidc/${provider}/disconnect`);
+        if (!resp.ok) {
+            console.error("Failed to disconnect provider. \nStatus: " + resp.status, "\nBody:\n" + await resp.text())
+            throw new Error('Failed to disconnect provider');
+        }
     }
 }

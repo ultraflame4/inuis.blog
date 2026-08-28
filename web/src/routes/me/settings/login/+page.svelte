@@ -28,7 +28,12 @@
 
 	async function disconnectProvider(p: string) {
 		if (!confirm("Are you sure you want to disconnect this provider?")) return;
-		await app.elevateSession();
+		if (!await app.elevateSession()) {
+			alert("Failed to verify user.");
+			return;
+		}
+		await api.disconnectOidcProvider(fetch, p);
+		location.reload()
 	}
 	
 </script>
