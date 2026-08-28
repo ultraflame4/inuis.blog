@@ -1,6 +1,5 @@
 <script lang="ts">
     import { page } from "$app/state";
-	import OidcLoginButton from "$lib/OidcLoginButton.svelte";
 	import { onMount } from "svelte";
 
     const queries = page.url.searchParams
@@ -13,9 +12,25 @@
 
     const desc_lines = reason_descriptions[reason ?? '']?.split("\n") ?? ["WHAT DID YOU DO??"]
 
-    onMount(() => {
-        window.opener?.postMessage({type: "action-success",  reason}, "*")
-    });
+
+    const auto_close_reasons = new Set([
+        "session_elevated"
+    ])
+    const auto_close_delay = 2
+    const should_auto_close = auto_close_reasons.has(reason??"")
+
+    let time_counter = $state(auto_close_delay)
+    onMount(()=>{
+        if (should_auto_close) {
+            setTimeout(() => {
+                window.close()
+            }, auto_close_delay * 1000)
+            const interval = setInterval(() => {
+                time_counter -= 1
+            }, 1000)
+            return () => clearInterval(interval)
+        }
+    })
     
 </script>
 <main class="p-4 space-y-4">
@@ -32,10 +47,15 @@
     </div>
 
     <p class="text-center">
-        You can now close this page.
+        {should_auto_close ? `Closing in ${time_counter}s...` : 'You can now close this page.'}
     </p>
     <nav class="text-center">
-        <a href="/me">Back to Home</a>
+        {#if !should_auto_close}
+            <a href="/me">Back to Home</a>
+        {:else}
+            <a onclick={window.close}>Close</a>
+        {/if}
+        
     </nav>
 
 </main>
