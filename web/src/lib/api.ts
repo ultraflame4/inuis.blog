@@ -48,4 +48,14 @@ export namespace api {
         const is_elevated = data.is_elevated;
         return { user, is_elevated };
     }
+
+    export async function fetchProviders(f: FetchLike) {
+        const res = await f('/api/oidc/providers');
+
+        if (!res.ok) {
+            throw new Error('Failed to load providers');
+        }
+
+        return await res.json() as string[];
+    }
 }

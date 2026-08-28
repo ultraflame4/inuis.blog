@@ -1,21 +1,13 @@
 <script lang="ts">
+	import { api } from '$lib/api';
 	import OidcLoginButton from '$lib/OidcLoginButton.svelte';
 	import { onMount } from 'svelte';
 
 	let providers: string[] = $state([]);
 
-	async function loadProviders() {
-		const res = await fetch('/api/oidc/providers');
 
-		if (!res.ok) {
-			throw new Error('Failed to load providers');
-		}
-
-		providers = await res.json();
-	}
-
-	onMount(() => {
-		loadProviders();
+	onMount(async () => {
+		providers = await api.fetchProviders(fetch);
 	});
 </script>
 

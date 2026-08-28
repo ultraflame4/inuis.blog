@@ -1,5 +1,7 @@
 
 <script lang="ts">
+	import { app } from "$lib";
+	import { api } from "$lib/api";
 	import OidcLoginButton from "$lib/OidcLoginButton.svelte";
 	import { onMount } from "svelte";
 
@@ -22,6 +24,13 @@
 	onMount(() => {
 		loadProviders();
 	});
+
+
+	async function disconnectProvider(p: string) {
+		if (!confirm("Are you sure you want to disconnect this provider?")) return;
+		await app.elevateSession();
+	}
+	
 </script>
 <main class="px-4">
 
@@ -40,6 +49,7 @@
                     <OidcLoginButton
                         class="text-green-700"
                         provider_id={p} intent={"add_identity"} prefix="Connected" disabled />
+                    <button onclick={()=>disconnectProvider(p)}>Disconnect</button>
                 {:else}
                     <OidcLoginButton provider_id={p} intent={"add_identity"} prefix="Connect to" />
                 {/if}
