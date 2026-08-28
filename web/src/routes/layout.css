@@ -26,6 +26,11 @@
         text-decoration: revert;
         color: revert
     }
+    
+    .classic code,
+    code.classic {
+        @apply bg-neutral-200 px-1 py-0.5 rounded-sm
+    }
 }
 
 :root {

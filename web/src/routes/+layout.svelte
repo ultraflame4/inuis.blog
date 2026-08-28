@@ -6,14 +6,16 @@
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
-<header class="mx-4 flex items-center gap-4" style="height: var(--navbar-height);">
+<header class="mx-4 flex items-center gap-2" style="height: var(--navbar-height);">
     <h1 class="text-2xl font-bold"><a href="/">TeenyBlog</a></h1>
 
-    <div class="ml-auto"></div>
+    
     {#if !!data.user}
-        <a class="classic m-0" href="/me">{data.user.Username}</a>
-        <a class="classic m-0" href="/api/me/logout">Logout</a>
+        <a class="classic m-0" href="/me">/me</a>
+        <div class="ml-auto"></div>
+        <a class="classic m-0" href="/me/settings">{data.user.Username}</a>
     {:else}
+        <div class="ml-auto"></div>
         <a class="classic m-0" href="/signup">Signup</a>
         <a class="classic m-0" href="/login">Login</a>
     {/if}

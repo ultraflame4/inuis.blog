@@ -83,7 +83,9 @@
 				saving_post = null;
 				const data = await resp.json();
 				post_id = data.post.ID;
-				goto(`/me/editor?post_id=${post_id}`);
+				goto(`/me/editor?post_id=${post_id}`, {
+					replaceState: true,
+				});
 			}
 			
 		}
@@ -125,8 +127,11 @@
 </script>
 
 <svelte:window on:beforeunload={warn_unsaved} />
+<nav class="px-4">
+    <a href="/me">&lt&lt; Back</a>
+</nav>
 <main class="page-content-height grid gap-2 p-4" style="grid-template-rows: auto 1fr auto;">
-	<div class="flex items-center gap-1">
+	<div class="flex items-center gap-1 flex-wrap">
 		<h2 class="font-bold">Title: {title}</h2>
 		<div class="ml-auto"></div>
 		<span class="mx-2 text-sm" class:font-bold={unsaved_changes}>
@@ -136,23 +141,25 @@
 				[Up to date]
 			{/if}
 		</span>
-		<button
-			class="classic"
-			class:hidden={!showPreview}
-			onclick={() => (showPreview = false)}
-		>
-			View Editor
-		</button>
-		<button class="classic" class:hidden={showPreview} onclick={() => (showPreview = true)}>
-			View Preview
-		</button>
-		<button class="classic" disabled={saving_post != null || deleting_post != null} onclick={save_post}>Save</button>
-
-		{#if !published}
-			<button class="classic" disabled={publishing_post != null || deleting_post != null} onclick={()=>publish_post(true)}>Publish</button>
-		{:else}
-			<button class="classic" disabled={publishing_post != null || deleting_post != null} onclick={()=>publish_post(false)}>Make Private</button>
-		{/if}
+		<div class="flex items-center gap-2">
+    		<button
+    			class="classic"
+    			class:hidden={!showPreview}
+    			onclick={() => (showPreview = false)}
+    		>
+    			View Editor
+    		</button>
+    		<button class="classic" class:hidden={showPreview} onclick={() => (showPreview = true)}>
+    			View Preview
+    		</button>
+    		<button class="classic" disabled={saving_post != null || deleting_post != null} onclick={save_post}>Save</button>
+    
+    		{#if !published}
+    			<button class="classic" disabled={publishing_post != null || deleting_post != null} onclick={()=>publish_post(true)}>Publish</button>
+    		{:else}
+    			<button class="classic" disabled={publishing_post != null || deleting_post != null} onclick={()=>publish_post(false)}>Make Private</button>
+    		{/if}
+		</div>
 	</div>
 	<div id="editor" class:hidden={showPreview} class="w-full overflow-hidden">
 		<style>
