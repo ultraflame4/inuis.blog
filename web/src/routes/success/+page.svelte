@@ -1,6 +1,7 @@
 <script lang="ts">
     import { page } from "$app/state";
 	import OidcLoginButton from "$lib/OidcLoginButton.svelte";
+	import { onMount } from "svelte";
 
     const queries = page.url.searchParams
     const reason = queries.get("reason")
@@ -11,6 +12,11 @@
     }
 
     const desc_lines = reason_descriptions[reason ?? '']?.split("\n") ?? ["WHAT DID YOU DO??"]
+
+    onMount(() => {
+        window.opener?.postMessage({type: "action-success",  reason}, "*")
+    });
+    
 </script>
 <main class="p-4 space-y-4">
     <h2 class="classic text-center">

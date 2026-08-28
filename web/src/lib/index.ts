@@ -1,8 +1,25 @@
 // place files you want to import through the `$lib` alias in this folder.
 
+import { api } from "./api";
+import { waitTimeout } from "./utils";
+
 
 export namespace app {
-    export async function elevateSession(): Promise<void> {
-        window.open("/me/elevate")
+    /**
+     * Returns true if session was elevated successfully
+     */
+    export async function elevateSession(): Promise<boolean> {
+        const child = window.open("/me/elevate", undefined, "popup=true")
+        if (!child) {
+            throw new Error("Failed to open elevation popup")
+        }
+        console.log("Elevation", child)
+
+        while (!child.closed) {
+            await waitTimeout(0)
+        }
+        console.log("Elevation window closed")
+        const s = await api.fetchSession(fetch)
+        return s.is_elevated
     }
 }

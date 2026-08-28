@@ -22,3 +22,7 @@ export function humanizeDate(date: Date | string): string {
     }
     return date.toLocaleString();
 }
+
+export function waitTimeout(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
