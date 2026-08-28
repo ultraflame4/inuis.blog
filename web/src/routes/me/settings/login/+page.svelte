@@ -54,7 +54,7 @@
                     <OidcLoginButton
                         class="text-green-700"
                         provider_id={p} intent={"add_identity"} prefix="Connected" disabled />
-                    <button onclick={()=>disconnectProvider(p)}>Disconnect</button>
+                    <button onclick={()=>disconnectProvider(p)} class="text-danger cursor-pointer underline">Disconnect</button>
                 {:else}
                     <OidcLoginButton provider_id={p} intent={"add_identity"} prefix="Connect to" />
                 {/if}
@@ -62,11 +62,7 @@
         {/each}
     </ul>
     <p class="italic my-4">
-        To disconnect an identity provider, please go to identity provider's settings page,
-        and remove TeenyBlog from the list of connected applications.
-
-        TeenyBlog may still show a disconnected identity provider as connected.
-        <br/>
-        TeenyBlog does not support this feature due to complexity and security concerns.
+        Note: These are OIDC compliant identity providers. TeenyBlog only uses them to authenticate the user.
+        TeenyBlog will only fetch the user's identity from the identity provider, it will not do any other form of integration. (i.e cross-posting etc.)
     </p>
 </main>
