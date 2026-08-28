@@ -1,5 +1,6 @@
 
 <script lang="ts">
+	import { invalidateAll } from "$app/navigation";
 	import { app } from "$lib";
 	import { api } from "$lib/api";
 	import OidcLoginButton from "$lib/OidcLoginButton.svelte";
@@ -38,6 +39,21 @@
 		await api.disconnectOidcProvider(fetch, p);
 		location.reload()
 	}
+
+
+	let updating_username = $state<Promise<void> | null>(null);
+	async function updateUsername() {
+		if (updating_username == null) {
+		    const inp = document.getElementById("inp-change-username")! as HTMLInputElement
+			if (inp.value == data.user.Username) return;
+		    updating_username = api.updateUsername(fetch, inp.value).then(x=> {
+				updating_username = null
+				inp.value=""
+				invalidateAll()
+			})
+		}
+		await updating_username
+	}
 	
 </script>
 <main class="px-4">
@@ -51,7 +67,11 @@
     </p>
     <h2 class="text-xl font-bold">Account Options</h2>
     <ul class="classic">
-        <li><a href="/me/settings/update-username">Change Usernames</a></li>
+        <li>
+            <label for="inp-change-username">Update Username:</label>
+            <input id="inp-change-username" type="text" placeholder={data.user.Username}>
+            <button onclick={updateUsername} disabled={updating_username != null}>Save</button>
+        </li>
         <li class="text-danger"><a href="/api/me/logout">Logout</a></li>
     </ul>
     <hr/>

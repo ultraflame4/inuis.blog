@@ -1,3 +1,4 @@
+import { asFormData } from "./utils";
 
 export namespace api {
 
@@ -64,6 +65,17 @@ export namespace api {
         if (!resp.ok) {
             console.error("Failed to disconnect provider. \nStatus: " + resp.status, "\nBody:\n" + await resp.text())
             throw new Error('Failed to disconnect provider');
+        }
+    }
+
+    export async function updateUsername(f: FetchLike, username: string) {
+        const resp = await f(`/api/me/username`, {
+            method: 'PUT',
+            body: asFormData({ username }),
+        });
+        if (!resp.ok) {
+            console.error("Failed to update username. \nStatus: " + resp.status, "\nBody:\n" + await resp.text())
+            throw new Error('Failed to update username');
         }
     }
 }

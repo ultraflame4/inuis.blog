@@ -4,7 +4,7 @@ export function nullish<T>(value: Nullish<T>): value is null | undefined {
     return value === null || value === undefined
 }
 
-export function jsonFormdata(obj: any) {
+export function asFormData(obj: any) {
     const formData = new FormData();
 
     for (const key in obj) {

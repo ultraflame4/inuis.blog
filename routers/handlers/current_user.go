@@ -17,10 +17,32 @@ func (*ApiHandler) CurrentUser(c *gin.Context) {
 	user, s := meta.GetSession(c)
 
 	c.JSON(200, gin.H{
-		"status":  200,
-		"message": "OK",
-		"user":    user,
+		"status":           "success",
+		"message":          "OK",
+		"user":             user,
 		"session_elevated": s.IsElevated(),
+	})
+}
+func (a *ApiHandler) UpdateUsername(c *gin.Context) {
+	user, _ := meta.GetSession(c)
+	new_username, ok := c.GetPostForm("username")
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": "field: username is required",
+		})
+		return
+	}
+	user.Username = new_username
+	if err := a.db.WithContext(c.Request.Context()).Save(user).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"status":  "error",
+			"message": "failed to save user",
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"status": "success",
 	})
 }
 
@@ -32,7 +54,6 @@ func (a *ApiHandler) Logout(c *gin.Context) {
 
 	c.Redirect(http.StatusFound, "/")
 }
-
 
 func (a *ApiHandler) LogoutEverywhere(c *gin.Context) {
 	user, _ := meta.GetSession(c)
@@ -135,24 +156,25 @@ func (a *ApiHandler) PublishPost(c *gin.Context) {
 
 }
 
-func (a* ApiHandler) DeletePost(c *gin.Context){
+func (a *ApiHandler) DeletePost(c *gin.Context) {
 	user, _ := meta.GetSession(c)
-	db := a.db;
+	db := a.db
 	post_id := c.Param("id")
 	var post models.Post
 
 	err := db.Transaction(func(tx *gorm.DB) error {
 		err := tx.First(&post, post_id).Error
-		if err != nil { return err}
+		if err != nil {
+			return err
+		}
 		if post.UserID != user.ID {
 			return errors.New("post does not belong to user")
 		}
 
-
 		return tx.Delete(&post).Error
 	})
 
-	if err == nil{
+	if err == nil {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "success",
 		})

@@ -4,7 +4,7 @@
 	import { highlightSpecialChars } from '@codemirror/view';
 	import { markdown } from '@codemirror/lang-markdown';
 	import { headingPlugin } from '$lib/editor';
-	import { jsonFormdata } from '$lib/utils';
+	import { asFormData } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import { api } from '$lib/api.js';
 
@@ -72,7 +72,7 @@
 			console.log(url.toString());
 			const resp = await fetch(url, {
 				method: 'POST',
-				body: jsonFormdata({
+				body: asFormData({
 					content: view.state.doc.toString(),
 				}),
 				

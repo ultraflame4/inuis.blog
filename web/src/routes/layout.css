@@ -11,7 +11,11 @@
         text-decoration: revert;
         @apply my-4
     }
-    button.classic, input.classic {
+    
+    button.classic,
+    input.classic,
+    .classic input,
+    .classic button {
         all: revert
     }
     main.classic {
