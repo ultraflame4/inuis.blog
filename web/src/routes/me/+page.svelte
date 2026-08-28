@@ -8,11 +8,7 @@
 
 </script>
 <main class="p-4">
-    <p class="text-lg my-4">Hello <span class="italic">{data.user.Username}</span>, writing today?</p>
-    <nav class="ring p-4 flex gap-3 flex-wrap">
-        
-        <a href="/me/settings/login">Login Settings</a>
-    </nav>
+    <p class="text-lg my-4 ring p-4">Hello <span class="italic">{data.user.Username}</span>, writing today?</p>
 
     <div class="flex items-center classic">
         <h2 class="mr-auto">Your Posts</h2>
