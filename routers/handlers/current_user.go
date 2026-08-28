@@ -14,12 +14,13 @@ import (
 )
 
 func (*ApiHandler) CurrentUser(c *gin.Context) {
-	user, _ := meta.GetSession(c)
+	user, s := meta.GetSession(c)
 
 	c.JSON(200, gin.H{
 		"status":  200,
 		"message": "OK",
 		"user":    user,
+		"session_elevated": s.IsElevated(),
 	})
 }
 

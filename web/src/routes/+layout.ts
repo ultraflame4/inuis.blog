@@ -2,7 +2,7 @@
 import type { LoadEvent } from '@sveltejs/kit';
 import type { LayoutLoad } from './$types';
 import type { Nullish } from '$lib/utils';
-import type { api } from '$lib/api';
+import { api } from '$lib/api';
 
 
 async function fetchUser(event: LoadEvent) {
@@ -15,9 +15,9 @@ async function fetchUser(event: LoadEvent) {
 
 export const load: LayoutLoad = async (event) => {
 
-    const user_resp = await fetchUser(event);
+    const { user } = await api.fetchSession(event.fetch)
 
     return {
-        user: user_resp?.["user"] as Nullish<api.User>
+        user
     }
 };

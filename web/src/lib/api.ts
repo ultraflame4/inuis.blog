@@ -37,4 +37,15 @@ export namespace api {
         }
 
     }
+
+    export async function fetchSession(f: FetchLike): Promise<{ is_elevated: boolean; user: User | null }> {
+        const response = await f('/api/me');
+        if (!response.ok) {
+            return { user: null, is_elevated: false };
+        }
+        const data = await response.json();
+        const user: User = data.user;
+        const is_elevated = data.is_elevated;
+        return { user, is_elevated };
+    }
 }
