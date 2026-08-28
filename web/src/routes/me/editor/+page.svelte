@@ -6,6 +6,7 @@
 	import { headingPlugin } from '$lib/editor';
 	import { jsonFormdata } from '$lib/utils';
 	import { goto } from '$app/navigation';
+	import { api } from '$lib/api.js';
 
 	const { data } = $props()
 
@@ -56,8 +57,12 @@
 	});
 
 	let saving_post = $state<Promise<void> | null>(null);
+	let deleting_post = $state<Promise<void> | null>(null);
 	let publishing_post = $state<Promise<void> | null>(null);
 
+	const can_delete = $derived(publishing_post == null && post_id != null && saving_post == null && !published);
+	
+	
 	async function save_post() {
 		async function _save_post() {
 		    if (!view) return
@@ -106,6 +111,17 @@
 		}
 		await publishing_post;
 	}
+
+	async function delete_post() {
+		if (!can_delete) return;
+		if (post_id === null) return;
+		if (!confirm('Are you sure you want to delete this post?\nThis action cannot be undone.')) return;
+		if (deleting_post == null) {
+			deleting_post = api.deletePost(fetch, post_id);
+		}
+		await deleting_post
+		goto("/me")
+	}
 </script>
 
 <svelte:window on:beforeunload={warn_unsaved} />
@@ -130,12 +146,12 @@
 		<button class="classic" class:hidden={showPreview} onclick={() => (showPreview = true)}>
 			View Preview
 		</button>
-		<button class="classic" disabled={saving_post != null} onclick={save_post}>Save</button>
+		<button class="classic" disabled={saving_post != null || deleting_post != null} onclick={save_post}>Save</button>
 
 		{#if !published}
-			<button class="classic" disabled={publishing_post != null} onclick={()=>publish_post(true)}>Publish</button>
+			<button class="classic" disabled={publishing_post != null || deleting_post != null} onclick={()=>publish_post(true)}>Publish</button>
 		{:else}
-			<button class="classic" disabled={publishing_post != null} onclick={()=>publish_post(false)}>Make Private</button>
+			<button class="classic" disabled={publishing_post != null || deleting_post != null} onclick={()=>publish_post(false)}>Make Private</button>
 		{/if}
 	</div>
 	<div id="editor" class:hidden={showPreview} class="w-full overflow-hidden">
@@ -149,5 +165,28 @@
 	</div>
 	<div id="preview" class="ring" class:hidden={!showPreview}></div>
 
-	<div></div>
+	<div>
+	
+		<button class="classic text-danger disabled:text-inherit"  disabled={!can_delete} onclick={delete_post}>
+			
+			{#if published}
+				Cannot delete published posts. Make it private first.
+			{:else if post_id == null}
+			    -
+			{:else}
+				Delete Post
+			{/if}
+		</button>
+	</div>
 </main>
+
+<dialog id="confirmDialog">
+  <form method="dialog">
+    <p>What is your favorite programming language?</p>
+    <input type="text" id="userInput" placeholder="Type here...">
+    <div>
+      <button value="cancel">Cancel</button>
+      <button id="confirmBtn" value="default">Submit</button>
+    </div>
+  </form>
+</dialog>

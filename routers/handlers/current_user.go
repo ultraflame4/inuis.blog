@@ -139,7 +139,7 @@ func (a* ApiHandler) DeletePost(c *gin.Context){
 		}
 
 
-		return tx.Delete(post).Error
+		return tx.Delete(&post).Error
 	})
 
 	if err == nil{

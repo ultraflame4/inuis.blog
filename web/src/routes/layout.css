@@ -41,3 +41,6 @@
     font-weight: revert;
     font-size: revert;
 }
+@theme {
+    --color-danger: var(--color-red-600)
+}

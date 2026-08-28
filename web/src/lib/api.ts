@@ -28,4 +28,13 @@ export namespace api {
         const user_posts: Paginated<any> = await resp.json();
         return user_posts;
     }
+
+    export async function deletePost(f: FetchLike, id: string): Promise<void> {
+        const resp = await f(`/api/me/posts/${id}`, { method: 'DELETE' });
+        if (!resp.ok) {
+            console.error("Failed to delete post. \nStatus: " + resp.status, "\nBody:\n" + await resp.text())
+            throw new Error('Failed to delete post');
+        }
+
+    }
 }
