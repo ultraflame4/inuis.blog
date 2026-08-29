@@ -34,3 +34,7 @@ OIDC_GOOGLE_URL="https://accounts.google.com"
 OIDC_GOOGLE_CLIENT="...google app client id..."
 OIDC_GOOGLE_SECRET="...google app client secret..."
 ```
+
+# API Routes
+See [API_SPECS.md](API_SPECS.md) for details on the API routes.
+

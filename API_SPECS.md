@@ -48,34 +48,36 @@ What a session object might look like:
 
 # API Routes
 
+All routes are prefixed with `/api`.
+
+## App Meta
+`GET /api/meta` — Get application metadata
+
+## OIDC Authentication
+`GET /api/oidc/providers` — List available OIDC login providers
+`GET /api/oidc/:oidc/login` — Start OAuth login flow for a provider
+`GET /api/oidc/:oidc/callback` — Accept OAuth callback from a provider
+
+## Current User Session (`/api/me`)
+All routes in this group require an authenticated session.
+
+`GET /api/me/` — Get current user session info
+`PUT /api/me/username` — Update current user's username
+`GET /api/me/logout` — Log out current session
+`GET /api/me/logout/all` — Log out all sessions
+`GET /api/me/oidc-providers` — List connected OIDC providers for current user
+`GET /api/me/oidc/:oidc/disconnect` — Disconnect an OIDC provider
+`POST /api/me/posts/save` — Create or update a post (draft)
+`GET /api/me/posts` — List current user's posts
+`GET /api/me/posts/:id` — Get a specific post owned by current user
+`DELETE /api/me/posts/:id` — Delete a post owned by current user
+`POST /api/me/posts/:id/publish` — Publish a draft post
+
+## Public Posts
+`GET /api/posts/:id` — Get a published post by ID
+
 ## Public User Routes
-Login
-`/user/login`
-Login for MFA
-`/user/login/2fa`
-Login OIDC
-`/oidc/<oidc_name>/login`
-Create User
-`/user/new`
-Reset Password 
-`/user/reset-password`
-
-## Current User Session
-Logout
-`/me/logout`
-Delete account
-`/user/delete`
-Query current session
-`/me`
-Query posts for current session.
-`/user/posts`
-
-## Post Actions
-GET    - `/posts` (Get Posts, can filter using queryies like: `?user=<user_id>`)
-GET    - `/posts/<post_id>` (Get specific Post) (Need permissions)
-UPDATE - `/posts/<post_id>` (Update Post)       (Need permissions)
-DELETE - `/posts/<post_id>` (Delete Post)       (Need permissions)
-POST   - `/posts/new` (Create Post)             (Need permissions)
+`GET /api/user/:user_id/posts` — List a specific user's published posts
 
 # Login & User Identity
 
