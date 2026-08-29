@@ -50,7 +50,7 @@
 
 * {
     box-sizing: border-box;
-    
+
 }
 
 hr {
@@ -92,6 +92,29 @@ hr {
      */
     --default-border-color: var(--color-divider);
     --default-ring-color: var(--color-accent);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        /* Primary text — warm off-white */
+        --color-ink: #f5f0eb;
+        --color-ink-light: #d6d3d1;
+        --color-ink-muted: #a8a29e;
+
+        /* Accent — brighter amber for dark backgrounds */
+        --color-accent: #f59e0b;
+        --color-accent-light: #451a03;
+        --color-accent-dark: #fcd34d;
+
+        /* Surfaces — warm dark stone tones */
+        --color-paper: #1c1917;
+        --color-paper-muted: #292524;
+        --color-paper-subtle: #44403c;
+
+        /* Borders / dividers */
+        --color-divider: #44403c;
+        --color-divider-light: #57534e;
+    }
 }
 
 /* Provides just enough min height to push footer all the way to the bottom.*/
