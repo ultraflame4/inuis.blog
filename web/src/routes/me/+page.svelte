@@ -8,7 +8,7 @@
 
 </script>
 <main class="p-4">
-    <p class="text-lg my-4 ring p-4">Hello <span class="italic">{data.user.Username}</span>, writing today?</p>
+    <p class="text-lg my-4 border p-4">Hello <span class="italic">{data.user.Username}</span>, writing today?</p>
 
     <div class="flex items-baseline classic gap-4">
         <h2 >Your Posts</h2>
