@@ -8,6 +8,7 @@
 	import { asFormData } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import { api } from '$lib/api.js';
+	import MarkdownContent from '$lib/MarkdownContent.svelte';
 
 	const { data } = $props()
 
@@ -177,8 +178,8 @@
 			}
 		</style>
 	</div>
-	<div id="preview" class="ring classic px-4 m-0" class:hidden={!showPreview}>
-	    <SvelteMarkdown source={preview_content} />
+	<div id="preview" class="ring px-4 m-0" class:hidden={!showPreview}>
+	    <MarkdownContent source={preview_content} />
 	</div>
 	<div>
 	
