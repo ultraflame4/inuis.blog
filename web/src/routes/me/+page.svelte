@@ -21,9 +21,9 @@
                 <span class="w-4 col-1 row-span-2 text-right font-bold mr-1">{index + 1 + (data.user_posts.page - 1) * data.user_posts.per_page}.</span>
             
                 <a href="/me/editor?post_id={post.ID}" class="underline font-semibold">{post.Title}</a>
-                <p class="my-0 text-sm">{post.Summary.slice(0, 96)}...</p>
+                <p class="my-0 text-sm text-ink-light">{post.Summary.slice(0, 96)}...</p>
                 <div class="m-0 col-2 row-3">
-                    <span class="text-xs text-gray-500 m-0">
+                    <span class="text-xs text-ink-muted m-0">
                         <!-- Created {humanizeDate(post.CreatedAt)} -->
                         Updated: {humanizeDate(post.UpdatedAt)}
                     </span>
