@@ -19,6 +19,7 @@ export namespace api {
     }
 
     export interface Post {
+        ID: string;
         CreatedAt: string;
         DeletedAt: string;
         UpdatedAt: string;

@@ -11,7 +11,11 @@
 
 <main class="p-4">
     <header class="flex flex-wrap gap-4">
-        <p class="mr-auto"><span class="font-semibold">Published by</span>: {author.Username}</p>
+        <p><span class="font-semibold">Published by</span>: {author.Username}</p>
+        {#if author.ID === data.user?.ID}
+            <a href="/me/editor?post_id={data.post_data.ID}" class="underline">/edit</a>
+        {/if}
+        <div class="mr-auto"></div>
         <p><span class="font-semibold">Last updated</span>: {humanizeDate(data.post_data.UpdatedAt)}</p>
     </header>
     <MarkdownContent source={body} />
