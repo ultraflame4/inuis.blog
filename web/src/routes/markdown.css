@@ -1,0 +1,75 @@
+.cm-md-heading {
+    font-family: revert;
+    font-weight: revert;
+    font-size: revert;
+}
+
+.cm-md-content * {
+    all: revert;
+    margin: 0
+}
+
+.cm-md-content p {
+    @apply mb-4
+}
+
+.cm-md-content ol,
+.cm-md-content ul {
+    @apply pl-5 mt-4
+}
+
+.cm-md-content li>* {
+    @apply my-0
+}
+
+.cm-md-content li {
+    @apply my-1
+}
+
+.cm-md-content .cm-md-heading {
+    @apply mt-6 mb-2;
+}
+
+.cm-md-content a:has(.cm-md-heading) {
+    color: black;
+    text-decoration: none;
+
+}
+
+.cm-md-content a:has(.cm-md-heading):hover {
+    text-decoration: underline;
+}
+
+.cm-md-content a:not(:has(.cm-md-heading)) {
+    color: revert;
+    @apply underline
+}
+
+.cm-md-content pre {
+    @apply bg-neutral-200 p-2 rounded-md my-4
+}
+
+.cm-md-content code {
+    @apply bg-neutral-200 rounded-md px-1 py-0.5
+}
+
+.cm-md-content pre code {
+    @apply p-0
+}
+
+.cm-md-content table {
+    border-collapse: collapse;
+}
+
+.cm-md-content table,
+.cm-md-content th,
+.cm-md-content td {
+    @apply border px-3 py-1
+}
+
+
+
+.cm-md-content hr {
+    border: none;
+    @apply border-b border-black my-4
+}

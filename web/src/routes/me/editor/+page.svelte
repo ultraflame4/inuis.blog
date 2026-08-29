@@ -178,7 +178,7 @@
 			}
 		</style>
 	</div>
-	<div id="preview" class="ring px-4 m-0" class:hidden={!showPreview}>
+	<div id="preview" class="ring px-4 m-0 w-full overflow-hidden" class:hidden={!showPreview}>
 	    <MarkdownContent source={preview_content} />
 	</div>
 	<div>
