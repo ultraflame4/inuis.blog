@@ -31,7 +31,7 @@
 }
 
 .cm-md-content a:has(.cm-md-heading) {
-    color: black;
+    color: var(--color-ink);
     text-decoration: none;
 
 }
@@ -46,11 +46,11 @@
 }
 
 .cm-md-content pre {
-    @apply bg-neutral-200 p-2 rounded-md my-4 overflow-auto
+    @apply bg-paper-muted p-2 rounded-md my-4 overflow-auto
 }
 
 .cm-md-content code {
-    @apply bg-neutral-200 rounded-md px-1 py-0.5
+    @apply bg-paper-muted rounded-md px-1 py-0.5
 }
 
 .cm-md-content pre code {
@@ -64,14 +64,14 @@
 .cm-md-content table,
 .cm-md-content th,
 .cm-md-content td {
-    @apply border px-3 py-1
+    @apply border border-divider px-3 py-1
 }
 
 
 
 .cm-md-content hr {
     border: none;
-    @apply border-b border-black my-4
+    @apply border-b border-divider my-4
 }
 
 .cm-md-content blockquote {

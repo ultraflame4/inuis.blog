@@ -11,13 +11,14 @@
         text-decoration: revert;
         @apply my-4
     }
-    
+
     button.classic,
     input.classic,
     .classic input,
     .classic button {
         all: revert
     }
+
     main.classic {
         @apply m-0 px-4 box-border flow-root
     }
@@ -30,10 +31,10 @@
         text-decoration: revert;
         color: revert
     }
-    
+
     .classic code,
     code.classic {
-        @apply bg-neutral-200 px-1 py-0.5 rounded-sm
+        @apply bg-paper-muted px-1 py-0.5 rounded-sm
     }
 
 }
@@ -49,7 +50,42 @@
 
 
 @theme {
-    --color-danger: var(--color-red-600)
+    /* Existing */
+    --color-danger: var(--color-red-600);
+
+    /*
+     * Warm, paper-like palette for a minimal blogging platform.
+     * "Ink" for text, "Paper" for surfaces, "Amber" for accents.
+     */
+
+    /* Primary text — warm near-black, softer than pure #000 */
+    --color-ink: #292524;
+    --color-ink-light: #57534e;
+    --color-ink-muted: #78716c;
+
+    /* Accent — warm amber for links, buttons, and interactive elements */
+    --color-accent: #d97706;
+    --color-accent-light: #fef3c7;
+    --color-accent-dark: #92400e;
+    --color-accent-50: #fffbeb;
+    --color-accent-100: #fef3c7;
+    --color-accent-200: #fde68a;
+    --color-accent-300: #fcd34d;
+    --color-accent-400: #fbbf24;
+    --color-accent-500: #f59e0b;
+    --color-accent-600: #d97706;
+    --color-accent-700: #b45309;
+    --color-accent-800: #92400e;
+    --color-accent-900: #78350f;
+
+    /* Surfaces — warm off-white paper tones */
+    --color-paper: #faf8f5;
+    --color-paper-muted: #f0ede8;
+    --color-paper-subtle: #e7e5e4;
+
+    /* Borders / dividers */
+    --color-divider: #d6d3d1;
+    --color-divider-light: #e7e5e4;
 }
 
 /* Provides just enough min height to push footer all the way to the bottom.*/
