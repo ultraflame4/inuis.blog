@@ -13,7 +13,7 @@
     <div class="flex items-baseline classic gap-4">
         <h2 >Your Posts</h2>
         <div class="w-0 border bg-black h-4 "></div>
-        <a href="/me/editor" class="self-center">New Post</a>
+        <a href="/me/editor" class="self-center">/New Post</a>
     </div>
     <ul class="space-y-2 classic">
         {#each  data.user_posts.items as post, index}
