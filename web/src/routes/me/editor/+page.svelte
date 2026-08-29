@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+    import SvelteMarkdown from '@humanspeak/svelte-markdown'
+    import { onMount } from 'svelte';
 	import { EditorView, basicSetup } from 'codemirror';
 	import { highlightSpecialChars } from '@codemirror/view';
 	import { markdown } from '@codemirror/lang-markdown';
@@ -17,6 +18,7 @@
 	let unsaved_changes = $derived(post_id == null);
 	let title = $state('');
 	let view = $state<EditorView | null>(null);
+	let preview_content = $state('');
 
 	const warn_unsaved = (e: BeforeUnloadEvent) => {
 		if (unsaved_changes) {
@@ -124,6 +126,11 @@
 		await deleting_post
 		goto("/me")
 	}
+
+	function enablePreview(x: boolean) {
+		showPreview = x;
+		preview_content = view?.state.doc.toString() ?? '';
+	}
 </script>
 
 <svelte:window on:beforeunload={warn_unsaved} />
@@ -145,11 +152,11 @@
     		<button
     			class="classic"
     			class:hidden={!showPreview}
-    			onclick={() => (showPreview = false)}
+    			onclick={() => enablePreview( false)}
     		>
     			View Editor
     		</button>
-    		<button class="classic" class:hidden={showPreview} onclick={() => (showPreview = true)}>
+    		<button class="classic" class:hidden={showPreview} onclick={() => enablePreview(true)}>
     			View Preview
     		</button>
     		<button class="classic" disabled={saving_post != null || deleting_post != null} onclick={save_post}>Save</button>
@@ -170,8 +177,9 @@
 			}
 		</style>
 	</div>
-	<div id="preview" class="ring" class:hidden={!showPreview}></div>
-
+	<div id="preview" class="ring classic px-4 m-0" class:hidden={!showPreview}>
+	    <SvelteMarkdown source={preview_content} />
+	</div>
 	<div>
 	
 		<button class="classic text-danger disabled:text-inherit"  disabled={!can_delete} onclick={delete_post}>
