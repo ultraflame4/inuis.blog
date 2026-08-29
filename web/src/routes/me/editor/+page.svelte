@@ -195,16 +195,16 @@
 			{/if}
 		</div>
 	</div>
-	<div id="editor" class:hidden={showPreview} class="w-full overflow-hidden">
+	<div id="editor" class:hidden={showPreview} class="w-full overflow-hidden rounded-lg border">
 		<style>
 			.cm-editor {
 				height: 100%;
 				width: 100%;
-				border: 1px solid silver;
+		
 			}
 		</style>
 	</div>
-	<div id="preview" class="m-0 w-full overflow-auto border px-4" class:hidden={!showPreview}>
+	<div id="preview" class="m-0 w-full overflow-auto border rounded-lg px-4" class:hidden={!showPreview}>
 		<MarkdownContent source={preview_content} />
 	</div>
 	<div class="classic flex flex-wrap">
