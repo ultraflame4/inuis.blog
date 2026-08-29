@@ -25,7 +25,7 @@
                     <div class="m-0">
                         <span class="text-xs text-gray-500 m-0">
                             <!-- Created {humanizeDate(post.CreatedAt)} -->
-                            Updated {humanizeDate(post.UpdatedAt)}
+                            Updated: {humanizeDate(post.UpdatedAt)}
                         </span>
 
                     </div>
