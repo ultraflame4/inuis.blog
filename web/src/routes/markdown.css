@@ -40,9 +40,17 @@
     text-decoration: underline;
 }
 
+
 .cm-md-content a:not(:has(.cm-md-heading)) {
-    color: revert;
-    @apply underline
+    @apply text-link underline
+}
+
+.cm-md-content a:not(:has(.cm-md-heading)):hover {
+    @apply text-link-hover
+}
+
+.cm-md-content a:not(:has(.cm-md-heading)):visited {
+    @apply text-link-visited
 }
 
 .cm-md-content pre {
@@ -96,3 +104,5 @@
     content: "\201D";
     @apply font-bold ml-2 text-2xl text-ink-muted
 }
+
+

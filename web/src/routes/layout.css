@@ -57,6 +57,7 @@ hr {
     border-color: var(--color-divider);
 }
 
+
 @theme {
     /* Common */
     --color-danger: var(--color-red-600);
@@ -72,11 +73,15 @@ hr {
     --color-ink-light: #57534e;
     --color-ink-muted: #78716c;
 
-    /* Accent — warm amber for links, buttons, and interactive elements */
+    /* Accent — warm amber for buttons and interactive elements */
     --color-accent: #d97706;
     --color-accent-light: #fef3c7;
     --color-accent-dark: #92400e;
 
+    /* Anchor links */
+        --color-link: #b45309;
+        --color-link-hover: #92400e;
+        --color-link-visited: #a16207;
     /* Surfaces — warm off-white paper tones */
     --color-paper: #faf8f5;
     --color-paper-muted: #f0ede8;
@@ -96,6 +101,9 @@ hr {
 
 @media (prefers-color-scheme: dark) {
     :root {
+        /** Common */
+        --color-danger: var(--color-red-400);
+        --color-success: var(--color-green-300);
         /* Primary text — warm off-white */
         --color-ink: #f5f0eb;
         --color-ink-light: #d6d3d1;
@@ -106,6 +114,10 @@ hr {
         --color-accent-light: #451a03;
         --color-accent-dark: #fcd34d;
 
+        /* Anchor links */
+            --color-link: #fbbf24;
+            --color-link-hover: #fcd34d;
+            --color-link-visited: #d97706;
         /* Surfaces — warm dark stone tones */
         --color-paper: #1c1917;
         --color-paper-muted: #292524;
