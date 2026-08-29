@@ -10,9 +10,10 @@
 <main class="p-4">
     <p class="text-lg my-4 ring p-4">Hello <span class="italic">{data.user.Username}</span>, writing today?</p>
 
-    <div class="flex items-center classic">
-        <h2 class="mr-auto">Your Posts</h2>
-        <a href="/me/editor">New Post</a>
+    <div class="flex items-baseline classic gap-4">
+        <h2 >Your Posts</h2>
+        <div class="w-0 border bg-black h-4 "></div>
+        <a href="/me/editor" class="self-center">New Post</a>
     </div>
     <ul class="space-y-2 classic">
         {#each  data.user_posts.items as post, index}
