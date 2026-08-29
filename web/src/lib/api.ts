@@ -52,7 +52,7 @@ export namespace api {
         return app_meta;
     }
 
-    export async function listPosts(f: FetchLike, page: string | number): Promise<Paginated<any>> {
+    export async function listPosts(f: FetchLike, page: string | number): Promise<Paginated<Post>> {
         const resp = await f(`/api/me/posts?page=${page}`);
         if (!resp.ok) {
             console.error("Failed to fetch user posts. \nStatus: " + resp.status, "\nBody:\n" + await resp.text())
