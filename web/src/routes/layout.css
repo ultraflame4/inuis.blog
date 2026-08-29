@@ -20,7 +20,22 @@
     input.classic,
     .classic input,
     .classic button {
-        all: revert
+        @apply bg-paper-muted text-ink rounded-md border px-2 py-0.5 cursor-pointer
+    }
+
+    button.classic:hover,
+    .classic button:hover {
+        @apply bg-paper
+    }
+
+    button.classic:active,
+    .classic button:active {
+        @apply bg-paper-subtle
+    }
+
+    button.classic:disabled,
+    .classic button:disabled {
+        @apply bg-paper-muted cursor-not-allowed
     }
 
     main.classic {
@@ -40,7 +55,6 @@
     code.classic {
         @apply bg-paper-muted px-1 py-0.5 rounded-sm
     }
-
 }
 
 :root {
@@ -56,7 +70,6 @@
 hr {
     border-color: var(--color-divider);
 }
-
 
 @theme {
     /* Common */
@@ -99,7 +112,7 @@ hr {
     --default-ring-color: var(--color-accent);
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: light) {
     :root {
         /* Common */
         --color-danger: var(--color-red-400);
