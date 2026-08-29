@@ -22,6 +22,6 @@
 </header>
 {@render children()}
 
-<footer class="text-center my-4">
-    <p>&copy; { data.app_meta.brand_name } { new Date().getFullYear() } | Powered with 💖 by <a class="font-mono underline">nichepages</a> </p>
+<footer class="text-center my-4 text-sm">
+    <p>&copy; { data.app_meta.brand_name } { new Date().getFullYear() } | Powered with 💖 by <a class="font-mono underline" href="https://github.com/ultraflame4/bytesblog">bytesblog</a> </p>
 </footer>
