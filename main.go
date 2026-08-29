@@ -4,9 +4,9 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/teenyblog/internal/app"
-	"github.com/teenyblog/models"
-	"github.com/teenyblog/routers"
+	"github.com/ultraflame4/bytesblog/internal/app"
+	"github.com/ultraflame4/bytesblog/models"
+	"github.com/ultraflame4/bytesblog/routers"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )

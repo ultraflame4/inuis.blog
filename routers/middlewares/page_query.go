@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/teenyblog/routers/meta"
+	"github.com/ultraflame4/bytesblog/routers/meta"
 )
 
 // Extracts the pagination query parameters from the request and sets them on the context

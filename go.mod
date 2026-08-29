@@ -1,4 +1,4 @@
-module github.com/teenyblog
+module github.com/ultraflame4/bytesblog
 
 go 1.26.6
 

@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/teenyblog/internal/app"
+	"github.com/ultraflame4/bytesblog/internal/app"
 	"gorm.io/gorm"
 )
 

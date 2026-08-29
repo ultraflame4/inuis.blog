@@ -2,7 +2,7 @@ package meta
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/teenyblog/models"
+	"github.com/ultraflame4/bytesblog/models"
 )
 
 // Returns the current user and session (models) from the context.

@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/teenyblog/models"
-	"github.com/teenyblog/routers/meta"
+	"github.com/ultraflame4/bytesblog/models"
+	"github.com/ultraflame4/bytesblog/routers/meta"
 	"gorm.io/gorm"
 )
 

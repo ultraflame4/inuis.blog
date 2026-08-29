@@ -6,8 +6,9 @@ import (
 	"log/slog"
 	"os"
 	"strings"
+
 	"github.com/coreos/go-oidc"
-	"github.com/teenyblog/models"
+	"github.com/ultraflame4/bytesblog/models"
 	"golang.org/x/oauth2"
 	"gorm.io/gorm"
 )

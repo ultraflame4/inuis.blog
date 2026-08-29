@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/gin-gonic/gin"
-	"github.com/teenyblog/internal/app"
-	"github.com/teenyblog/routers/handlers"
-	"github.com/teenyblog/routers/middlewares"
+	"github.com/ultraflame4/bytesblog/internal/app"
+	"github.com/ultraflame4/bytesblog/routers/handlers"
+	"github.com/ultraflame4/bytesblog/routers/middlewares"
 	"gorm.io/gorm"
 )
 
