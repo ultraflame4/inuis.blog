@@ -1,5 +1,4 @@
 <script lang="ts">
-    import SvelteMarkdown from '@humanspeak/svelte-markdown'
     import { onMount } from 'svelte';
 	import { EditorView, basicSetup } from 'codemirror';
 	import { highlightSpecialChars } from '@codemirror/view';
@@ -138,7 +137,7 @@
 <nav class="px-4">
     <a href="/me">&lt&lt; Back</a>
 </nav>
-<main class="page-content-height grid gap-2 p-4" style="grid-template-rows: auto 1fr auto;">
+<main class="h-page-content grid gap-2 p-4 overflow-hidden" style="grid-template-rows: auto 1fr auto;">
 	<div class="flex items-center gap-1 flex-wrap">
 		<h2 class="font-bold">Title: {title}</h2>
 		<div class="ml-auto"></div>
@@ -178,7 +177,7 @@
 			}
 		</style>
 	</div>
-	<div id="preview" class="ring px-4 m-0 w-full overflow-hidden" class:hidden={!showPreview}>
+	<div id="preview" class="ring px-4 m-0 w-full overflow-auto" class:hidden={!showPreview}>
 	    <MarkdownContent source={preview_content} />
 	</div>
 	<div>

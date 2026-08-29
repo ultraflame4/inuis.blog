@@ -45,8 +45,11 @@
 body {
     min-height: 100vh;
 }
-.page-content-height {
+.min-h-page-content {
     min-height: calc(100vh - var(--navbar-height));
+}
+.h-page-content {
+    height: calc(100vh - var(--navbar-height));
 }
 
 @theme {
