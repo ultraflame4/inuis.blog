@@ -50,11 +50,11 @@
 }
 
 .cm-md-content code {
-    @apply bg-paper-muted rounded-md px-1 py-0.5
+    @apply bg-paper-muted rounded-md px-1 py-0.5 border mx-0.5
 }
 
 .cm-md-content pre code {
-    @apply p-0 bg-transparent
+    @apply p-0 bg-transparent border-none m-0
 }
 
 .cm-md-content table {
@@ -89,10 +89,10 @@
 
 .cm-md-content blockquote p::before {
     content: "\201C";
-    @apply font-bold mr-1
+    @apply font-bold mr-2 text-2xl text-ink-muted
 }
 
 .cm-md-content blockquote p::after {
     content: "\201D";
-    @apply font-bold ml-1
+    @apply font-bold ml-2 text-2xl text-ink-muted
 }
