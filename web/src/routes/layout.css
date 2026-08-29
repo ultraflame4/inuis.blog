@@ -115,9 +115,9 @@ hr {
         --color-accent-dark: #fcd34d;
 
         /* Anchor links */
-            --color-link: #fbbf24;
-            --color-link-hover: #fcd34d;
-            --color-link-visited: #d97706;
+        --color-link: #fbbf24;
+        --color-link-hover: #fcd34d;
+        --color-link-visited: #d97706;
         /* Surfaces — warm dark stone tones */
         --color-paper: #1c1917;
         --color-paper-muted: #292524;
