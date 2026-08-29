@@ -16,6 +16,11 @@ func InitRouter(db *gorm.DB) *gin.Engine {
 	handlers := handlers.NewApiHandler(db)
 	_api := r.Group("/api")
 	_api.Use(middlewares.PaginationQuery())
+
+	// These endpoints return information about the application
+	{
+		_api.GET("/meta", handlers.GetAppMeta)
+	}
 	{
 		_api.GET("/oidc/providers", handlers.ListLoginProviders)
 		_api.GET("/oidc/:oidc/login", handlers.StartOauthLoginFlow)

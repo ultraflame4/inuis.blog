@@ -18,7 +18,21 @@ export namespace api {
 
     }
 
+    export interface AppMeta {
+        brand_name: string;
+    }
+
     export type FetchLike = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
+
+    export async function fetchAppMeta(f: FetchLike): Promise<AppMeta> {
+        const resp = await f('/api/meta');
+        if (!resp.ok) {
+            console.error("Failed to fetch app meta. \nStatus: " + resp.status, "\nBody:\n" + await resp.text())
+            throw new Error('Failed to fetch app meta');
+        }
+        const app_meta = await resp.json() as AppMeta;
+        return app_meta;
+    }
 
     export async function listPosts(f: FetchLike, page: string | number): Promise<Paginated<any>> {
         const resp = await f(`/api/me/posts?page=${page}`);
