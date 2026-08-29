@@ -42,6 +42,9 @@
     --navbar-height: calc(13 * var(--spacing));
 }
 
+body {
+    min-height: 100vh;
+}
 .page-content-height {
     min-height: calc(100vh - var(--navbar-height));
 }
