@@ -18,6 +18,23 @@ export namespace api {
 
     }
 
+    export interface Post {
+        CreatedAt: string;
+        DeletedAt: string;
+        UpdatedAt: string;
+        // Title of post
+        Title: string
+        // Generated summary of post. (First few lines of the post)
+        Summary: string
+        // Contents of the post in markdown. This also includes the post title.
+        Content: string
+        // Author id of the post
+        UserID: number
+        // Author of the post
+        User: User
+
+    }
+
     export interface AppMeta {
         brand_name: string;
     }
@@ -104,4 +121,13 @@ export namespace api {
     }
 
 
+
+    export async function fetchPost(f: FetchLike, post_id: string): Promise<Post> {
+        const res = await f(`/api/posts/${post_id}`);
+        if (!res.ok) {
+            throw new Error('Failed to fetch post');
+        }
+        const data = await res.json();
+        return data["post"] as Post;
+    }
 }

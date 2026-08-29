@@ -12,10 +12,10 @@ import (
 // Get post for non-authenticated users
 func (a *ApiHandler) GetPublicPost(c *gin.Context) {
 	post_id := c.Param("id")
-	db := a.db
+	db := a.db.WithContext(c.Request.Context())
 
 	var post models.Post
-	err := db.First(&post, post_id).Error
+	err := db.Preload("User").First(&post, post_id).Error
 	if err == nil && post.AllowPublic {
 		c.JSON(http.StatusOK, gin.H{
 			"post": post,
