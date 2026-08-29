@@ -3,6 +3,10 @@
 
 @layer base {
 
+    html {
+        @apply bg-paper text-ink;
+    }
+
     .classic *,
     .classic {
         font-family: revert;
@@ -46,11 +50,12 @@
 
 * {
     box-sizing: border-box;
+    
 }
 
 
 @theme {
-    /* Existing */
+    /* Common */
     --color-danger: var(--color-red-600);
 
     /*
@@ -86,6 +91,13 @@
     /* Borders / dividers */
     --color-divider: #d6d3d1;
     --color-divider-light: #e7e5e4;
+
+    /*
+     * Override Tailwind v4 default style variables.
+     * These apply globally — bare `border`, `ring`, etc. pick up the theme.
+     */
+    --default-border-color: var(--color-divider);
+    --default-ring-color: var(--color-accent);
 }
 
 /* Provides just enough min height to push footer all the way to the bottom.*/
@@ -97,4 +109,8 @@
 /* Makes the element fill the remaining height of the page after navbar*/
 @utility h-page-content {
     height: calc(100svh - var(--navbar-height));
+}
+
+@utility border {
+    border-color: var(--color-divider);
 }

@@ -177,7 +177,7 @@
 			}
 		</style>
 	</div>
-	<div id="preview" class="ring px-4 m-0 w-full overflow-auto" class:hidden={!showPreview}>
+	<div id="preview" class="border px-4 m-0 w-full overflow-auto" class:hidden={!showPreview}>
 	    <MarkdownContent source={preview_content} />
 	</div>
 	<div class="classic flex flex-wrap">
