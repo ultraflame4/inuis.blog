@@ -1,7 +1,8 @@
 <script lang="ts">
 	import SvelteMarkdown from '@humanspeak/svelte-markdown';
-	import { onMount } from 'svelte';
+	import { codeToHtml, bundledLanguages } from 'shiki/dist/bundle-web.mjs';
 	
+
 	
 	interface Props {
 		source: string;
@@ -9,28 +10,23 @@
 
 	const { source }: Props = $props();
 
-	$effect( () => {
-	    console.log("highlightCode", source);
-		window.highlightCode();
-	});
-</script>
 
-
-
-<div class="cm-md-content h-fit max-w-full overflow-hidden">
-    <script lang="ts" type="module">
-        const { codeToHtml } = await import( 'https://esm.sh/shiki@3.0.0');
-        function highlightCode() {
-            Array.from(document.querySelectorAll('.shiki-highlightme')).map(async (el) => {
-                const lang = el.getAttribute('data-lang');
+	function highlightCode() {
+	    const langs = new Set(Object.keys(bundledLanguages));
+        Array.from(document.querySelectorAll('.shiki-highlightme')).map(async (el) => {
+            
+                let lang = el.getAttribute('data-lang') ?? '';
            	    console.log("shiki", lang);
-                if (!lang) return;
-                if (lang === 'no-highlight') return;
-                const text = el.querySelector('code').textContent;
+
+                if (!langs.has(lang)) {
+                    lang = 'text';
+                }
+                
+                const text = el.querySelector('code')!.textContent;
                 el.classList.remove('shiki-highlightme');
                 el.classList.add('shiki-highlighted');
                 try{
-                    const html = await codeToHtml(text, { lang, theme: 'rose-pine' });
+                    const html = await codeToHtml(text, { lang, theme: 'github-dark' });
                     console.log("html", html);
                     el.outerHTML = html;
                 } catch (e) {
@@ -39,8 +35,17 @@
       
             });
         }
-        window.highlightCode = highlightCode;
-    </script>
+	
+	$effect( () => {
+	    console.log("highlightCode", source);
+		highlightCode()
+	});
+</script>
+
+
+
+<div class="cm-md-content h-fit max-w-full overflow-hidden">
+
 	<SvelteMarkdown {source}>
 		{#snippet heading({ depth, children, text, slug })}
 			<a href="#__{slug(text)}">
