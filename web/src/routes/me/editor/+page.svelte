@@ -180,9 +180,9 @@
 	<div id="preview" class="ring px-4 m-0 w-full overflow-auto" class:hidden={!showPreview}>
 	    <MarkdownContent source={preview_content} />
 	</div>
-	<div>
+	<div class="classic flex flex-wrap">
 	
-		<button class="classic text-danger disabled:text-inherit"  disabled={!can_delete} onclick={delete_post}>
+		<button class="text-danger disabled:text-inherit"  disabled={!can_delete} onclick={delete_post}>
 			
 			{#if published}
 				Cannot delete published posts. Make it private first.
@@ -192,7 +192,12 @@
 				Delete Post
 			{/if}
 		</button>
+		<div class="my-0 mr-auto"></div>
+		{#if published}
+			<a href="/posts/{post_id}" class="my-0">View published post</a>
+		{/if}
 	</div>
+	<br/>
 </main>
 
 <dialog id="confirmDialog">
