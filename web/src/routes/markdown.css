@@ -46,7 +46,7 @@
 }
 
 .cm-md-content pre {
-    @apply bg-neutral-200 p-2 rounded-md my-4
+    @apply bg-neutral-200 p-2 rounded-md my-4 overflow-auto
 }
 
 .cm-md-content code {
@@ -72,4 +72,27 @@
 .cm-md-content hr {
     border: none;
     @apply border-b border-black my-4
+}
+
+.cm-md-content blockquote {
+    @apply pl-4 pt-2 relative border rounded-sm
+}
+
+.cm-md-content blockquote::before {
+    content: "";
+    @apply border border-2 absolute top-0 left-0 bottom-0 rounded-2xl
+}
+
+/*.cm-md-content blockquote p {
+    @apply my-2
+}*/
+
+.cm-md-content blockquote p::before {
+    content: "\201C";
+    @apply font-bold mr-1
+}
+
+.cm-md-content blockquote p::after {
+    content: "\201D";
+    @apply font-bold ml-1
 }
