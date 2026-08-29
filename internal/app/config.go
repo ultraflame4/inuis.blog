@@ -51,7 +51,7 @@ func readConfigFromEnv() Config {
 		ProxiedAddress: getEnvOrNil("PROXIED_ADDR"),
 		DataDirectory: getEnv("DATA_DIR", "/data"),
 		MaxSessionAge: sessionMaxAge(),
-		BrandName: getEnv("BRAND", "TeenyBlog"),
+		BrandName: getEnv("BRAND_NAME", "TeenyBlog"),
 	}
 }
 var (
