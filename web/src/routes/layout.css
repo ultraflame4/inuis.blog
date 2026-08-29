@@ -19,7 +19,7 @@
         all: revert
     }
     main.classic {
-        @apply mx-4
+        @apply m-0 px-4 box-border flow-root
     }
 
     hr {
@@ -40,18 +40,25 @@
 
 :root {
     --navbar-height: calc(13 * var(--spacing));
+    --footer-height: calc(12 * var(--spacing));
 }
 
-body {
-    min-height: 100vh;
+* {
+    box-sizing: border-box;
 }
-.min-h-page-content {
-    min-height: calc(100vh - var(--navbar-height));
-}
-.h-page-content {
-    height: calc(100vh - var(--navbar-height));
-}
+
 
 @theme {
     --color-danger: var(--color-red-600)
+}
+
+/* Provides just enough min height to push footer all the way to the bottom.*/
+@utility min-h-page-content {
+    --temp-diff: calc(var(--footer-height) + var(--navbar-height));
+    min-height: calc(100svh - var(--temp-diff));
+}
+
+/* Makes the element fill the remaining height of the page after navbar*/
+@utility h-page-content {
+    height: calc(100svh - var(--navbar-height));
 }

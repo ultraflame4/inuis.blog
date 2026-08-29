@@ -8,8 +8,8 @@
 
 </script>
 
-<div class="flex w-full">
-	<main class="mx-auto ring p-8 flex flex-col fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 gap-4">
+<div class="w-full min-h-page-content flex items-center justify-center">
+	<main class="mx-auto ring p-8 flex flex-col gap-4">
 		<h2 class="classic my-0">Log In</h2>
 		<span>Hello there!</span>
 		<p>Sign in with your preferred provider below.</p>

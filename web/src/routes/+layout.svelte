@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
-<header class="mx-4 flex items-center gap-2" style="height: var(--navbar-height);">
+<header class="mx-4 flex items-center gap-2 h-(--navbar-height)">
     <h1 class="text-2xl font-bold"><a href="/">{ data.app_meta.brand_name }</a></h1>
 
     
@@ -22,6 +22,6 @@
 </header>
 {@render children()}
 
-<footer class="text-center my-4 text-sm">
+<footer class="text-center text-sm h-(--footer-height) flex items-center justify-center">
     <p>&copy; { data.app_meta.brand_name } { new Date().getFullYear() } | Powered with 💖 by <a class="font-mono underline" href="https://github.com/ultraflame4/bytesblog">bytesblog</a> </p>
 </footer>
