@@ -13,7 +13,7 @@
     {#if !!data.user}
         <a class="classic m-0" href="/me">/me</a>
         <div class="ml-auto"></div>
-        <a class="classic m-0" href="/me/settings">{data.user.Username}</a>
+        <a class="classic text-ink m-0" href="/me/settings">{data.user.Username}</a>
     {:else}
         <div class="ml-auto"></div>
         <a class="classic m-0" href="/signup">Signup</a>

@@ -20,22 +20,22 @@
     input.classic,
     .classic input,
     .classic button {
-        @apply bg-paper-muted text-ink rounded-md border px-2 py-0.5 cursor-pointer
+        @apply bg-paper-muted text-ink rounded-md border px-2 py-0.5
     }
 
     button.classic:hover,
     .classic button:hover {
-        @apply bg-paper
+        @apply bg-paper-subtle
     }
 
     button.classic:active,
     .classic button:active {
-        @apply bg-paper-subtle
+        @apply bg-paper
     }
 
     button.classic:disabled,
     .classic button:disabled {
-        @apply bg-paper-muted cursor-not-allowed
+        @apply bg-paper cursor-not-allowed
     }
 
     main.classic {
@@ -48,12 +48,26 @@
 
     nav>a {
         text-decoration: revert;
-        color: revert
+        /*color: revert*/
     }
 
     .classic code,
     code.classic {
         @apply bg-paper-muted px-1 py-0.5 rounded-sm
+    }
+
+    .classic a,
+    a.classic {
+        @apply text-link underline;
+    }
+
+    .classic a,
+    a.classic:hover {
+        @apply text-link-hover;
+    }
+
+    .classic {
+        @apply transition-all
     }
 }
 
@@ -64,11 +78,15 @@
 
 * {
     box-sizing: border-box;
-
+    transition: inherit;
 }
 
 hr {
     border-color: var(--color-divider);
+}
+
+button {
+    @apply cursor-pointer
 }
 
 @theme {
@@ -112,7 +130,7 @@ hr {
     --default-ring-color: var(--color-accent);
 }
 
-@media (prefers-color-scheme: light) {
+@media (prefers-color-scheme: dark) {
     :root {
         /* Common */
         --color-danger: var(--color-red-400);
