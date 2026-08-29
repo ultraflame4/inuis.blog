@@ -30,6 +30,7 @@
 	"dependencies": {
 		"@codemirror/lang-html": "^6.4.12",
 		"@codemirror/lang-markdown": "^6.5.2",
+		"@codemirror/language-data": "^6.5.2",
 		"@codemirror/view": "^6.43.9",
 		"@ddietr/codemirror-themes": "^1.5.2",
 		"@humanspeak/svelte-markdown": "^1.9.0",

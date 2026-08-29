@@ -12,7 +12,8 @@
 	import { githubLight } from '@ddietr/codemirror-themes/github-light';
 	import MarkdownContent from '$lib/MarkdownContent.svelte';
 	import { useMediaQuery } from '$lib/utils.svelte.js';
-
+	import { languages  } from '@codemirror/language-data';
+	
 	const { data } = $props();
 
 	let post_id = $derived(data.post_id);
@@ -48,7 +49,9 @@
 			extensions: [
 				basicSetup,
 				highlightSpecialChars(),
-				markdown({}),
+				markdown({
+					codeLanguages: languages
+				}),
 				headingPlugin(),
 				EditorView.updateListener.of((update) => {
 					if (update.docChanged) {
@@ -150,7 +153,7 @@
 </script>
 
 <svelte:window on:beforeunload={warn_unsaved} />
-<nav class="px-4 classic">
+<nav class="classic px-4">
 	<a href="/me">&lt&lt; Back</a>
 </nav>
 <main
@@ -200,11 +203,14 @@
 			.cm-editor {
 				height: 100%;
 				width: 100%;
-		
 			}
 		</style>
 	</div>
-	<div id="preview" class="m-0 w-full overflow-auto border rounded-lg px-4" class:hidden={!showPreview}>
+	<div
+		id="preview"
+		class="m-0 w-full overflow-auto rounded-lg border px-4"
+		class:hidden={!showPreview}
+	>
 		<MarkdownContent source={preview_content} />
 	</div>
 	<div class="classic flex flex-wrap">
