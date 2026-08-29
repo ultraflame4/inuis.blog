@@ -9,7 +9,7 @@
 </script>
 
 <div class="w-full min-h-page-content flex items-center justify-center">
-	<main class="mx-auto ring p-8 flex flex-col gap-4">
+	<main class="mx-auto border border-ink p-8 flex flex-col gap-4">
 		<h2 class="classic my-0">Log In</h2>
 		<span>Hello there!</span>
 		<p>Sign in with your preferred provider below.</p>

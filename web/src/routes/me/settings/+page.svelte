@@ -65,7 +65,7 @@
             <li class="flex items-center gap-4">
                 {#if added_providers.includes(p)}
                     <OidcLoginButton
-                        class="text-green-700"
+                        class="text-success"
                         provider_id={p} intent={"add_identity"} prefix="Connected" disabled />
                     <button onclick={()=>disconnectProvider(p)} class="text-danger cursor-pointer underline">Disconnect</button>
                 {:else}

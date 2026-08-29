@@ -24,8 +24,8 @@
 
 <a
 	href={getHref()}
-	class="block w-48 rounded-lg p-2 text-center font-semibold ring {className}"
-	class:opacity-75={disabled}
+	class="block w-48 rounded-lg p-2 text-center font-semibold border border-ink data-[disabled]:border-divider {className}"
+	data-disabled={disabled}
 >
 	{ prefix ?? "Sign in with"}
 	<span class="capitalize">{provider}</span>
