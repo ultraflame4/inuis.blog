@@ -6,9 +6,28 @@ No trackers, minimal JavaScript and some CSS
 
 This is a minimal, self-hostable blogging platform for developers, writers, and anyone else who wants to share their thoughts, in a fast and simple way.
 
-# Notices
-- Users can only login/signup and be authenticated via an external Identity Provider like Google.
+# Setup Behaviour
 
+1. On first startup, the server will generate a single-use invite code.
+2. Use this code to sign up as the first admin user.
+
+# Notices
+
+## User Signup Behaviour
+Users can only login/signup and be authenticated via an external Identity Provider like Google.
+
+Server owners can enable "invite only" mode, which requires invite codes for all signups.
+
+If there are no admin users, invite codes are required even when "invite only" mode is not enabled.
+
+### Invite Codes
+- On startup, server will check for presence of admin users.
+- If no admin users are found, invite codes are required to sign up.
+- A single-use \[admin\] invite code is also generated / retrieved from the database.
+    - This code is used to create the first (admin) user.
+
+#### Single-Use Invite Codes
+- Invite codes are single use by default.
 
 # Configuration
 
