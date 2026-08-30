@@ -244,7 +244,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 			inviteCode := app.ConsumeInviteCode(a.db, c.Request.Context(), inviteCode_s)
 			if inviteCode == nil {
 				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-					"error": "Invite code has expired or invalid.",
+					"error": "Invite code has expired or is invalid.",
 				})
 				return
 			}

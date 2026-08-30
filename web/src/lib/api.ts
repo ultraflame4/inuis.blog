@@ -38,6 +38,7 @@ export namespace api {
 
     export interface AppMeta {
         brand_name: string;
+        requires_invite_code: boolean;
     }
 
     export type FetchLike = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
