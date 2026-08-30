@@ -32,6 +32,9 @@ type Config struct {
 
 	// Brand name to use for the application
 	BrandName string
+
+	// New users need an invite code to create an account
+	RequiresInviteCode bool
 }
 
 

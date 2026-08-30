@@ -56,6 +56,10 @@ func (*ApiHandler) StartOauthLoginFlow(c *gin.Context) {
 	}
 	setCallbackCookie(c, "state", state)
 
+	if inviteCode, exists := c.GetQuery("invite_code"); exists {
+		setCallbackCookie(c, "inviteCode", inviteCode)
+	}
+	
 	intent := c.Query("intent")
 	setCallbackCookie(c, "intent", intent)
 
@@ -215,6 +219,27 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 
 	// No identities with this email found. Create a new user.
 	if len(existing) == 0 {
+
+		// Check for invite code requirements
+		if a.config.RequiresInviteCode {
+			slog.Info("Invite code required.")
+
+			inviteCode, err := c.Cookie("inviteCode")
+			if err != nil || inviteCode == "" {
+				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+					"error": "Invite code required.",
+				})
+				return
+			}
+
+			if !app.ConsumeInviteCode(a.db, c.Request.Context(), inviteCode) {
+				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+					"error": "Invite code has expired or invalid.",
+				})
+				return
+			}
+		}
+		
 		slog.Info("Creating new user for email: " + userInfo.Email)
 		// Create new user
 		email_parts := strings.SplitN(userInfo.Email, "@", 2)
