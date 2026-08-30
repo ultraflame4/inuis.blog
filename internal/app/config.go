@@ -90,7 +90,7 @@ func (c *Config) ServerAddress() string {
 // ```
 func (c *Config) PublicServerAddr() string {
 	if c.ProxiedAddress != nil{
-		return *c.ProxiedAddress
+		return strings.TrimSuffix(*c.ProxiedAddress, "/")
 	}
 	return c.ServerAddress()
 }
