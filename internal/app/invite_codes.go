@@ -17,17 +17,18 @@ import (
 func ConsumeInviteCode(db *gorm.DB, ctx context.Context, code string) *models.SignupInviteCode {
 	var inviteCode models.SignupInviteCode
 	if err := db.WithContext(ctx).Where("code = ?", code).First(&inviteCode).Error; err != nil {
-		expired := inviteCode.IsExpired()
-		// Delete the invite code from the database if expired or is single use.
-		if expired || inviteCode.SingleUse {
-			db.WithContext(ctx).Delete(inviteCode)
-		}
-		if expired {
-			return nil
-		}
-		return &inviteCode
+		slog.Error("Failed to find invite code", "error", err)
+		return nil
 	}
-	return nil
+	expired := inviteCode.IsExpired()
+	// Delete the invite code from the database if expired or is single use.
+	if expired || inviteCode.SingleUse {
+		db.WithContext(ctx).Delete(inviteCode)
+	}
+	if expired {
+		return nil
+	}
+	return &inviteCode
 }
 
 // Generates and inserts a new invite code into the database.

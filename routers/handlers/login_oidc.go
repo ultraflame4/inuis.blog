@@ -232,8 +232,6 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 
 		// Check for invite code requirements
 		if a.config.RequireInviteCode {
-			slog.Info("Invite code required.")
-
 			inviteCode_s, err := c.Cookie("inviteCode")
 			if err != nil || inviteCode_s == "" {
 				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
@@ -245,6 +243,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 			if inviteCode == nil {
 				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 					"error": "Invite code has expired or is invalid.",
+					"invite_code": inviteCode_s,
 				})
 				return
 			}
