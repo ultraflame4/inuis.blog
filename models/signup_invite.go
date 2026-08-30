@@ -12,7 +12,7 @@ type SignupInviteCode struct {
 	Validity  *time.Duration
 	SingleUse  bool `gorm:"default:true"`
 	// Additional metadata for specific use cases
-	Metadata  string
+	Metadata  *string
 }
 
 func (s *SignupInviteCode) IsExpired() bool {

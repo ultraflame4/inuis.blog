@@ -29,7 +29,7 @@ func ConsumeInviteCode(db *gorm.DB, ctx context.Context, code string) bool {
 // Generates and inserts a new invite code into the database.
 // 
 // Returns the generated invite code, or an empty string if the operation fails.
-func GenerateInviteCode(db *gorm.DB, ctx context.Context, validity *time.Duration, singleUse bool) (string, error){
+func GenerateInviteCode(db *gorm.DB, ctx context.Context, validity *time.Duration, singleUse bool, metadata *string) (string, error){
 	const charset = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 	code := make([]byte, 16)
 	for i := range code {
@@ -44,6 +44,7 @@ func GenerateInviteCode(db *gorm.DB, ctx context.Context, validity *time.Duratio
 	inviteCode.Code = string(code)
 	inviteCode.Validity = validity
 	inviteCode.SingleUse = singleUse
+	inviteCode.Metadata = metadata
 	if err := db.WithContext(ctx).Create(&inviteCode).Error; err != nil {
 		return "", err
 	}
