@@ -15,15 +15,14 @@
 		view?: EditorView;
 		initialContent?: string;
 		contentChanged?: (view: EditorView) => void;
+		hidden?: boolean;
 	}
 
 
-	let {  view = $bindable(), initialContent, contentChanged }: Props = $props();
+	let {  view = $bindable(), initialContent, contentChanged, hidden }: Props = $props();
 
 
 	let showPreview = $state(false);
-	let title = $state('');
-	// let view = $state<EditorView | null>(null);
 
 	const theme = new Compartment();
 	const darkTheme = githubDark;
@@ -70,7 +69,7 @@
 </script>
 
 
-<div id="editor" class:hidden={showPreview} class="w-full overflow-hidden rounded-lg border grid relative group">
+<div id="editor" class:hidden={hidden} class="w-full overflow-hidden rounded-lg border grid relative group" >
     <p class="absolute top-2 right-2 z-10 bg-paper-subtle border-paper border px-2 py-1 rounded-lg hover:opacity-0 text-sm invisible group-focus-within:visible">
         Press <kbd>ESC</kbd>+<kbd>Tab</kbd> escape Editor focus.
     </p>

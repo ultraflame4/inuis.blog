@@ -158,6 +158,7 @@
 	</div>
 	<Editor
 		bind:view={view}
+		hidden={showPreview}
 		initialContent={data.content}
 		contentChanged={(view)=> {
 			unsaved_changes = true;
