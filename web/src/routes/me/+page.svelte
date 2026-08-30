@@ -24,6 +24,7 @@
 
 		<select
 			id="posts-filter"
+			class="relative bottom-0.5"
 			onchange={(e) => update_query('filter', e.target.value)}
 			value={page.url.searchParams.get('filter') ?? 'all'}
 		>
@@ -32,7 +33,7 @@
 			<option value="private">Private</option>
 		</select>
 
-		<div class="h-4 w-0 border bg-black"></div>
+		<div class="h-4 w-0 border bg-black mr-auto sm:mr-0"></div>
 		<a href="/me/editor" class="self-center">/New Post</a>
 	</div>
 	<ul class="flex flex-wrap items-center justify-center gap-4 sm:justify-start">
