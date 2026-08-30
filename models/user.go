@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"gorm.io/gorm"
@@ -10,6 +11,8 @@ import (
 type User struct {
 	gorm.Model
 	Username string
+	// Metadata string delimited by semicolons
+	Roles string
 }
 
 func (u *User) IsDeleted() bool {
@@ -48,6 +51,24 @@ func (s *UserSession) IsElevated() bool {
 		return false
 	}
 	return time.Since(*s.ElevatedAt) < 30*time.Second
+}
+
+
+func (u *User) HasRole(role string) bool {
+	if !strings.HasSuffix(role, ";") {
+		role += ";"
+	}
+	return strings.Contains(u.Roles, role)
+}
+
+func (u *User) AddRole(role string) {
+	if u.HasRole(role){
+		return
+	}
+	if strings.HasSuffix(role, ";") {
+		role += ";"
+	}
+	u.Roles += role
 }
 
 func (s *UserSession) ElevateNow(db *gorm.DB, ctx context.Context) {
