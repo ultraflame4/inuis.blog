@@ -11,6 +11,8 @@ type SignupInviteCode struct {
 	// Longest Validity period for invite code is 7 days
 	Validity  *time.Duration
 	SingleUse  bool `gorm:"default:true"`
+	// Additional metadata for specific use cases
+	Metadata  string
 }
 
 func (s *SignupInviteCode) IsExpired() bool {
