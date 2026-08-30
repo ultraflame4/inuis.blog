@@ -2,6 +2,7 @@
 	import SvelteMarkdown from '@humanspeak/svelte-markdown';
 	import { codeToHtml, bundledLanguages } from 'shiki/dist/bundle-web.mjs';
 	import CopyButton from './CopyButton.svelte';
+	import type { Nullish } from './utils';
 
 	interface Props {
 		source: string;
@@ -24,7 +25,7 @@
 			el.classList.add('shiki-highlighted');
 			try {
 				const html = await codeToHtml(text, { lang, theme: 'github-dark' });
-				console.log('html', html);
+				// console.log('html', html);
 				el.outerHTML = html;
 			} catch (e) {
 				console.log('shiki', e);
@@ -32,9 +33,17 @@
 		});
 	}
 
+	function stripAlertPrefix(text: Nullish<string>) {
+		if (!text) return null;
+		return text.replace(/\[!.*?\]\s*/, '');
+	}
+
 	$effect(() => {
 		console.log('highlightCode', source);
 		highlightCode();
+		document.querySelectorAll('blockquote:has(> .cm-md-alert) > p:not(.cm-md-alert)').forEach((el) => {
+			el.innerHTML = stripAlertPrefix(el.innerHTML) ?? '';
+		});
 	});
 
 
@@ -50,10 +59,22 @@
 		selection.removeAllRanges()
 		selection.addRange(range)
 	}
+
+
+	function extractAlert(text: Nullish<string>) {
+	    if (!text) return null;
+	    const s = text.toLowerCase()
+		if (s.startsWith('[!note]')) return "note";
+		if (s.startsWith('[!tip]')) return "tip";
+		if (s.startsWith('[!important]')) return "important";
+		if (s.startsWith('[!warning]')) return "warn";
+		if (s.startsWith('[!caution]')) return "caution";
+		return null
+	}
 </script>
 
-<div class="cm-md-content h-fit max-w-full overflow-hidden">
-	<SvelteMarkdown {source}>
+<div class="cm-md-content h-fit max-w-full overflow-hidden" >
+	<SvelteMarkdown {source} >
 		{#snippet heading({ depth, children, text, slug })}
 			<a href="#__{slug(text)}">
 				{#if depth === 1}
@@ -93,6 +114,21 @@
 
 				<pre class="shiki-highlightme" data-lang={lang}><code>{text}</code></pre>
 			</div>
+		{/snippet}
+		{#snippet image({text, href, title})}
+			<img src={href} alt={text} title={title} />
+		{/snippet}
+		{#snippet html_img({attributes})}
+			<img {...attributes} style:height="{attributes['height']}px;" style:width="{attributes['width']}px;"/>
+		{/snippet}
+		{#snippet blockquote({text, raw, children})}
+			<blockquote>
+			    {#if extractAlert(text)}
+			        {@const alert_tip = extractAlert(text)}
+					<p class="cm-md-alert alert-{alert_tip}">{alert_tip}</p>
+				{/if}
+			    {@render children?.()}
+			</blockquote>
 		{/snippet}
 	</SvelteMarkdown>
 </div>

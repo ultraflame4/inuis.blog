@@ -4,9 +4,12 @@
     font-size: revert;
 }
 
-.cm-md-content *:not(.md-escape) {
-    all: revert;
-    margin: 0
+@layer markdown-revert {
+    .cm-md-content *:not(.md-escape) {
+        all: revert;
+        margin: 0
+    }
+
 }
 
 .cm-md-content p {
@@ -83,26 +86,62 @@
 }
 
 .cm-md-content blockquote {
-    @apply pl-4 pt-2 relative border rounded-sm
+    --color: var(--color-divider);
+    @apply pl-4 pt-2 relative border border-(--color) rounded-sm;
+    }
+    
+    .cm-md-content blockquote>blockquote {
+    
+        @apply mb-4
 }
 
 .cm-md-content blockquote::before {
     content: "";
-    @apply border border-2 absolute top-0 left-0 bottom-0 rounded-2xl
+    @apply border border-(--color) border-2 absolute top-0 left-0 bottom-0
 }
 
 /*.cm-md-content blockquote p {
     @apply my-2
 }*/
 
-.cm-md-content blockquote p::before {
+.cm-md-content blockquote p:nth-child(1):not(.cm-md-alert)::before {
     content: "\201C";
     @apply font-bold mr-2 text-2xl text-ink-muted
 }
 
-.cm-md-content blockquote p::after {
+.cm-md-content blockquote p:nth-child(1):not(.cm-md-alert)::after {
     content: "\201D";
     @apply font-bold ml-2 text-2xl text-ink-muted
 }
 
+.cm-md-alert {
+    @apply capitalize font-bold text-(--color);
+}
 
+.cm-md-content blockquote:has(> .alert-note) {
+    --color: var(--color-ink);
+}
+
+.cm-md-content blockquote:has(> .alert-tip) {
+    --color: var(--color-success);
+}
+
+.cm-md-content blockquote:has(> .alert-important),
+.cm-md-content blockquote:has(> .alert-caution) {
+    --color: var(--color-danger);
+}
+
+.cm-md-content blockquote:has(> .alert-warn) {
+    --color: var(--color-warning);
+}
+
+
+
+.cm-md-content img {
+    /*max-width: 100%;*/
+    @apply h-auto max-w-full rounded-md p-0.5
+}
+
+.cm-md-content kbd {
+    @apply inline-block
+}

@@ -90,14 +90,15 @@ button {
 }
 
 kbd {
-    @apply bg-paper-muted px-1.5 pt-0.5 rounded-sm border-black border font-mono text-xs;
-    -webkit-box-shadow: 1px 2px 0px 0px #000000;
-    box-shadow: 1px 2px 0px 0px #000000;
+    @apply bg-paper-muted px-1 mx-0.5 rounded-sm border-ink-muted border font-mono text-xs;
+        -webkit-box-shadow: 1px 1px 0px 0px var(--color-ink-muted);
+        box-shadow: 1px 1px 0px 0px var(--color-ink-muted);
 
 }
 @theme {
     /* Common */
     --color-danger: var(--color-red-600);
+    --color-warning: var(--color-yellow-700);
     --color-success: var(--color-green-600);
 
     /*
@@ -141,7 +142,7 @@ kbd {
         /* Common */
         --color-danger: var(--color-red-400);
         --color-success: var(--color-green-300);
-
+        --color-warning: var(--color-yellow-400);
         /* Primary text — cool muted gray */
         --color-ink: #e2e8f0;
         --color-ink-light: #cbd5e1;
