@@ -4,7 +4,7 @@
     font-size: revert;
 }
 
-.cm-md-content * {
+.cm-md-content *:not(.md-escape) {
     all: revert;
     margin: 0
 }
@@ -53,7 +53,7 @@
     @apply text-link-visited
 }
 
-.cm-md-content pre {
+.cm-md-content pre:not(.md-escape) {
     @apply bg-paper-muted p-2 rounded-md my-4 overflow-auto
 }
 
