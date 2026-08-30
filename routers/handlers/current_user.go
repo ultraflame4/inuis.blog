@@ -66,6 +66,7 @@ func (a *ApiHandler) LogoutEverywhere(c *gin.Context) {
 func (a *ApiHandler) ListPosts(c *gin.Context) {
 
 	ctx := c.Request.Context()
+	filterQuery := strings.ToLower(c.Query("filter"))
 	pageQuery := meta.GetPagination(c)
 	user, _ := meta.GetSession(c)
 	db := a.db
@@ -79,10 +80,18 @@ func (a *ApiHandler) ListPosts(c *gin.Context) {
 		return
 	}
 
-	posts, err := sql.
+	sqlQuery := sql.
 		Limit(pageQuery.Limit).
-		Offset(pageQuery.Offset()).
-		Find(c.Request.Context())
+		Offset(pageQuery.Offset())
+
+
+	if filterQuery == "published" {
+		sqlQuery = sqlQuery.Where("allow_public = ?", true)
+	} else if filterQuery == "private" {
+		sqlQuery = sqlQuery.Where("allow_public = ?", false)
+	}
+
+	posts, err := sqlQuery.Find(c.Request.Context())
 
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)

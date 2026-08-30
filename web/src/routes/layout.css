@@ -84,7 +84,9 @@
 hr {
     border-color: var(--color-divider);
 }
-
+.classic select {
+    @apply border px-1.5 p-1 rounded-full bg-paper-muted
+}
 button {
     @apply cursor-pointer
 }

@@ -33,6 +33,7 @@ export namespace api {
         UserID: number
         // Author of the post
         User: User
+        AllowPublic: boolean
 
     }
 
@@ -53,8 +54,11 @@ export namespace api {
         return app_meta;
     }
 
-    export async function listPosts(f: FetchLike, page: string | number): Promise<Paginated<Post>> {
-        const resp = await f(`/api/me/posts?page=${page}`);
+    export async function listPosts(f: FetchLike, page: string | number, filter?: string): Promise<Paginated<Post>> {
+
+        const params = new URLSearchParams({ page: page.toString(), filter: filter ?? "" });
+
+        const resp = await f(`/api/me/posts?${params.toString()}`);
         if (!resp.ok) {
             console.error("Failed to fetch user posts. \nStatus: " + resp.status, "\nBody:\n" + await resp.text())
             throw new Error('Failed to fetch user posts');
