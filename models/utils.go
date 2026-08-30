@@ -10,5 +10,6 @@ func Migrate(db *gorm.DB) error {
 		&UserIdentity{},
 		&UserSession{},
 		&Post{},
+		&SignupInviteCode{},
 	)
 }

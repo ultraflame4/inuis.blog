@@ -1,6 +1,7 @@
 package models
 
 import (
+	"strings"
 	"time"
 )
 
@@ -11,8 +12,9 @@ type SignupInviteCode struct {
 	// Longest Validity period for invite code is 7 days
 	Validity  *time.Duration
 	SingleUse  bool `gorm:"default:true"`
-	// Additional metadata for specific use cases
-	Metadata  *string
+	// Roles to grant to the user when they sign up. Note that this should be a semicolon-separated list of roles.
+	// Needs to also be suffixed with ";"
+	GrantRoles  *string
 }
 
 func (s *SignupInviteCode) IsExpired() bool {
@@ -27,3 +29,12 @@ func (s *SignupInviteCode) IsExpired() bool {
 	return false
 }
 
+// Roles to grant to the user when they sign up. Don't need to be a semicolon-separated list.
+func (s *SignupInviteCode) SetRoles(roles []string) {
+	if len(roles) == 0 {
+		s.GrantRoles = nil
+		return
+	}
+	rs := strings.Join(roles, ";") + ";"
+	s.GrantRoles = &rs
+}
