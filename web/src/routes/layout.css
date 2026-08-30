@@ -89,6 +89,12 @@ button {
     @apply cursor-pointer
 }
 
+kbd {
+    @apply bg-paper-muted px-1.5 pt-0.5 rounded-sm border-black border font-mono text-xs;
+    -webkit-box-shadow: 1px 2px 0px 0px #000000;
+    box-shadow: 1px 2px 0px 0px #000000;
+
+}
 @theme {
     /* Common */
     --color-danger: var(--color-red-600);

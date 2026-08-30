@@ -1,18 +1,13 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { EditorView, basicSetup } from 'codemirror';
-	import { highlightSpecialChars } from '@codemirror/view';
-	import { Compartment } from '@codemirror/state';
-	import { markdown } from '@codemirror/lang-markdown';
-	import { headingPlugin } from '$lib/editor';
+	
+	import { EditorView } from 'codemirror';
 	import { asFormData } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import { api } from '$lib/api.js';
-	import { githubDark } from '@ddietr/codemirror-themes/github-dark';
-	import { githubLight } from '@ddietr/codemirror-themes/github-light';
+	
 	import MarkdownContent from '$lib/MarkdownContent.svelte';
-	import { useMediaQuery } from '$lib/utils.svelte.js';
-	import { languages  } from '@codemirror/language-data';
+	
+	import Editor from '$lib/Editor.svelte';
 	
 	const { data } = $props();
 
@@ -22,13 +17,8 @@
 	let showPreview = $state(false);
 	let unsaved_changes = $derived(post_id == null);
 	let title = $state('');
-	let view = $state<EditorView | null>(null);
+	let view = $state<EditorView | undefined>();
 	let preview_content = $state('');
-
-	const theme = new Compartment();
-	const darkTheme = githubDark;
-	const lightTheme = githubLight;
-	let prefersDark = useMediaQuery('(prefers-color-scheme: dark)');
 
 	const warn_unsaved = (e: BeforeUnloadEvent) => {
 		if (unsaved_changes) {
@@ -36,46 +26,14 @@
 			return 'You have unsaved changes!';
 		}
 	};
-	onMount(() => {
-		function updateTitle(view: EditorView) {
-			let t = view.state.doc.lineAt(0).text;
-			t = t.startsWith('#') ? t.slice(1) : t;
-			title = t.trim();
-		}
 
-		view = new EditorView({
-			parent: document.getElementById('editor') ?? undefined,
-			doc: data.content,
-			extensions: [
-				basicSetup,
-				highlightSpecialChars(),
-				markdown({
-					codeLanguages: languages
-				}),
-				headingPlugin(),
-				EditorView.updateListener.of((update) => {
-					if (update.docChanged) {
-						unsaved_changes = true;
-						updateTitle(update.view);
-					}
-				}),
-				EditorView.lineWrapping,
-				theme.of(prefersDark.matches ? darkTheme : lightTheme)
-			]
-		});
+	function updateTitle(view: EditorView) {
+		let t = view.state.doc.lineAt(0).text;
+		t = t.startsWith('#') ? t.slice(1) : t;
+		title = t.trim();
+	}
 
-		updateTitle(view);
-
-		return () => {
-			view?.destroy();
-		};
-	});
-
-	$effect(() => {
-		view?.dispatch({
-			effects: theme.reconfigure(prefersDark.matches ? darkTheme : lightTheme)
-		});
-	});
+	
 
 	let saving_post = $state<Promise<void> | null>(null);
 	let deleting_post = $state<Promise<void> | null>(null);
@@ -198,14 +156,15 @@
 			{/if}
 		</div>
 	</div>
-	<div id="editor" class:hidden={showPreview} class="w-full overflow-hidden rounded-lg border">
-		<style>
-			.cm-editor {
-				height: 100%;
-				width: 100%;
-			}
-		</style>
-	</div>
+	<Editor
+		bind:view={view}
+		initialContent={data.content}
+		contentChanged={(view)=> {
+			unsaved_changes = true;
+			updateTitle(view);
+		}}
+	/>
+
 	<div
 		id="preview"
 		class="m-0 w-full overflow-auto rounded-lg border px-4"
