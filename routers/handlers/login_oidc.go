@@ -226,25 +226,30 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 			c.Redirect(http.StatusFound, fmt.Sprintf("/login-failure?reason=signup_required&email=%s", userInfo.Email))
 			return
 		}
-		
+
+		// Create empty user
+		user := models.User{}
+
 		// Check for invite code requirements
 		if a.config.RequireInviteCode {
 			slog.Info("Invite code required.")
 
-			inviteCode, err := c.Cookie("inviteCode")
-			if err != nil || inviteCode == "" {
+			inviteCode_s, err := c.Cookie("inviteCode")
+			if err != nil || inviteCode_s == "" {
 				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 					"error": "Invite code required.",
 				})
 				return
 			}
-
-			if !app.ConsumeInviteCode(a.db, c.Request.Context(), inviteCode) {
+			inviteCode := app.ConsumeInviteCode(a.db, c.Request.Context(), inviteCode_s)
+			if inviteCode == nil {
 				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 					"error": "Invite code has expired or invalid.",
 				})
 				return
 			}
+			slog.Info("Invite code consumed: " + inviteCode_s)
+			user.Roles = *inviteCode.GrantRoles
 		}
 		
 		slog.Info("Creating new user for email: " + userInfo.Email)
@@ -253,9 +258,8 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 		discriminator_hash := sha256.Sum256([]byte(email_parts[1]))
 		discriminator := base64.RawURLEncoding.EncodeToString(discriminator_hash[:])[:8]
 		// Create user
-		user = models.User{
-			Username: email_parts[0] + "_" + discriminator,
-		}
+		user.Username = email_parts[0] + "_" + discriminator
+		
 		if err := a.db.Transaction(func(tx *gorm.DB) error {
 			if err := gorm.G[models.User](tx).Create(c.Request.Context(), &user); err != nil {
 				return err

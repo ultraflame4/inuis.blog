@@ -11,10 +11,10 @@ import (
 	"gorm.io/gorm"
 )
 
-// Returns true if the invite code is valid, false otherwise.
+// Returns the invite code if valid, nil otherwise.
 //
 // This will also delete the invite code from the database (if expired or single use).
-func ConsumeInviteCode(db *gorm.DB, ctx context.Context, code string) bool {
+func ConsumeInviteCode(db *gorm.DB, ctx context.Context, code string) *models.SignupInviteCode {
 	var inviteCode models.SignupInviteCode
 	if err := db.WithContext(ctx).Where("code = ?", code).First(&inviteCode).Error; err != nil {
 		expired := inviteCode.IsExpired()
@@ -22,9 +22,12 @@ func ConsumeInviteCode(db *gorm.DB, ctx context.Context, code string) bool {
 		if expired || inviteCode.SingleUse {
 			db.WithContext(ctx).Delete(inviteCode)
 		}
-		return !expired
+		if expired {
+			return nil
+		}
+		return &inviteCode
 	}
-	return false
+	return nil
 }
 
 // Generates and inserts a new invite code into the database.
