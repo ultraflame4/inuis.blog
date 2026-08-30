@@ -233,8 +233,8 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 		// Check for invite code requirements
 		// - Get invite code from cookie
 		inviteCode_s, err := c.Cookie("inviteCode")
-		// - Do invite code checks if: 1. required, 2. invite code is present
-		if a.config.RequireInviteCode || err != nil {
+		// - Do invite code checks if: 1. required, 2. invite code is present.
+		if a.config.RequireInviteCode || err == nil {
 			if err != nil || inviteCode_s == "" {
 				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 					"error": "Invite code required.",
