@@ -228,7 +228,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 		}
 		
 		// Check for invite code requirements
-		if a.config.RequiresInviteCode {
+		if a.config.RequireInviteCode {
 			slog.Info("Invite code required.")
 
 			inviteCode, err := c.Cookie("inviteCode")

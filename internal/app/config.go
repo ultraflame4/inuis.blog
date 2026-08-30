@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 )
 
@@ -34,7 +35,7 @@ type Config struct {
 	BrandName string
 
 	// New users need an invite code to create an account
-	RequiresInviteCode bool
+	RequireInviteCode bool
 }
 
 
@@ -55,6 +56,7 @@ func readConfigFromEnv() Config {
 		DataDirectory: getEnv("DATA_DIR", "/data"),
 		MaxSessionAge: sessionMaxAge(),
 		BrandName: getEnv("BRAND_NAME", "bytes.blog"),
+		RequireInviteCode: strings.ToLower(getEnv("REQUIRE_INVITE_CODE", "false")) == "true",
 	}
 }
 var (
