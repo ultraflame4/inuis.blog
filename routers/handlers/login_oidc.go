@@ -170,6 +170,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 	// User wants to add a new identity
 	const IntentAddIdentity = "add_identity"
 	const IntentElevate = "elevate"
+	const IntentSignup = "signup"
 
 	var user models.User
 
@@ -220,6 +221,12 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 	// No identities with this email found. Create a new user.
 	if len(existing) == 0 {
 
+		// Require signup intent!
+		if intent != IntentSignup {
+			c.Redirect(http.StatusFound, fmt.Sprintf("/login-failure?reason=signup_required&email=%s", userInfo.Email))
+			return
+		}
+		
 		// Check for invite code requirements
 		if a.config.RequiresInviteCode {
 			slog.Info("Invite code required.")
