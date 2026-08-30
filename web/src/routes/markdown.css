@@ -87,12 +87,7 @@
 
 .cm-md-content blockquote {
     --color: var(--color-divider);
-    @apply pl-4 pt-2 relative border border-(--color) rounded-sm;
-    }
-    
-    .cm-md-content blockquote>blockquote {
-    
-        @apply mb-4
+    @apply pl-4 pt-2 relative border border-(--color) rounded-sm mb-4;
 }
 
 .cm-md-content blockquote::before {
