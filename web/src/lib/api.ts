@@ -54,9 +54,9 @@ export namespace api {
         return app_meta;
     }
 
-    export async function listPosts(f: FetchLike, page: string | number, filter?: string): Promise<Paginated<Post>> {
+    export async function listPosts(f: FetchLike, page: string | number, filter?: string, search?: string): Promise<Paginated<Post>> {
 
-        const params = new URLSearchParams({ page: page.toString(), filter: filter ?? "" });
+        const params = new URLSearchParams({ page: page.toString(), filter: filter ?? "", q: search ?? "" });
 
         const resp = await f(`/api/me/posts?${params.toString()}`);
         if (!resp.ok) {

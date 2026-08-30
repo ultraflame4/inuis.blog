@@ -67,6 +67,7 @@ func (a *ApiHandler) ListPosts(c *gin.Context) {
 
 	ctx := c.Request.Context()
 	filterQuery := strings.ToLower(c.Query("filter"))
+	searchQuery := strings.ToLower(c.Query("q"))
 	pageQuery := meta.GetPagination(c)
 	user, _ := meta.GetSession(c)
 	db := a.db
@@ -89,6 +90,10 @@ func (a *ApiHandler) ListPosts(c *gin.Context) {
 		sqlQuery = sqlQuery.Where("allow_public = ?", true)
 	} else if filterQuery == "private" {
 		sqlQuery = sqlQuery.Where("allow_public = ?", false)
+	}
+
+	if searchQuery != "" {
+		sqlQuery = sqlQuery.Where("title LIKE ?", "%"+searchQuery+"%")
 	}
 
 	posts, err := sqlQuery.Find(c.Request.Context())

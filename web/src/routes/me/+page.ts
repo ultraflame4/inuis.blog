@@ -9,12 +9,14 @@ export const load: PageLoad = async ({ url, ...e }) => {
 
 
     const page = url.searchParams.get("page") ?? "1";
+    const search = url.searchParams.get("q") ?? "";
     const filter = url.searchParams.get("filter") ?? undefined;
 
     const user_posts = await api.listPosts(
         e.fetch,
         page,
-        filter
+        filter,
+        search
     );
 
 

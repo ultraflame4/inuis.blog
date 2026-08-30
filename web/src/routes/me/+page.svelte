@@ -6,6 +6,8 @@
 
 	const { data } = $props();
 
+	let searchQuery = $state(page.url.searchParams.get('q') ?? '');
+
 	async function update_query(key: string, value: string) {
 		// await invalidate('data:posts')
 		const searchParams = new URLSearchParams(page.url.searchParams);
@@ -19,7 +21,7 @@
 		Hello <span class="italic">{data.user.Username}</span>, writing today?
 	</p>
 
-	<div class="classic flex items-baseline gap-4">
+	<div class="classic flex flex-wrap items-baseline gap-x-4">
 		<h2>Your Posts</h2>
 
 		<select
@@ -32,9 +34,19 @@
 			<option value="published">Published</option>
 			<option value="private">Private</option>
 		</select>
+		<div class="mr-auto h-4 w-0 border bg-black sm:mr-0"></div>
 
-		<div class="h-4 w-0 border bg-black mr-auto sm:mr-0"></div>
 		<a href="/me/editor" class="self-center">/New Post</a>
+		<form
+			class="my-0 ml-auto flex h-6 grow gap-2 sm:grow-0"
+			onsubmit={(e) => {
+				update_query('q', searchQuery);
+				e.preventDefault();
+			}}
+		>
+			<input class="my-0 h-6 grow" bind:value={searchQuery} />
+			<button type="submit" class="my-0">Search</button>
+		</form>
 	</div>
 	<ul class="flex flex-wrap items-center justify-center gap-4 sm:justify-start">
 		{#each data.user_posts.items as post, index}
@@ -48,11 +60,11 @@
 
 				<a href="/me/editor?post_id={post.ID}" class="font-semibold underline">{post.Title}</a>
 				<p class="my-0 text-sm text-ink-light">{post.Summary.slice(0, 96)}...</p>
-				<div class="col-2 row-3 m-0 text-xs text-ink-muted flex justify-between">
+				<div class="col-2 row-3 m-0 flex justify-between text-xs text-ink-muted">
 					<span>
 						[{post.AllowPublic ? 'Public' : 'Private'}]
 					</span>
-					<span >
+					<span>
 						<!-- Created {humanizeDate(post.CreatedAt)} -->
 						Updated: {humanizeDate(post.UpdatedAt)}
 					</span>
