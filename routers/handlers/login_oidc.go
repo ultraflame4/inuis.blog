@@ -228,7 +228,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 		}
 
 		// Create empty user
-		user := models.User{}
+		user = models.User{}
 
 		// Check for invite code requirements
 		if a.config.RequireInviteCode {
