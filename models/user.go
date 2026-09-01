@@ -11,7 +11,8 @@ import (
 type User struct {
 	gorm.Model
 	Username string
-	// Hashed ID used for publicly identifying users in the API.
+	// Hashed ID used for publicly retrieving (public) user info in the API.
+	// Used to prevent ID iteration attacks. (Makes scraping information impossible by increasing IDs)
 	HID string `json:"hid" gorm:"uniqueIndex"`
 	// Metadata string delimited by semicolons
 	Roles string
