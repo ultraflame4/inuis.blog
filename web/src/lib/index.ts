@@ -17,6 +17,7 @@ export namespace app {
         if (!child) {
             throw new Error("Failed to open elevation popup")
         }
+        child.focus()
         console.log("Elevation", child)
 
         while (!child.closed) {
