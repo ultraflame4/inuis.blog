@@ -6,8 +6,8 @@ import (
 )
 
 type PageQuery struct {
-	Page  int `form:"page,default=1,min=1"`
-	Limit int `form:"limit,default=10,max=100"`
+	Page  int    `form:"page,default=1,min=1"`
+	Limit int    `form:"limit,default=10,max=100"`
 	Sort  string `form:"sort,default=none"`
 }
 
@@ -15,8 +15,8 @@ func (q *PageQuery) Offset() int {
 	return (q.Page - 1) * q.Limit
 }
 
-func ApplySqlPagination[T any](q PageQuery,sqlQuery gorm.ChainInterface[T}]) gorm.ChainInterface[T] {
-	return  sql.
+func ApplySqlPagination[T any](q PageQuery, sqlQuery gorm.ChainInterface[T]) gorm.ChainInterface[T] {
+	return sqlQuery.
 		Limit(q.Limit).
 		Offset(q.Offset())
 }
