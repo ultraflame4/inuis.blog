@@ -18,7 +18,7 @@
 	}
 </script>
 
-<main class="p-4">
+<main class="p-4 min-h-page-content">
 	<p class="my-4 border p-4 text-lg">
 		Hello <span class="italic">{data.user.Username}</span>, writing today?
 	</p>
