@@ -14,12 +14,12 @@
 	interface Props {
 		view?: EditorView;
 		initialContent?: string;
-		contentChanged?: (view: EditorView) => void;
+		update?: (view: EditorView, contentChanged: boolean) => void;
 		hidden?: boolean;
 	}
 
 
-	let {  view = $bindable(), initialContent, contentChanged, hidden }: Props = $props();
+	let {  view = $bindable(), initialContent, update: contentChanged, hidden }: Props = $props();
 
 
 	let showPreview = $state(false);
@@ -44,7 +44,7 @@
 				headingPlugin(),
 				EditorView.updateListener.of((update) => {
 					if (update.docChanged) {
-						contentChanged?.(update.view);
+						contentChanged?.(update.view, true);
 					}
 				}),
 				EditorView.lineWrapping,
@@ -53,7 +53,7 @@
 			]
 		});
 
-		contentChanged?.(view);
+		contentChanged?.(view, false);
 		return () => {
 			view?.destroy();
 		};

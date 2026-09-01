@@ -160,8 +160,8 @@
 		bind:view={view}
 		hidden={showPreview}
 		initialContent={data.content}
-		contentChanged={(view)=> {
-			unsaved_changes = true;
+		update={(view, changed)=> {
+			if (changed) unsaved_changes = true;
 			updateTitle(view);
 		}}
 	/>
