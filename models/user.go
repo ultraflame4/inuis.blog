@@ -12,7 +12,7 @@ type User struct {
 	gorm.Model
 	Username string
 	// Hashed ID used for publicly identifying users in the API.
-	HID *string `json:"hid" gorm:"uniqueIndex"`
+	HID string `json:"hid" gorm:"uniqueIndex"`
 	// Metadata string delimited by semicolons
 	Roles string
 }
