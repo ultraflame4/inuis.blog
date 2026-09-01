@@ -12,11 +12,11 @@ import (
 
 func (a *ApiHandler) ListUserPublicPosts(c *gin.Context) {
 	db := a.db
-	user_id := c.Param("user_id")
+	user_id := c.Param("user_hid")
 	pageQuery := meta.GetPagination(c)
 	ctx := c.Request.Context()
 
-	sql := gorm.G[models.Post](db).Where("hid = ? AND allow_public = true", user_id)
+	sql := gorm.G[models.Post](db).Where("user_hid = ? AND allow_public = true", user_id)
 	sql = meta.ApplySqlPagination(pageQuery, sql);
 	total_count, err := sql.Count(ctx, "ID")
 	posts, err := sql.Find(ctx)
