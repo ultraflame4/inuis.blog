@@ -43,7 +43,7 @@ func InitRouter(db *gorm.DB) *gin.Engine {
 	}
 	{
 		_posts := _api.Group("/posts")
-		_posts.GET("/:id", handlers.GetPublicPost)
+		_posts.GET("/:hid", handlers.GetPublicPost)
 	}
 	{
 		_user := _api.Group("/user")

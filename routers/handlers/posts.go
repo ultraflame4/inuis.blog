@@ -4,19 +4,18 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ultraflame4/bytesblog/models"
+	"github.com/ultraflame4/bytesblog/internal/app"
+
 )
 
 // Public unprotected api
 //
 // Get post for non-authenticated users
 func (a *ApiHandler) GetPublicPost(c *gin.Context) {
-	post_id := c.Param("id")
-	db := a.db.WithContext(c.Request.Context())
+	post_hid := c.Param("hid")
 
-	var post models.Post
-	err := db.Preload("User").First(&post, post_id).Error
-	if err == nil && post.AllowPublic {
+	post, ok := app.FindPublicPostByHID(post_hid, a.db, c.Request.Context())
+	if ok {
 		c.JSON(http.StatusOK, gin.H{
 			"post": post,
 		})
@@ -24,8 +23,6 @@ func (a *ApiHandler) GetPublicPost(c *gin.Context) {
 	}
 
 	c.AbortWithStatusJSON(404, gin.H{
-		"error": "Cannot find post with id: " + post_id,
+		"error": "Cannot find post with hid: " + post_hid,
 	})
 }
-
-
