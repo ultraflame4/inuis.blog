@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/ultraflame4/bytesblog/internal/app"
 	"github.com/ultraflame4/bytesblog/models"
 	"github.com/ultraflame4/bytesblog/routers/meta"
 	"gorm.io/gorm"
@@ -12,11 +13,16 @@ import (
 
 func (a *ApiHandler) ListUserPublicPosts(c *gin.Context) {
 	db := a.db
-	user_id := c.Param("user_hid")
+	user_hid := c.Param("user_hid")
+	user_id, found := app.FindUserByHid(user_hid, a.db, c.Request.Context())
+	if !found {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
 	pageQuery := meta.GetPagination(c)
 	ctx := c.Request.Context()
 
-	sql := gorm.G[models.Post](db).Where("user_hid = ? AND allow_public = true", user_id)
+	sql := gorm.G[models.Post](db).Where("user_id = ? AND allow_public = true", user_id)
 	sql = meta.ApplySqlPagination(pageQuery, sql);
 	total_count, err := sql.Count(ctx, "ID")
 	posts, err := sql.Find(ctx)
