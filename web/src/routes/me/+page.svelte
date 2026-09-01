@@ -2,16 +2,18 @@
 	import { goto, invalidate } from '$app/navigation';
 	import { page } from '$app/state';
 	import PageNumbers from '$lib/PageNumbers.svelte';
-	import { humanizeDate } from '$lib/utils';
+	import { humanizeDate, nullish } from '$lib/utils';
 
 	const { data } = $props();
 
 	let searchQuery = $state(page.url.searchParams.get('q') ?? '');
 
-	async function update_query(key: string, value: string) {
+	async function update_query(key: string, value: string | null | undefined) {
 		// await invalidate('data:posts')
 		const searchParams = new URLSearchParams(page.url.searchParams);
-		searchParams.set(key, value);
+		if (!nullish(value)) {
+			searchParams.set(key, value);
+		}
 		await goto(`?${searchParams.toString()}`, { replaceState: true });
 	}
 </script>
@@ -27,7 +29,7 @@
 		<select
 			id="posts-filter"
 			class="relative bottom-0.5"
-			onchange={(e) => update_query('filter', e.target.value)}
+			onchange={(e) => update_query('filter', e.currentTarget.value)}
 			value={page.url.searchParams.get('filter') ?? 'all'}
 		>
 			<option value="all">All</option>
