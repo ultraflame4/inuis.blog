@@ -59,7 +59,7 @@ func (*ApiHandler) StartOauthLoginFlow(c *gin.Context) {
 	if inviteCode, exists := c.GetQuery("invite_code"); exists {
 		setCallbackCookie(c, "inviteCode", inviteCode)
 	}
-	
+
 	intent := c.Query("intent")
 	setCallbackCookie(c, "intent", intent)
 
@@ -252,34 +252,28 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 			slog.Info("Invite code consumed: " + inviteCode_s)
 			user.Roles = *inviteCode.GrantRoles
 		}
-		
+
 		slog.Info("Creating new user for email: " + userInfo.Email)
 		// Create new user
 		email_parts := strings.SplitN(userInfo.Email, "@", 2)
 		discriminator_hash := sha256.Sum256([]byte(email_parts[1]))
 		discriminator := base64.RawURLEncoding.EncodeToString(discriminator_hash[:])[:8]
 		// Create user
-		user.Username = email_parts[0] + "_" + discriminator
-		
-		if err := a.db.Transaction(func(tx *gorm.DB) error {
-			if err := gorm.G[models.User](tx).Create(c.Request.Context(), &user); err != nil {
-				return err
-			}
-			// Attach identity
-			identity := models.UserIdentity{
-				Subject: userInfo.Subject,
-				Email:   &userInfo.Email,
-				Issuer:  conf.Issuer,
-				UserID:  user.ID,
-			}
-			if err := gorm.G[models.UserIdentity](tx).Create(c.Request.Context(), &identity); err != nil {
-				return err
-			}
-			return nil
-		}); err != nil {
-			c.AbortWithStatus(http.StatusInternalServerError)
+		username := email_parts[0] + "_" + discriminator
+
+		identity := models.UserIdentity{
+			Subject: userInfo.Subject,
+			Email:   &userInfo.Email,
+			Issuer:  conf.Issuer,
+			UserID:  user.ID,
+		}
+
+		new_user, err := app.CreateUser(username, identity, a.db, c.Request.Context());
+		if err != nil {
+			c.AbortWithStatus(http.StatusInternalServerError);
 			return
 		}
+		user = new_user
 		slog.Info("Created user: " + user.Username)
 
 	} else {
@@ -291,7 +285,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				// Here we already know there is a user with this email.
-				
+
 				// There is a technically an edge case here where the user has identity registered, but not with the same subject
 				// AKA their subject for the identity has changed somehow. (eg. IDP changed but using same domain)
 				// We are going to ignore this edge case and treat it as a "bad_identity" error.
@@ -319,7 +313,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 
 				// Retrieve the user's existing identity for this issuer
 				identity := existing[ident_idx]
-				
+
 				var allowed_providers strings.Builder
 				for idx, value := range existing {
 					// Skip the current provider, as it's subject field is now non-working
