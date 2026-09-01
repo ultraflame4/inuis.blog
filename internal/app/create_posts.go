@@ -1,5 +1,7 @@
 package app
 
+import "strings"
+
 // Generates a title and summary for the post based on the content.
 // Returns (title, summary)
 func GeneratePostTitleAndSummary(content string) (string, string) {
