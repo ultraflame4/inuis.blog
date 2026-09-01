@@ -30,5 +30,5 @@ func Slugify(s string) string {
 
 func GenerateHID() string {
 	uuid_ := uuid.New()
-	return base64.RawStdEncoding.EncodeToString(uuid_[:])
+	return base64.RawURLEncoding.EncodeToString(uuid_[:])
 }
