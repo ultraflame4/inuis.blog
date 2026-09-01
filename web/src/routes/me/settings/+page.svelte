@@ -7,9 +7,9 @@
 	import { humanizeDate } from "$lib/utils";
 	import { onMount } from "svelte";
 
-	
+
 	const { data } = $props()
-   	
+
    	const added_providers: string[] = $derived(data['connected_providers']);
    	const providers: string[] = $derived(data['providers']);
 
@@ -29,6 +29,7 @@
 		if (updating_username == null) {
 		    const inp = document.getElementById("inp-change-username")! as HTMLInputElement
 			if (inp.value == data.user.Username) return;
+			if (inp.value == '') return;
 		    updating_username = api.updateUsername(fetch, inp.value).then(x=> {
 				updating_username = null
 				inp.value=""
@@ -37,14 +38,14 @@
 		}
 		await updating_username
 	}
-	
+
 </script>
 <main class="px-4">
 
     <h2 class="text-xl font-bold">Account Details</h2>
     <p class="classic">Username: <code>{data.user.Username}</code></p>
     <p class="classic">
-        Created at: 
+        Created at:
         <code>{data.user.CreatedAt}</code>
         <small>({humanizeDate(data.user.CreatedAt)} )</small>
     </p>
