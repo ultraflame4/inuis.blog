@@ -3,9 +3,7 @@ package handlers
 import (
 	"errors"
 	"net/http"
-	"strconv"
 	"strings"
-
 	"github.com/gin-gonic/gin"
 	"github.com/ultraflame4/bytesblog/internal/app"
 	"github.com/ultraflame4/bytesblog/models"
@@ -124,12 +122,13 @@ func (a *ApiHandler) ListPosts(c *gin.Context) {
 
 // Get a private post by id. Note that this also works for public posts.
 func (a *ApiHandler) GetPost(c *gin.Context) {
-	post_id := c.Param("id")
+	user, _ := meta.GetSession(c)
+	post_hid := c.Param("hid")
 	db := a.db
 
 	var post models.Post
-	err := db.First(&post, post_id).Error
-	if err == nil {
+	post, ok := app.FindPostByHID(post_hid, user.ID, db, c.Request.Context())
+	if ok {
 		c.JSON(http.StatusOK, gin.H{
 			"post": post,
 		})
@@ -137,7 +136,7 @@ func (a *ApiHandler) GetPost(c *gin.Context) {
 	}
 
 	c.AbortWithStatusJSON(404, gin.H{
-		"error": "Cannot find post with id:" + post_id,
+		"error": "Cannot find post with hid:" + post_hid,
 	})
 
 }
@@ -145,15 +144,12 @@ func (a *ApiHandler) GetPost(c *gin.Context) {
 // Also used to make post private / unpublish post
 func (a *ApiHandler) PublishPost(c *gin.Context) {
 	user, _ := meta.GetSession(c)
-	post_id := c.Param("id")
+	post_hid := c.Param("hid")
 	make_public := c.Query("public") == "true"
-	db := a.db
 
-	var post models.Post
-	err := db.First(&post, post_id).Error
-	if err == nil && post.UserID == user.ID {
+	if post, ok := app.FindPostByHID(post_hid, user.ID, a.db, c.Request.Context()); ok{
 		post.AllowPublic = make_public
-		db.Save(&post)
+		a.db.Save(&post)
 		c.JSON(http.StatusOK, gin.H{
 			"message": "success",
 		})
@@ -162,7 +158,7 @@ func (a *ApiHandler) PublishPost(c *gin.Context) {
 
 	c.AbortWithStatusJSON(404, gin.H{
 		"status":  "error",
-		"message": "Cannot find post with id:" + post_id,
+		"message": "Cannot find post with id:" + post_hid,
 	})
 
 }
@@ -170,16 +166,12 @@ func (a *ApiHandler) PublishPost(c *gin.Context) {
 func (a *ApiHandler) DeletePost(c *gin.Context) {
 	user, _ := meta.GetSession(c)
 	db := a.db
-	post_id := c.Param("id")
-	var post models.Post
+	post_hid := c.Param("hid")
 
 	err := db.Transaction(func(tx *gorm.DB) error {
-		err := tx.First(&post, post_id).Error
-		if err != nil {
-			return err
-		}
-		if post.UserID != user.ID {
-			return errors.New("post does not belong to user")
+		post, ok := app.FindPostByHID(post_hid, user.ID, tx, c.Request.Context())
+		if !ok {
+			return errors.New("post not found")
 		}
 
 		return tx.Delete(&post).Error
@@ -194,7 +186,7 @@ func (a *ApiHandler) DeletePost(c *gin.Context) {
 
 	c.AbortWithStatusJSON(404, gin.H{
 		"status":  "error",
-		"message": "Cannot find post with id:" + post_id,
+		"message": "Cannot find post with id:" + post_hid,
 	})
 }
 
@@ -202,24 +194,15 @@ func (a *ApiHandler) SavePost(c *gin.Context) {
 	db := a.db
 	user, _ := meta.GetSession(c)
 
-	post_id := c.Query("id")
+	post_hid := c.Query("hid")
 	content := c.PostForm("content")
 
 	var post models.Post
 
-	if post_id != "" {
-		post_id, err := strconv.ParseUint(post_id, 10, 32)
-		if err != nil {
-			c.AbortWithStatusJSON(404, gin.H{
-				"error": "Post not found",
-			})
-			return
-		}
-
+	if post_hid != "" {
 		// Check if post exists and belongs to the user
-		var existingPost models.Post
-		err = db.First(&existingPost, post_id).Error
-		if err != nil || existingPost.UserID != user.ID {
+		existingPost, ok := app.FindPostByHID(post_hid, user.ID, db, c.Request.Context());
+		if !ok {
 			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
 				"error": "Post not found",
 			})

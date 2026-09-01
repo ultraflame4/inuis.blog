@@ -60,7 +60,7 @@
 					>{index + 1 + (data.user_posts.page - 1) * data.user_posts.per_page}.</span
 				>
 
-				<a href="/me/editor?post_id={post.ID}" class="font-semibold underline">{post.Title}</a>
+				<a href="/me/editor?post_id={post.hid}" class="font-semibold underline">{post.Title}</a>
 				<p class="my-0 text-sm text-ink-light">{post.Summary.slice(0, 96)}...</p>
 				<div class="col-2 row-3 m-0 flex justify-between text-xs text-ink-muted">
 					<span>

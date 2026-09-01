@@ -36,10 +36,10 @@ func InitRouter(db *gorm.DB) *gin.Engine {
 		_me.GET("/oidc-providers", handlers.ListConnectedOidcProviders)
 		_me.GET("/oidc/:oidc/disconnect", handlers.UserDisconnectOidcProvider)
 		_me.POST("/posts/save", handlers.SavePost)
-		_me.GET("/posts/:id", handlers.GetPost)
-		_me.DELETE("/posts/:id", handlers.DeletePost)
+		_me.GET("/posts/:hid", handlers.GetPost)
+		_me.DELETE("/posts/:hid", handlers.DeletePost)
 		_me.GET("/posts", handlers.ListPosts)
-		_me.POST("/posts/:id/publish", handlers.PublishPost)
+		_me.POST("/posts/:hid/publish", handlers.PublishPost)
 	}
 	{
 		_posts := _api.Group("/posts")

@@ -48,6 +48,11 @@ func CreatePost(content string, userID uint, db *gorm.DB, ctx context.Context) (
 	return post, err
 }
 
+func FindPostByHID(hid string, userID uint, db *gorm.DB, ctx context.Context) (models.Post, bool) {
+	post, err := gorm.G[models.Post](db).Where("hid = ?", hid).First(ctx)
+	return post, err == nil && post.UserID == userID
+}
+
 func SavePost(existingPost *models.Post, content string, db *gorm.DB, ctx context.Context) (*models.Post, error) {
 	if existingPost == nil {
 		return nil, nil
