@@ -9,8 +9,8 @@ type PageMeta struct {
    	// TotalItems number of items (includes other pages aswell)
   	TotalItems      int `json:"total_items,omitempty"`
    	// Total number of pages
-  	TotalPages int `json:"total_pages,omitempty"`	
-  	
+  	TotalPages int `json:"total_pages,omitempty"`
+
 }
 
 func CreatePageMeta(q PageQuery, total_count int) PageMeta {
@@ -36,4 +36,5 @@ type PostSummary struct {
 	Title string
 	Summary string
 	AllowPublic bool
+	HID string `json:"hid"`
 }

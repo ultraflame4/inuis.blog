@@ -67,6 +67,7 @@ export namespace api {
             throw new Error('Failed to fetch user posts');
         }
         const user_posts: Paginated<any> = await resp.json();
+        console.info(user_posts)
         return user_posts;
     }
 

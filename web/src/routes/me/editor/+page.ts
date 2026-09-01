@@ -4,13 +4,13 @@ import type { PageLoad } from './$types';
 
 export const load: PageLoad = async (e) => {
     const data = await e.parent();
-    const post_id = e.url.searchParams.get('post_id');
+    const post_hid = e.url.searchParams.get('hid');
 
     let content = '# Example post title\nSome text content'
     let published = false
-    if (!nullish(post_id)) {
+    if (!nullish(post_hid)) {
 
-        const resp = await e.fetch(`/api/me/posts/${post_id}`);
+        const resp = await e.fetch(`/api/me/posts/${post_hid}`);
         if (resp.ok) {
             const data = await resp.json();
             content = data.post.Content;
@@ -18,5 +18,5 @@ export const load: PageLoad = async (e) => {
         }
     }
 
-    return { ...data, post_id, content, published };
+    return { ...data, post_hid, content, published };
 }

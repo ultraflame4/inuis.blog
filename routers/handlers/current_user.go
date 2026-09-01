@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"strings"
+
 	"github.com/gin-gonic/gin"
 	"github.com/ultraflame4/bytesblog/internal/app"
 	"github.com/ultraflame4/bytesblog/models"
@@ -92,7 +93,6 @@ func (a *ApiHandler) ListPosts(c *gin.Context) {
 	}
 
 	posts, err := sqlQuery.Find(c.Request.Context())
-
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -110,6 +110,7 @@ func (a *ApiHandler) ListPosts(c *gin.Context) {
 			Title:       post.Title,
 			Summary:     post.Summary,
 			AllowPublic: post.AllowPublic,
+			HID:         post.HID,
 		})
 	}
 
