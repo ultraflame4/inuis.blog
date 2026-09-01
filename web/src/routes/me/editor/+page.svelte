@@ -61,8 +61,8 @@
 				unsaved_changes = false;
 				saving_post = null;
 				const data = await resp.json();
-				post_hid = data.post.ID;
-				goto(`/me/editor?post_id=${post_hid}`, {
+				post_hid = data.post.hid;
+				goto(`/me/editor?hid=${post_hid}`, {
 					replaceState: true
 				});
 			}

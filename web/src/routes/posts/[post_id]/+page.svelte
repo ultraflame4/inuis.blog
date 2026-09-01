@@ -13,7 +13,7 @@
     <header class="flex flex-wrap gap-4">
         <p><span class="font-semibold">Published by</span>: <a class="classic" href="/u/{author.hid}">@{author.Username}</a></p>
         {#if author.ID === data.user?.ID}
-            <a href="/me/editor?post_id={data.post_data.ID}" class="underline">/edit</a>
+            <a href="/me/editor?hid={data.post_data.hid}" class="underline">/edit</a>
         {/if}
         <div class="mr-auto"></div>
         <p><span class="font-semibold">Last updated</span>: {humanizeDate(data.post_data.UpdatedAt)}</p>
