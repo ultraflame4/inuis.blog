@@ -81,10 +81,7 @@ func (a *ApiHandler) ListPosts(c *gin.Context) {
 		return
 	}
 
-	sqlQuery := sql.
-		Limit(pageQuery.Limit).
-		Offset(pageQuery.Offset())
-
+	sqlQuery := meta.ApplySqlPagination(pageQuery, sql);
 
 	if filterQuery == "published" {
 		sqlQuery = sqlQuery.Where("allow_public = ?", true)

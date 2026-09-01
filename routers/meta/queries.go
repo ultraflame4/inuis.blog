@@ -2,6 +2,7 @@ package meta
 
 import (
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type PageQuery struct {
@@ -12,6 +13,12 @@ type PageQuery struct {
 
 func (q *PageQuery) Offset() int {
 	return (q.Page - 1) * q.Limit
+}
+
+func ApplySqlPagination[T any](q PageQuery,sqlQuery gorm.ChainInterface[T}]) gorm.ChainInterface[T] {
+	return  sql.
+		Limit(q.Limit).
+		Offset(q.Offset())
 }
 
 func BindPageQuery(c *gin.Context) (PageQuery, error) {
