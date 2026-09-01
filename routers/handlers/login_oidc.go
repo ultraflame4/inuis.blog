@@ -233,6 +233,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 		// Check for invite code requirements
 		// - Get invite code from cookie
 		inviteCode_s, err := c.Cookie("inviteCode")
+		var grantRoles string
 		// - Do invite code checks if: 1. required, 2. invite code is present.
 		if a.config.RequireInviteCode || err == nil {
 			if err != nil || inviteCode_s == "" {
@@ -250,7 +251,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 				return
 			}
 			slog.Info("Invite code consumed: " + inviteCode_s)
-			user.Roles = *inviteCode.GrantRoles
+			grantRoles = *inviteCode.GrantRoles
 		}
 
 		slog.Info("Creating new user for email: " + userInfo.Email)
@@ -268,7 +269,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 			UserID:  user.ID,
 		}
 
-		new_user, err := app.CreateUser(username, identity, a.db, c.Request.Context());
+		new_user, err := app.CreateUser(username, identity, grantRoles, a.db, c.Request.Context());
 		if err != nil {
 			c.AbortWithStatus(http.StatusInternalServerError);
 			return
