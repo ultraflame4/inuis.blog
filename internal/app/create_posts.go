@@ -14,7 +14,7 @@ func GeneratePostTitleAndSummary(content string) (string, string) {
 	title := ""
 	body := ""
 	// Remove the first line of the content. (Treated as title)
-	if i := strings.IndexByte(body, '\n'); i >= 0 {
+	if i := strings.IndexByte(content, '\n'); i >= 0 {
 		title = content[:i]
 		body = content[i+1:]
 	} else {
