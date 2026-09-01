@@ -15,6 +15,8 @@ export namespace api {
         CreatedAt: string;
         DeletedAt: string;
         UpdatedAt: string;
+        // Hid used to fetch user content in the database.
+        hid: string
 
     }
 

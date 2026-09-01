@@ -11,7 +11,7 @@
 
 <main class="p-4">
     <header class="flex flex-wrap gap-4">
-        <p><span class="font-semibold">Published by</span>: <a class="classic" href="/u/{author.ID}">@{author.Username}</a></p>
+        <p><span class="font-semibold">Published by</span>: <a class="classic" href="/u/{author.hid}">@{author.Username}</a></p>
         {#if author.ID === data.user?.ID}
             <a href="/me/editor?post_id={data.post_data.ID}" class="underline">/edit</a>
         {/if}
