@@ -205,28 +205,8 @@ func (a *ApiHandler) SavePost(c *gin.Context) {
 	post_id := c.Query("id")
 	var post models.Post
 
-	title := ""
 	content := c.PostForm("content")
-	body := c.PostForm("content")
-	// Remove the first line of the content. (Treated as title)
-	if i := strings.IndexByte(body, '\n'); i >= 0 {
-		title = content[:i]
-		body = body[i+1:]
-	} else {
-		// If i == -1. Means no newlines. The entire content is the first line.
-		title = strings.Clone(content)
-		// Also means that body has no content
-		body = ""
-	}
-	title = strings.TrimPrefix(title, "#")
-	title = strings.TrimSpace(title)
-
-	// Generate summary from body
-	summary_len := 100
-	summary_body := strings.ReplaceAll(body, "\n", "")
-	summary := summary_body[0:min(len(summary_body), summary_len)]
-	summary = strings.TrimSpace(summary)
-
+	title, summary := app.GeneratePostTitleAndSummary(content)
 	post = models.Post{
 		UserID:  user.ID,
 		Summary: summary,

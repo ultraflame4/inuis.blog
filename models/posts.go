@@ -4,6 +4,8 @@ import "gorm.io/gorm"
 
 type Post struct {
 	gorm.Model
+	// Id used to retrieve the post to prevent ID iteration attacks
+	HID string `json:"hid" gorm:"uniqueIndex"`
 	// Title of post
 	Title string
 	// Generated summary of post. (First few lines of the post)
