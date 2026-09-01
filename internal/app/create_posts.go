@@ -49,7 +49,7 @@ func CreatePost(content string, userID uint, db *gorm.DB, ctx context.Context) (
 }
 
 func FindPostByHID(hid string, userID uint, db *gorm.DB, ctx context.Context) (models.Post, bool) {
-	post, err := gorm.G[models.Post](db).Where("hid = ?", hid).First(ctx)
+	post, err := gorm.G[models.Post](db).Where("h_id = ?", hid).First(ctx)
 	return post, err == nil && post.UserID == userID
 }
 
