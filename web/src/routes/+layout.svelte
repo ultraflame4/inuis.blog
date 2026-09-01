@@ -9,11 +9,11 @@
 <header class="mx-4 flex items-center gap-2 h-(--navbar-height)">
     <h1 class="text-2xl font-bold"><a href="/">{ data.app_meta.brand_name }</a></h1>
 
-    
+
     {#if !!data.user}
         <a class="classic m-0" href="/me">/me</a>
         <div class="ml-auto"></div>
-        <a class="classic text-ink m-0" href="/me/settings">{data.user.Username}</a>
+        <a class="classic text-ink m-0" href="/me/settings">Account Settings</a>
     {:else}
         <div class="ml-auto"></div>
         <a class="classic m-0" href="/signup">Signup</a>
