@@ -1,6 +1,12 @@
 package app
 
-import "strings"
+import (
+	"context"
+	"strings"
+
+	"github.com/ultraflame4/bytesblog/models"
+	"gorm.io/gorm"
+)
 
 // Generates a title and summary for the post based on the content.
 // Returns (title, summary)
@@ -28,6 +34,28 @@ func GeneratePostTitleAndSummary(content string) (string, string) {
 	return title, summary
 }
 
-// func CreatePost(content string, db *gorm.DB, ctx context.Context) (models.Post, error) {
+func CreatePost(content string, userID uint, db *gorm.DB, ctx context.Context) (models.Post, error) {
+	hid := GenerateHID()
+	title, summary := GeneratePostTitleAndSummary(content)
+	post := models.Post{
+		Title:   title,
+		Summary: summary,
+		Content: content,
+		UserID:  userID,
+		HID:     hid,
+	}
+	err := db.Create(&post).Error
+	return post, err
+}
 
-// }
+func SavePost(existingPost *models.Post, content string, db *gorm.DB, ctx context.Context) (*models.Post, error) {
+	if existingPost == nil {
+		return nil, nil
+	}
+	title, summary := GeneratePostTitleAndSummary(content)
+	existingPost.Title = title
+	existingPost.Summary = summary
+	existingPost.Content = content
+	err := db.Save(existingPost).Error
+	return existingPost, err
+}

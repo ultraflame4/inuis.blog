@@ -203,16 +203,9 @@ func (a *ApiHandler) SavePost(c *gin.Context) {
 	user, _ := meta.GetSession(c)
 
 	post_id := c.Query("id")
-	var post models.Post
-
 	content := c.PostForm("content")
-	title, summary := app.GeneratePostTitleAndSummary(content)
-	post = models.Post{
-		UserID:  user.ID,
-		Summary: summary,
-		Content: content,
-		Title:   title,
-	}
+
+	var post models.Post
 
 	if post_id != "" {
 		post_id, err := strconv.ParseUint(post_id, 10, 32)
@@ -227,27 +220,26 @@ func (a *ApiHandler) SavePost(c *gin.Context) {
 		var existingPost models.Post
 		err = db.First(&existingPost, post_id).Error
 		if err != nil || existingPost.UserID != user.ID {
-			c.AbortWithStatusJSON(404, gin.H{
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
 				"error": "Post not found",
 			})
 			return
 		}
 
-		post.ID = uint(post_id)
-		err = db.Save(&post).Error
-		if err != nil {
-			c.AbortWithStatusJSON(404, gin.H{
-
-				"error": "Failed to save post :" + err.Error(),
+		if savedPost, err := app.SavePost(&existingPost, content, db, c.Request.Context()); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+				"error": "Failed to save post: " + err.Error(),
 			})
 			return
+		} else {
+			post = *savedPost
 		}
 	} else {
-		err := db.Create(&post).Error
+		var err error
+		post, err = app.CreatePost(content, user.ID, db, c.Request.Context())
 		if err != nil {
-			c.AbortWithStatusJSON(404, gin.H{
-
-				"error": "Failed to save post :" + err.Error(),
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+				"error": "Failed to create post: " + err.Error(),
 			})
 			return
 		}
