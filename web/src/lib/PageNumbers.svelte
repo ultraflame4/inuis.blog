@@ -13,7 +13,7 @@
 
 	const { page_data, url, class: className, query_key}: Props = $props();
 	const page_key = $derived(query_key ?? "page");
-	
+
 
 </script>
 

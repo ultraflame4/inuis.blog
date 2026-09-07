@@ -80,7 +80,7 @@
 hr {
 	border-color: var(--color-divider);
 }
-.classic select {
+select {
 	@apply rounded-full border bg-paper-muted p-1 px-1.5;
 }
 button {
