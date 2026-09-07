@@ -32,7 +32,7 @@
 				</a>
 			</li>
 		{/each}
-		<li class:hidden={page_data.page === page_data.total_pages}>
+		<li class:hidden={page_data.page >= page_data.total_pages}>
 			<a class="text-ink no-underline hover:underline" href="{url}?{page_key}={page_data.page + 1}">
 				Next
 			</a>

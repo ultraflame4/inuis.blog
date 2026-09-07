@@ -3,13 +3,13 @@ package meta
 import "gorm.io/gorm"
 type PageMeta struct {
 	// Page number
-	Page       int `json:"page,omitempty"`
+	Page       int `json:"page"`
 	// Items per page
-  	PerPage    int `json:"per_page,omitempty"`
+  	PerPage    int `json:"per_page"`
    	// TotalItems number of items (includes other pages aswell)
-  	TotalItems      int `json:"total_items,omitempty"`
+  	TotalItems      int `json:"total_items"`
    	// Total number of pages
-  	TotalPages int `json:"total_pages,omitempty"`
+  	TotalPages int `json:"total_pages"`
 
 }
 
@@ -24,7 +24,7 @@ func CreatePageMeta(q PageQuery, total_count int) PageMeta {
 		Page:  q.Page,
 		PerPage: q.Limit,
 		TotalItems: total_count,
-		TotalPages: total_pages,
+		TotalPages: max(1, total_pages), // Always a minimum of 1 page
 	}
 }
 
