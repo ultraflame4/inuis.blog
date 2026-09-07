@@ -9,7 +9,7 @@
 
     .classic *,
     .classic {
-        font-family: revert;
+        font-family: monospace;
         font-weight: revert;
         font-size: revert;
         text-decoration: revert;
@@ -20,7 +20,7 @@
     input.classic,
     .classic input,
     .classic button {
-        @apply bg-paper-muted text-ink rounded-md border px-2 py-0.5
+        @apply bg-paper-muted text-ink rounded-none border px-2 py-1
     }
 
     button.classic:hover,
@@ -170,7 +170,7 @@ kbd {
         --color-paper-subtle: #1e293b;
 
         /* Borders / dividers */
-        --color-divider: #1e293b;
+        --color-divider: #3a495b;
         --color-divider-light: #334155;
     }
 }
