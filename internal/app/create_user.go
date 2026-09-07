@@ -17,6 +17,7 @@ func CreateUser(username string, identity models.UserIdentity, grantRoles string
 			return err
 		}
 		// Attach identity
+		identity.UserID = user.ID
 		if err := gorm.G[models.UserIdentity](tx).Create(ctx, &identity); err != nil {
 			return err
 		}

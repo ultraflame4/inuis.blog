@@ -266,7 +266,6 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 			Subject: userInfo.Subject,
 			Email:   &userInfo.Email,
 			Issuer:  conf.Issuer,
-			UserID:  user.ID,
 		}
 
 		new_user, err := app.CreateUser(username, identity, grantRoles, a.db, c.Request.Context());
