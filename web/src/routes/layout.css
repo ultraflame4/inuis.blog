@@ -2,190 +2,181 @@
 @import './markdown.css';
 
 @layer base {
-
-    html {
-        @apply bg-paper text-ink;
-    }
-
-    .classic *,
-    .classic {
-        font-family: monospace;
-        font-weight: revert;
-        font-size: revert;
-        text-decoration: revert;
-        @apply my-4
-    }
-
-    button.classic,
-    input.classic,
-    .classic input,
-    .classic button {
-        @apply bg-paper-muted text-ink rounded-none border px-2 py-1
-    }
-
-    button.classic:hover,
-    .classic button:hover {
-        @apply bg-paper-subtle
-    }
-
-    button.classic:active,
-    .classic button:active {
-        @apply bg-paper
-    }
-
-    button.classic:disabled,
-    .classic button:disabled {
-        @apply bg-paper cursor-not-allowed
-    }
-
-    main.classic {
-        @apply m-0 px-4 box-border flow-root
-    }
-
-    hr {
-        @apply my-4
-    }
-
-    nav>a {
-        text-decoration: revert;
-        /*color: revert*/
-    }
-
-    .classic code,
-    code.classic {
-        @apply bg-paper-muted px-1 py-0.5 rounded-sm
-    }
-
-    .classic a,
-    a.classic
-    a.classic:visited,
-    .classic a:visited {
-        @apply text-link underline;
-    }
-
-    .classic a,
-    a.classic:hover {
-        @apply text-link-hover;
-    }
-
-    .classic {
-        @apply transition-all
-    }
+	html {
+		@apply bg-paper text-ink font-mono;
+	}
 
 
+	.classic *,
+	.classic {
+		font-weight: revert;
+		font-size: revert;
+		text-decoration: revert;
+		@apply my-4;
+	}
+
+	input,
+	button {
+		@apply rounded-none border bg-paper-muted px-2 py-1 text-ink;
+	}
+
+	button:hover {
+		@apply bg-paper-subtle;
+	}
+	button:active {
+		@apply bg-paper;
+	}
+
+	button:disabled {
+		@apply cursor-not-allowed bg-paper;
+	}
+
+	main.classic {
+		@apply m-0 box-border flow-root px-4;
+	}
+
+	hr {
+		@apply my-4;
+	}
+
+	nav > a {
+		text-decoration: revert;
+		/*color: revert*/
+	}
+
+	code {
+		@apply rounded-sm bg-paper-muted px-1 py-0.5;
+	}
+
+
+	a{
+		@apply text-link underline;
+	}
+
+	a:hover {
+		@apply text-link-hover;
+	}
+
+	h1 > a,
+	h2 > a,
+	h3 > a,
+	h4 > a,
+	h5 > a,
+	h6 > a {
+		@apply text-ink no-underline;
+	}
 }
 
 :root {
-    --navbar-height: calc(13 * var(--spacing));
-    --footer-height: calc(12 * var(--spacing));
+	--navbar-height: calc(13 * var(--spacing));
+	--footer-height: calc(12 * var(--spacing));
 }
 
 * {
-    box-sizing: border-box;
-    transition: inherit;
+	box-sizing: border-box;
+	transition: inherit;
 }
 
 hr {
-    border-color: var(--color-divider);
+	border-color: var(--color-divider);
 }
 .classic select {
-    @apply border px-1.5 p-1 rounded-full bg-paper-muted
+	@apply rounded-full border bg-paper-muted p-1 px-1.5;
 }
 button {
-    @apply cursor-pointer
+	@apply cursor-pointer;
 }
 
 kbd {
-    @apply bg-paper-muted px-1 mx-0.5 rounded-sm border-ink-muted border font-mono text-xs;
-        -webkit-box-shadow: 1px 1px 0px 0px var(--color-ink-muted);
-        box-shadow: 1px 1px 0px 0px var(--color-ink-muted);
-
+	@apply mx-0.5 rounded-sm border border-ink-muted bg-paper-muted px-1 font-mono text-xs;
+	-webkit-box-shadow: 1px 1px 0px 0px var(--color-ink-muted);
+	box-shadow: 1px 1px 0px 0px var(--color-ink-muted);
 }
 @theme {
-    /* Common */
-    --color-danger: var(--color-red-600);
-    --color-warning: var(--color-yellow-700);
-    --color-success: var(--color-green-600);
+	/* Common */
+	--color-danger: var(--color-red-600);
+	--color-warning: var(--color-yellow-700);
+	--color-success: var(--color-green-600);
 
-    /*
+	/*
      * Warm, paper-like palette for a minimal blogging platform.
      * "Ink" for text, "Paper" for surfaces, "Amber" for accents.
      */
 
-    /* Primary text — warm near-black, softer than pure #000 */
-    --color-ink: #292524;
-    --color-ink-light: #57534e;
-    --color-ink-muted: #78716c;
+	/* Primary text — warm near-black, softer than pure #000 */
+	--color-ink: #292524;
+	--color-ink-light: #57534e;
+	--color-ink-muted: #78716c;
 
-    /* Accent — warm amber for buttons and interactive elements */
-    --color-accent: #d97706;
-    --color-accent-light: #fef3c7;
-    --color-accent-dark: #92400e;
+	/* Accent — warm amber for buttons and interactive elements */
+	--color-accent: #d97706;
+	--color-accent-light: #fef3c7;
+	--color-accent-dark: #92400e;
 
-    /* Anchor links */
-    --color-link: #b45309;
-    --color-link-hover: #92400e;
-    --color-link-visited: #a16207;
-    /* Surfaces — warm off-white paper tones */
-    --color-paper: #faf8f5;
-    --color-paper-muted: #f0ede8;
-    --color-paper-subtle: #e7e5e4;
+	/* Anchor links */
+	--color-link: #b45309;
+	--color-link-hover: #92400e;
+	--color-link-visited: #a16207;
+	/* Surfaces — warm off-white paper tones */
+	--color-paper: #faf8f5;
+	--color-paper-muted: #f0ede8;
+	--color-paper-subtle: #e7e5e4;
 
-    /* Borders / dividers */
-    --color-divider: #d6d3d1;
-    --color-divider-light: #e7e5e4;
+	/* Borders / dividers */
+	--color-divider: #d6d3d1;
+	--color-divider-light: #e7e5e4;
 
-    /*
+	/*
      * Override Tailwind v4 default style variables.
      * These apply globally — bare `border`, `ring`, etc. pick up the theme.
      */
-    --default-border-color: var(--color-divider);
-    --default-ring-color: var(--color-accent);
+	--default-border-color: var(--color-divider);
+	--default-ring-color: var(--color-accent);
 }
 
 @media (prefers-color-scheme: dark) {
-    :root {
-        /* Common */
-        --color-danger: var(--color-red-400);
-        --color-success: var(--color-green-300);
-        --color-warning: var(--color-yellow-400);
-        /* Primary text — cool muted gray */
-        --color-ink: #e2e8f0;
-        --color-ink-light: #cbd5e1;
-        --color-ink-muted: #94a3b8;
+	:root {
+		/* Common */
+		--color-danger: var(--color-red-400);
+		--color-success: var(--color-green-300);
+		--color-warning: var(--color-yellow-400);
+		/* Primary text — cool muted gray */
+		--color-ink: #e2e8f0;
+		--color-ink-light: #cbd5e1;
+		--color-ink-muted: #94a3b8;
 
-        /* Accent — pastel sky blue */
-        --color-accent: #93cce8;
-        --color-accent-light: #0c2d3f;
-        --color-accent-dark: #b8ddf0;
+		/* Accent — pastel sky blue */
+		--color-accent: #93cce8;
+		--color-accent-light: #0c2d3f;
+		--color-accent-dark: #b8ddf0;
 
-        /* Anchor links */
-        --color-link: #93cce8;
-        --color-link-hover: #b8ddf0;
-        --color-link-visited: #6faecb;
+		/* Anchor links */
+		--color-link: #93cce8;
+		--color-link-hover: #b8ddf0;
+		--color-link-visited: #6faecb;
 
-        /* Surfaces — near-black cool slate */
-        --color-paper: #0a0e14;
-        --color-paper-muted: #111827;
-        --color-paper-subtle: #1e293b;
+		/* Surfaces — near-black cool slate */
+		--color-paper: #0a0e14;
+		--color-paper-muted: #111827;
+		--color-paper-subtle: #1e293b;
 
-        /* Borders / dividers */
-        --color-divider: #3a495b;
-        --color-divider-light: #334155;
-    }
+		/* Borders / dividers */
+		--color-divider: #3a495b;
+		--color-divider-light: #334155;
+	}
 }
 
 /* Provides just enough min height to push footer all the way to the bottom.*/
 @utility min-h-page-content {
-    --temp-diff: calc(var(--footer-height) + var(--navbar-height));
-    min-height: calc(100svh - var(--temp-diff));
+	--temp-diff: calc(var(--footer-height) + var(--navbar-height));
+	min-height: calc(100svh - var(--temp-diff));
 }
 
 /* Makes the element fill the remaining height of the page after navbar*/
 @utility h-page-content {
-    height: calc(100svh - var(--navbar-height));
+	height: calc(100svh - var(--navbar-height));
 }
 
 @utility border {
-    border-color: var(--color-divider);
+	border-color: var(--color-divider);
 }
