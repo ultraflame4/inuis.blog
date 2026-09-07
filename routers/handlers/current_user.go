@@ -238,7 +238,6 @@ func (a *ApiHandler) SavePost(c *gin.Context) {
 
 func (a *ApiHandler) ListConnectedOidcProviders(c *gin.Context) {
 	user, _ := meta.GetSession(c)
-
 	existing, err := gorm.G[models.UserIdentity](a.db).Where("user_id = ?", user.ID).Find(c.Request.Context())
 	if err != nil {
 		c.AbortWithStatusJSON(500, gin.H{
@@ -251,7 +250,6 @@ func (a *ApiHandler) ListConnectedOidcProviders(c *gin.Context) {
 	for _, value := range existing {
 		provider_name := strings.ToLower(app.FindProviderName(value.Issuer))
 		providers = append(providers, provider_name)
-		slog.Info("Provider:" + provider_name)
 	}
 
 

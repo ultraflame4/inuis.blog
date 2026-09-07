@@ -10,7 +10,7 @@
 
 	const { data } = $props()
 
-   	const added_providers: string[] = $derived(data['connected_providers']);
+   	const added_providers: string[] = $derived(data['connected_providers'] ?? []);
    	const providers: string[] = $derived(data['providers']);
 
 	async function disconnectProvider(p: string) {
@@ -22,7 +22,6 @@
 		await api.disconnectOidcProvider(fetch, p);
 		invalidateAll();
 	}
-
 
 	let updating_username = $state<Promise<void> | null>(null);
 	async function updateUsername() {
