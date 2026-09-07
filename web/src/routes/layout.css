@@ -57,7 +57,9 @@
     }
 
     .classic a,
-    a.classic {
+    a.classic
+    a.classic:visited,
+    .classic a:visited {
         @apply text-link underline;
     }
 
@@ -69,6 +71,8 @@
     .classic {
         @apply transition-all
     }
+
+
 }
 
 :root {
