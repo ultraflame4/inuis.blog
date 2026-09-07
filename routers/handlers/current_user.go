@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"log/slog"
 	"net/http"
 	"strings"
 
@@ -246,11 +247,13 @@ func (a *ApiHandler) ListConnectedOidcProviders(c *gin.Context) {
 		return
 	}
 
-	var providers []string
+	providers := []string{}
 	for _, value := range existing {
 		provider_name := strings.ToLower(app.FindProviderName(value.Issuer))
 		providers = append(providers, provider_name)
+		slog.Info("Provider:" + provider_name)
 	}
+
 
 	c.JSON(200, gin.H{
 		"status":    "success",
