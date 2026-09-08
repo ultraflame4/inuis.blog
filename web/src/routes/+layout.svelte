@@ -23,5 +23,5 @@
 {@render children()}
 
 <footer class="text-center text-sm h-(--footer-height) flex items-center justify-center">
-    <p>&copy; { data.app_meta.brand_name } { new Date().getFullYear() } | Powered with 💖 by <a class="font-mono underline" href="https://github.com/ultraflame4/inuis">inuis</a> </p>
+    <p><span class="font-serif">&copy;&nbsp;</span>{ data.app_meta.copyright_name } { new Date().getFullYear() } | Powered with 💖 by <a class="font-mono underline" href="https://github.com/ultraflame4/inuis.blog">I.N.U.I.S</a> </p>
 </footer>

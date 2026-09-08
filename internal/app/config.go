@@ -33,6 +33,8 @@ type Config struct {
 
 	// Brand name to use for the application
 	BrandName string
+	// Brand name to use for copyright. Otherwise defaults to BrandName
+	CopyrightName string
 
 	// New users need an invite code to create an account
 	RequireInviteCode bool
@@ -49,13 +51,15 @@ func readConfigFromEnv() Config {
 		}
 		return maxAge
 	}
+	BrandName := getEnv("BRAND_NAME", "inuis.blog")
 	return Config{
 		Host: getEnv("HOST", "localhost"),
 		Port: getEnv("PORT", "8080"),
 		ProxiedAddress: getEnvOrNil("PROXIED_ADDR"),
 		DataDirectory: getEnv("DATA_DIR", "/data"),
 		MaxSessionAge: sessionMaxAge(),
-		BrandName: getEnv("BRAND_NAME", "inuis"),
+		BrandName: BrandName,
+		CopyrightName: getEnv("COPYRIGHT_NAME", BrandName),
 		RequireInviteCode: strings.ToLower(getEnv("REQUIRE_INVITE_CODE", "false")) == "true",
 	}
 }

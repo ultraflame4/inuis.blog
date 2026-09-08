@@ -11,6 +11,7 @@ func (a *ApiHandler) GetAppMeta(c *gin.Context){
 	
 	c.JSON(200, gin.H{
 		"brand_name": a.config.BrandName,
+		"copyright_name": a.config.CopyrightName,
 		"requires_invite_code": a.config.RequireInviteCode || adminless,
 	})
 }

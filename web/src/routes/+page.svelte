@@ -1,5 +1,7 @@
 
 <main class="classic min-h-page-content">
+    <h1>I.N.U.I.S <span class="text-sm align-top">(It's not ugly, it's simple)</span></h1>    
+    <hr/>
     <h2>A tiny, no-nonsense, fast blogging platform</h2>
     <h3>No trackers, minimal JavaScript and some CSS</h3>
     <nav>
@@ -24,7 +26,7 @@
     </ul>
     <h2>Backstory</h2>
     <p>
-        TeenyBlog was inspired by <a href="https://bearblog.dev">bearblog</a>.
+        [I.N.U.I.S] was inspired by <a href="https://bearblog.dev">bearblog</a>.
         <br/>
         Unfortunately, bearblog.dev was written in Python, not easily self-hostable, and that really bothered me.
     </p>

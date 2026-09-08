@@ -45,6 +45,7 @@ export namespace api {
 
     export interface AppMeta {
         brand_name: string;
+        copyright_name: string;
         requires_invite_code: boolean;
     }
 

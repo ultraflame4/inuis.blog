@@ -1,4 +1,4 @@
-# Inuis (It's not ugly, it's simple)
+# I.N.U.I.S (It's not ugly, it's simple)
 
 A tiny, no-nonsense, fast blogging platform written in go.
 
