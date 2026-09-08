@@ -6,9 +6,9 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ultraflame4/bytesblog/internal/app"
-	"github.com/ultraflame4/bytesblog/models"
-	"github.com/ultraflame4/bytesblog/routers/meta"
+	"github.com/ultraflame4/inuis/internal/app"
+	"github.com/ultraflame4/inuis/models"
+	"github.com/ultraflame4/inuis/routers/meta"
 	"gorm.io/gorm"
 )
 

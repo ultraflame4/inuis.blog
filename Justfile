@@ -31,10 +31,10 @@ build:
     just client build
     rm -rf ./dist
     mv ./web/build ./dist
-    mkdir -p ./bin/app
+    mkdir -p ./bin
     go build -o ./bin/app .
 
 
 # Builds and run the binary
 build-x: build
-    ./bin/app/bytesblog.exe
+    ./bin/app/app.exe

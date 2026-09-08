@@ -7,9 +7,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ultraflame4/bytesblog/internal/app"
-	"github.com/ultraflame4/bytesblog/routers/handlers"
-	"github.com/ultraflame4/bytesblog/routers/middlewares"
+	"github.com/ultraflame4/inuis/internal/app"
+	"github.com/ultraflame4/inuis/routers/handlers"
+	"github.com/ultraflame4/inuis/routers/middlewares"
 	"gorm.io/gorm"
 )
 

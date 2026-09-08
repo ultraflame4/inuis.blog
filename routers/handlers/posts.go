@@ -4,8 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ultraflame4/bytesblog/internal/app"
-
+	"github.com/ultraflame4/inuis/internal/app"
 )
 
 // Public unprotected api

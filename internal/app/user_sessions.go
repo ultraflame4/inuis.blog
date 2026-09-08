@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/ultraflame4/bytesblog/models"
+	"github.com/ultraflame4/inuis/models"
 	"gorm.io/gorm"
 )
 

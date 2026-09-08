@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/ultraflame4/bytesblog/internal/app"
-	"github.com/ultraflame4/bytesblog/models"
-	"github.com/ultraflame4/bytesblog/routers"
+	"github.com/ultraflame4/inuis/internal/app"
+	"github.com/ultraflame4/inuis/models"
+	"github.com/ultraflame4/inuis/routers"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )

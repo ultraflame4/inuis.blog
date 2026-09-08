@@ -13,9 +13,9 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ultraflame4/bytesblog/internal/app"
-	"github.com/ultraflame4/bytesblog/models"
-	"github.com/ultraflame4/bytesblog/routers/middlewares"
+	"github.com/ultraflame4/inuis/internal/app"
+	"github.com/ultraflame4/inuis/models"
+	"github.com/ultraflame4/inuis/routers/middlewares"
 	"golang.org/x/oauth2"
 	"gorm.io/gorm"
 )

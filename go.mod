@@ -1,4 +1,4 @@
-module github.com/ultraflame4/bytesblog
+module github.com/ultraflame4/inuis
 
 go 1.26.6
 

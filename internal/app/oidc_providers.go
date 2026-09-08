@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/coreos/go-oidc"
-	"github.com/ultraflame4/bytesblog/models"
+	"github.com/ultraflame4/inuis/models"
 	"golang.org/x/oauth2"
 	"gorm.io/gorm"
 )

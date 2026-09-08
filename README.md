@@ -1,4 +1,4 @@
-# bytesblog
+# Inuis (It's not ugly, it's simple)
 
 A tiny, no-nonsense, fast blogging platform written in go.
 

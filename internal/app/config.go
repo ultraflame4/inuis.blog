@@ -55,10 +55,11 @@ func readConfigFromEnv() Config {
 		ProxiedAddress: getEnvOrNil("PROXIED_ADDR"),
 		DataDirectory: getEnv("DATA_DIR", "/data"),
 		MaxSessionAge: sessionMaxAge(),
-		BrandName: getEnv("BRAND_NAME", "bytes.blog"),
+		BrandName: getEnv("BRAND_NAME", "inuis"),
 		RequireInviteCode: strings.ToLower(getEnv("REQUIRE_INVITE_CODE", "false")) == "true",
 	}
 }
+
 var (
     instance *Config
     once     sync.Once

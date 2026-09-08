@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/ultraflame4/bytesblog/internal/app"
+	"github.com/ultraflame4/inuis/internal/app"
 )
 
 func (a *ApiHandler) GetAppMeta(c *gin.Context){
