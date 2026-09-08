@@ -1,4 +1,5 @@
 
+import { api } from '$lib/api';
 import { nullish } from '$lib/utils';
 import type { PageLoad } from './$types';
 
@@ -10,12 +11,10 @@ export const load: PageLoad = async (e) => {
     let published = false
     if (!nullish(post_hid)) {
 
-        const resp = await e.fetch(`/api/me/posts/${post_hid}`);
-        if (resp.ok) {
-            const data = await resp.json();
-            content = data.post.Content;
-            published = data.post.AllowPublic;
-        }
+        const post = await api.fetchPost(e.fetch, post_hid)
+        content = post.Content;
+        published = post.AllowPublic;
+
     }
 
     return { ...data, post_hid, content, published };

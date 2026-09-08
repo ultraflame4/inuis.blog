@@ -48,9 +48,20 @@ func CreatePost(content string, userID uint, db *gorm.DB, ctx context.Context) (
 	return post, err
 }
 
+
+// Finds a post by post_hid
+// 
+// This will return ok as long as the user is authorised to read the post.
+// 
+// Params:
+// 	- `hid` - Hid of post
+// 	- `userId` - User finding the post
+// 
+// Returns: (post_data, ok)
+// 
 func FindPostByHID(hid string, userID uint, db *gorm.DB, ctx context.Context) (models.Post, bool) {
-	post, err := gorm.G[models.Post](db).Where("h_id = ?", hid).First(ctx)
-	return post, err == nil && post.UserID == userID
+	post, err := gorm.G[models.Post](db).Preload("User", nil).Where("h_id = ?", hid).First(ctx)
+	return post, err == nil && (post.UserID == userID || post.AllowPublic)
 }
 
 func FindPublicPostByHID(hid string, db *gorm.DB, ctx context.Context) (models.Post, bool) {

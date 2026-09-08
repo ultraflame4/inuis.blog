@@ -131,9 +131,36 @@ export namespace api {
     }
 
 
+    /**
+     * Fetches a public post using it's hid
+     * @param f Fetch function
+     * @param hid post's hid
+     * @returns 
+     */
+    export async function fetchPublicPost(f: FetchLike, hid: string): Promise<Post> {
+        const res = await f(`/api/posts/${hid}`);
+        if (!res.ok) {
+            throw new Error('Failed to fetch post');
+        }
+        const data = await res.json();
+        return data["post"] as Post;
+    }
 
-    export async function fetchPost(f: FetchLike, post_id: string): Promise<Post> {
-        const res = await f(`/api/posts/${post_id}`);
+    /**
+     * Fetches a post using it's hid.
+     * 
+     * This is similar to `fetchPublicPost` except it works for all posts the user has access to.
+     * 
+     * This includes:
+     * - The user's private posts
+     * - All public posts
+     * 
+     * @param f Fetch function
+     * @param hid post's hid
+     * @returns 
+     */
+    export async function fetchPost(f: FetchLike, post_hid: string): Promise<Post> {
+        const res = await f(`/api/me/posts/${post_hid}`);
         if (!res.ok) {
             throw new Error('Failed to fetch post');
         }
