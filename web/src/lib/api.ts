@@ -105,7 +105,7 @@ export namespace api {
         const resp = await f(`/api/me/oidc/${provider}/disconnect`);
         if (!resp.ok) {
             console.error("Failed to disconnect provider. \nStatus: " + resp.status, "\nBody:\n" + await resp.text())
-            if (resp.status == 401) {
+            if (resp.status == 409) {
                 throw new Error('You need atleast 1 OIDC provider connected!');
             }
             throw new Error('Failed to disconnect provider');

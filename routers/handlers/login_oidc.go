@@ -72,8 +72,6 @@ func (*ApiHandler) StartOauthLoginFlow(c *gin.Context) {
 	setCallbackCookie(c, "intent", intent)
 	// -- end
 
-
-	 
 	
 	if len(config.Config.ClientSecret) == 0 {
 		// No client secret. Default to pkce
