@@ -20,7 +20,7 @@ func (a *ApiHandler) GetUserPublicInfo(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"user": meta.MakeUserInfo(user, false),
+		"user": user,
 	})
 	return
 }

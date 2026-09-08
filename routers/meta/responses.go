@@ -1,9 +1,6 @@
 package meta
 
 import (
-	"time"
-
-	"github.com/ultraflame4/bytesblog/models"
 	"gorm.io/gorm"
 )
 
@@ -40,27 +37,4 @@ type PostSummary struct {
 	Summary     string
 	AllowPublic bool
 	HID         string `json:"hid"`
-}
-
-type UserInfo struct {
-	Username  string
-	HID       string `json:"hid"`
-	CreatedAt time.Time
-	UpdatedAt time.Time 
-	DeletedAt gorm.DeletedAt `json:"DeletedAt,omitempty"`
-	Roles     string `json:"Roles,omitempty"`
-}
-
-func MakeUserInfo(userModel models.User, includeRoles bool) UserInfo {
-	info := UserInfo{
-		Username:  userModel.Username,
-		HID:       userModel.HID,
-		CreatedAt: userModel.CreatedAt,
-		UpdatedAt: userModel.UpdatedAt,
-		DeletedAt: userModel.DeletedAt,
-	}
-	if includeRoles {
-		info.Roles = userModel.Roles
-	}
-	return info
 }

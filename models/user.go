@@ -15,7 +15,8 @@ type User struct {
 	// Used to prevent ID iteration attacks. (Makes scraping information impossible by increasing IDs)
 	HID string `json:"hid" gorm:"uniqueIndex"`
 	// Metadata string delimited by semicolons
-	Roles string
+	// Never let this field be serialised!
+	Roles string `json:"-"`
 }
 
 func (u *User) IsDeleted() bool {

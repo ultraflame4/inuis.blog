@@ -14,10 +14,10 @@ export namespace api {
         CreatedAt: string
         UpdatedAt: string
         DeletedAt?: string | null
-        Roles?: string
-
         // Hid used to fetch user content in the database.
         hid: string
+        // May be omitted by server for security reasons
+        roles?: string
 
     }
 
@@ -170,5 +170,14 @@ export namespace api {
         }
         const data = await res.json();
         return data["post"] as Post;
+    }
+
+    export async function fetchUser(f: FetchLike, user_hid: string): Promise<UserInfo> {
+        const res = await f(`/api/user/${user_hid}`);
+        if (!res.ok) {
+            throw new Error('Failed to fetch user!');
+        }
+        const data = await res.json();
+        return data["user"] as UserInfo;
     }
 }
