@@ -17,7 +17,7 @@
 		<ul class="flex flex-col gap-2">
 			{#each providers as provider}
 				<li class="block">
-					<OidcLoginButton provider_id={provider} intent="signup" prefix="Sign up with" inviteCode={inviteCode} requireInviteCode={data.app_meta.requires_invite_code} />
+					<OidcLoginButton provider_id={provider} intent="signup" prefix="Sign up with" inviteCode={inviteCode} requireInviteCode={data.app_meta.require_invite_code} />
 				</li>
 			{/each}
 		</ul>
