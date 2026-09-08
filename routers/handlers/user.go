@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/ultraflame4/bytesblog/internal/app"
@@ -33,14 +34,30 @@ func (a *ApiHandler) ListUserPublicPosts(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "user not found"})
 		return
 	}
+
+	filterQuery := strings.ToLower(c.Query("filter"))
+	searchQuery := strings.ToLower(c.Query("q"))
 	pageQuery := meta.GetPagination(c)
 	ctx := c.Request.Context()
 
-	sql := gorm.G[models.Post](db).Where("user_id = ? AND allow_public = true", user.ID)
-	sql = sql.Order("created_at desc")
-	sql = meta.ApplySqlPagination(pageQuery, sql)
-	total_count, err := sql.Count(ctx, "ID")
-	posts, err := sql.Find(ctx)
+	sqlQuery := gorm.G[models.Post](db).Where("user_id = ? AND allow_public = true", user.ID)
+
+	sqlQuery = sqlQuery.Order("created_at desc")
+	sqlQuery = meta.ApplySqlPagination(pageQuery, sqlQuery)
+	if filterQuery == "published" {
+		sqlQuery = sqlQuery.Where("allow_public = ?", true)
+	} else if filterQuery == "private" {
+		sqlQuery = sqlQuery.Where("allow_public = ?", false)
+	}
+
+	if searchQuery != "" {
+		sqlQuery = sqlQuery.Where("title LIKE ?", "%"+searchQuery+"%")
+	}
+
+	
+	total_count, err := sqlQuery.Count(ctx, "ID")
+	posts, err := sqlQuery.Find(ctx)
+	
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return

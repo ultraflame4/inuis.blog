@@ -9,7 +9,6 @@
 	const author = $derived(data.author);
 	const author_posts = $derived(data.author_posts);
 
-
 	let searchQuery = $state(page.url.searchParams.get('q') ?? '');
 	async function update_query(key: string, value: string | null | undefined) {
 		// await invalidate('data:posts')
@@ -20,7 +19,7 @@
 		await goto(`?${searchParams.toString()}`, { replaceState: true });
 	}
 
-	$inspect(author_posts)
+	$inspect(author_posts);
 </script>
 
 <main class="min-h-page-content p-4">
@@ -40,13 +39,19 @@
 				e.preventDefault();
 			}}
 		>
-			<input class="my-0 h-6 grow" bind:value={searchQuery} />
+			<input class="my-0 h-6 grow" bind:value={searchQuery} type="search" />
 			<button type="submit" class="my-0">Search</button>
 		</form>
 	</div>
 
 	{#if author_posts.posts.length === 0}
-		<p class="text-ink-muted">No posts yet.</p>
+		{#if searchQuery !== ''}
+			<p class="text-ink-muted">No post matching query: "{searchQuery}"</p>
+			<br/>
+			<a class="no-underline hover:underline cursor-pointer" href="/u/{author.hid}">[Clear filters]</a>
+		{:else}
+			<p class="text-ink-muted">No posts yet.</p>
+		{/if}
 	{:else}
 		<ul class="flex flex-wrap items-center justify-center gap-4 sm:justify-start">
 			{#each author_posts.posts as post, index}

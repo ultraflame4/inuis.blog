@@ -11,7 +11,7 @@ export const load: PageLoad = async ({ url, ...event }) => {
     const search = url.searchParams.get("q") ?? "";
     const filter = url.searchParams.get("filter") ?? undefined;
 
-    const author_posts = await api.listUserPosts(event.fetch, author_hid, page)
+    const author_posts = await api.listUserPosts(event.fetch, author_hid, page, filter, search)
 
     return {
         ...parent,
