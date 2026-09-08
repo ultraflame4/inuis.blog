@@ -24,3 +24,7 @@ configure: _configure_client
 [working-directory("./web")]
 _configure_client:
     npm install
+
+
+build:
+    just client build
