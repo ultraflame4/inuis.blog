@@ -36,15 +36,18 @@ type Config struct {
 	// Brand name to use for copyright. Otherwise defaults to BrandName
 	CopyrightName string
 
-	// New users need an invite code to create an account
+	// Require New users need an invite code to create an account
+	//
+	// The enviromental variable is parsed using `strconv.ParseBool` (https://pkg.go.dev/strconv#ParseBool)
+	// 
+	// If parsing fails, require invite code will be enabled as a precautionary measure.
 	RequireInviteCode bool
 }
-
 
 // Load config from env
 func readConfigFromEnv() Config {
 	// Returns the maximum age of a session in seconds
-	sessionMaxAge := func () int {
+	sessionMaxAge := func() int {
 		maxAge, err := strconv.Atoi(getEnv("MAX_SESSION_AGE", "3600"))
 		if err != nil {
 			return 60 * 60 * 4
@@ -52,26 +55,30 @@ func readConfigFromEnv() Config {
 		return maxAge
 	}
 	BrandName := getEnv("BRAND_NAME", "inuis.blog")
+	requireInviteCode, err := strconv.ParseBool(strings.ToLower(getEnv("REQUIRE_INVITE_CODE", "false")))
+	if err != nil {
+		requireInviteCode = true
+	}
 	return Config{
-		Host: getEnv("HOST", "localhost"),
-		Port: getEnv("PORT", "8080"),
-		ProxiedAddress: getEnvOrNil("PROXIED_ADDR"),
-		DataDirectory: getEnv("DATA_DIR", "/data"),
-		MaxSessionAge: sessionMaxAge(),
-		BrandName: BrandName,
-		CopyrightName: getEnv("COPYRIGHT_NAME", BrandName),
-		RequireInviteCode: strings.ToLower(getEnv("REQUIRE_INVITE_CODE", "false")) == "true",
+		Host:              getEnv("HOST", "localhost"),
+		Port:              getEnv("PORT", "8080"),
+		ProxiedAddress:    getEnvOrNil("PROXIED_ADDR"),
+		DataDirectory:     getEnv("DATA_DIR", "/data"),
+		MaxSessionAge:     sessionMaxAge(),
+		BrandName:         BrandName,
+		CopyrightName:     getEnv("COPYRIGHT_NAME", BrandName),
+		RequireInviteCode: requireInviteCode,
 	}
 }
 
 var (
-    instance *Config
-    once     sync.Once
+	instance *Config
+	once     sync.Once
 )
 
-func GetConfig() *Config{
+func GetConfig() *Config {
 	once.Do(func() {
-		c := readConfigFromEnv();
+		c := readConfigFromEnv()
 		instance = &c
 	})
 	return instance
@@ -94,7 +101,7 @@ func (c *Config) ServerAddress() string {
 // PROXIED_ADDR=localhost:5173
 // ```
 func (c *Config) PublicServerAddr() string {
-	if c.ProxiedAddress != nil{
+	if c.ProxiedAddress != nil {
 		return strings.TrimSuffix(*c.ProxiedAddress, "/")
 	}
 	return c.ServerAddress()
