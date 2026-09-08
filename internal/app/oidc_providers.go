@@ -13,18 +13,17 @@ import (
 	"gorm.io/gorm"
 )
 
-
 type OidcProvider struct {
-	Verifier* oidc.IDTokenVerifier
+	Verifier *oidc.IDTokenVerifier
 	Config   oauth2.Config
-	Provider* oidc.Provider
-	Issuer string
+	Provider *oidc.Provider
+	Issuer   string
 }
 
 var loadedProviders map[string]OidcProvider
 var issuer2ProviderName map[string]string
 
-func FindProviderName(issuer_url string) string{
+func FindProviderName(issuer_url string) string {
 	return issuer2ProviderName[issuer_url]
 }
 
@@ -46,7 +45,7 @@ func RegisterOIDCProviders(ctx context.Context) {
 			provider, err := oidc.NewProvider(ctx, oidc_url)
 			if err != nil {
 
-				logger.Error("Failed to create provider for " + oidc_name + ":\n\t", err.Error())
+				logger.Error("Failed to create provider for "+oidc_name+":\n\t", err.Error())
 				continue
 			}
 			oidcConfig := oidc.Config{
@@ -55,30 +54,28 @@ func RegisterOIDCProviders(ctx context.Context) {
 			verifier := provider.Verifier(&oidcConfig)
 			redirectURL := fmt.Sprintf("http://%s/api/oidc/%s/callback", server_addr, strings.ToLower(oidc_name))
 			config := oauth2.Config{
-				ClientID:  client_id,
+				ClientID:     client_id,
 				ClientSecret: os.Getenv("OIDC_" + oidc_name + "_CLIENT_SECRET"),
-				RedirectURL: redirectURL,
-				Endpoint: provider.Endpoint(),
-				Scopes: []string{oidc.ScopeOpenID, "profile", "email"},
+				RedirectURL:  redirectURL,
+				Endpoint:     provider.Endpoint(),
+				Scopes:       []string{oidc.ScopeOpenID, "profile", "email"},
 			}
 			issuer2ProviderName[oidc_url] = oidc_name
 			loadedProviders[oidc_name] = OidcProvider{
 				Verifier: verifier,
 				Config:   config,
 				Provider: provider,
-				Issuer: oidc_url,
+				Issuer:   oidc_url,
 			}
 
 			slog.Info("Registered oidc provider", "name", oidc_name)
-			slog.Info(oidc_name,"login",fmt.Sprintf("http://%s/api/oidc/%s/login", server_addr, strings.ToLower(oidc_name)))
-			slog.Info(oidc_name,"callback",config.RedirectURL)
-
+			slog.Info(oidc_name, "login", fmt.Sprintf("http://%s/api/oidc/%s/login", server_addr, strings.ToLower(oidc_name)))
+			slog.Info(oidc_name, "callback", config.RedirectURL)
 
 		}
 	}
 
 }
-
 
 // Get GetOidcProvider by name. Case insensitive.
 func GetOidcProvider(name string) (OidcProvider, bool) {
@@ -87,7 +84,7 @@ func GetOidcProvider(name string) (OidcProvider, bool) {
 }
 
 // Return list of oidc provider names
-func GetProviders()  []string {
+func GetProviders() []string {
 	names := make([]string, 0, len(loadedProviders))
 	for name, _ := range loadedProviders {
 		names = append(names, strings.ToLower(name))
@@ -95,10 +92,30 @@ func GetProviders()  []string {
 	return names
 }
 
-
 // Remove this OidcProvider from the user
 func (p *OidcProvider) RemoveFromUser(db *gorm.DB, ctx context.Context, userID uint) error {
 	issuer := p.Issuer
 	_, err := gorm.G[models.UserIdentity](db).Where("user_id = ? AND issuer = ?", userID, issuer).Delete(ctx)
 	return err
+}
+
+func ListUserIdentities(userId uint, db *gorm.DB, ctx context.Context) ([]models.UserIdentity, error){
+	return gorm.G[models.UserIdentity](db).Where("user_id = ?", userId).Find(ctx)
+}
+
+
+// Similar to ListUserIdentities, but will convert it into provider names.
+// 
+// More accurate as inactive identities (identities, for providers that aren't loaded) will not be returned.
+func ListUserProviders(userId uint, db *gorm.DB, ctx context.Context) ([]string, error){
+	results, err := gorm.G[models.UserIdentity](db).Where("user_id = ?", userId).Find(ctx)
+	if err != nil{
+		return nil, err
+	}
+	providers := []string{}
+	for _, value := range results {
+		provider_name := strings.ToLower(FindProviderName(value.Issuer))
+		providers = append(providers, provider_name)
+	}
+	return providers, nil
 }

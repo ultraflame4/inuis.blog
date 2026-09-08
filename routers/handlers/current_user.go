@@ -80,7 +80,7 @@ func (a *ApiHandler) ListPosts(c *gin.Context) {
 		return
 	}
 
-	sqlQuery := meta.ApplySqlPagination(pageQuery, sql);
+	sqlQuery := meta.ApplySqlPagination(pageQuery, sql)
 
 	if filterQuery == "published" {
 		sqlQuery = sqlQuery.Where("allow_public = ?", true)
@@ -148,7 +148,7 @@ func (a *ApiHandler) PublishPost(c *gin.Context) {
 	post_hid := c.Param("hid")
 	make_public := c.Query("public") == "true"
 
-	if post, ok := app.FindPostByHID(post_hid, user.ID, a.db, c.Request.Context()); ok{
+	if post, ok := app.FindPostByHID(post_hid, user.ID, a.db, c.Request.Context()); ok {
 		post.AllowPublic = make_public
 		a.db.Save(&post)
 		c.JSON(http.StatusOK, gin.H{
@@ -202,7 +202,7 @@ func (a *ApiHandler) SavePost(c *gin.Context) {
 
 	if post_hid != "" {
 		// Check if post exists and belongs to the user
-		existingPost, ok := app.FindPostByHID(post_hid, user.ID, db, c.Request.Context());
+		existingPost, ok := app.FindPostByHID(post_hid, user.ID, db, c.Request.Context())
 		if !ok {
 			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
 				"error": "Post not found",
@@ -237,21 +237,13 @@ func (a *ApiHandler) SavePost(c *gin.Context) {
 
 func (a *ApiHandler) ListConnectedOidcProviders(c *gin.Context) {
 	user, _ := meta.GetSession(c)
-	existing, err := gorm.G[models.UserIdentity](a.db).Where("user_id = ?", user.ID).Find(c.Request.Context())
+	providers, err := app.ListUserProviders(user.ID, a.db, c.Request.Context())
 	if err != nil {
 		c.AbortWithStatusJSON(500, gin.H{
 			"error": "Failed to retrieve connected OIDC providers: " + err.Error(),
 		})
 		return
 	}
-
-	providers := []string{}
-	for _, value := range existing {
-		provider_name := strings.ToLower(app.FindProviderName(value.Issuer))
-		providers = append(providers, provider_name)
-	}
-
-
 	c.JSON(200, gin.H{
 		"status":    "success",
 		"providers": providers,
@@ -269,17 +261,33 @@ func (a *ApiHandler) UserDisconnectOidcProvider(c *gin.Context) {
 		return
 	}
 
+	providers, err := app.ListUserProviders(user.ID, a.db, c.Request.Context())
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to retrieve user connected OIDC providers: " + err.Error(),
+		})
+		return
+	}
+
+	// If there is only 1 left, stop user from disconnecting
+	if len(providers) == 1 {
+		c.AbortWithStatusJSON(http.StatusConflict, gin.H{
+			"error": "You must have atleast 1 OIDC provider connected to allow you to login!",
+		})
+		return
+	}
+
 	conf, ok := app.GetOidcProvider(provider)
 	if !ok {
-		c.AbortWithStatusJSON(404, gin.H{
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
 			"error": "OIDC provider " + provider + " not found",
 		})
 		return
 	}
 
-	err := conf.RemoveFromUser(a.db, c.Request.Context(), user.ID)
+	err = conf.RemoveFromUser(a.db, c.Request.Context(), user.ID)
 	if err != nil {
-		c.AbortWithStatusJSON(500, gin.H{
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to remove OIDC provider: " + err.Error(),
 		})
 		return
