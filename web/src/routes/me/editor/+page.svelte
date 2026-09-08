@@ -1,5 +1,4 @@
 <script lang="ts">
-
 	import { EditorView } from 'codemirror';
 	import { asFormData } from '$lib/utils';
 	import { goto } from '$app/navigation';
@@ -32,8 +31,6 @@
 		t = t.startsWith('#') ? t.slice(1) : t;
 		title = t.trim();
 	}
-
-
 
 	let saving_post = $state<Promise<void> | null>(null);
 	let deleting_post = $state<Promise<void> | null>(null);
@@ -157,10 +154,10 @@
 		</div>
 	</div>
 	<Editor
-		bind:view={view}
+		bind:view
 		hidden={showPreview}
 		initialContent={data.content}
-		update={(view, changed)=> {
+		update={(view, changed) => {
 			if (changed) unsaved_changes = true;
 			updateTitle(view);
 		}}
@@ -184,9 +181,8 @@
 			{/if}
 		</button>
 		<div class="my-0 mr-auto"></div>
-		{#if published}
-			<a href="/posts/{post_hid}" class="my-0">View published post</a>
-		{/if}
+
+		<a href="/posts/{post_hid}" class="my-0">View post page</a>
 	</div>
 	<br />
 </main>
