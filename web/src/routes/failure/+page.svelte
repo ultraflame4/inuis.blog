@@ -65,6 +65,23 @@
 					href: '/me/elevate'
 				}
 			]
+		},
+		add_identity_in_use: {
+			hide_providers: true,
+			title: () => 'Identity Already in use',
+			desc: () => `
+			The identity (email: ${queries.get('email')}) for ${queries.get('provider')} is already in use by another account.
+
+			As such, you cannot use connect it to your account!
+
+			`,
+			links: [
+		
+				{
+					label: 'Back to Settings',
+					href: '/me/settings'
+				}
+			]
 		}
 	};
 
@@ -73,11 +90,10 @@
 	const hide_providers = reasons[fail_reason]?.hide_providers ?? false;
 	const links = reasons[fail_reason]?.links ?? [];
 	const show_close = reasons[fail_reason]?.show_cancel ?? false;
-
 </script>
 
 <main class="min-h-page-content space-y-4 p-4 text-center">
-	<h2 class="classic text-center">{title}</h2>
+	<h2 class="classic text-center capitalize">{title}</h2>
 	<h3 class="text-center">
 		<code class="border border-divider-light px-2 py-1 text-link">{fail_reason}</code>
 	</h3>
@@ -104,14 +120,16 @@
 		</div>
 	{/if}
 
-	{#each links as link}
-		<a href={link.href} class="classic text-center font-mono no-underline hover:underline"
-			>[{link.label ?? link.href}]</a
-		>
-	{/each}
+	<div class="flex justify-center gap-2">
+		{#each links as link}
+			<a href={link.href} class="classic text-center font-mono no-underline hover:underline"
+				>[{link.label ?? link.href}]</a
+			>
+		{/each}
+	</div>
 
 	{#if show_close}
-	    <br/>
-	    <button class="text-danger px-4" onclick={()=>window.close()}>Close</button>
+		<br />
+		<button class="px-4 text-danger" onclick={() => window.close()}>Close</button>
 	{/if}
 </main>

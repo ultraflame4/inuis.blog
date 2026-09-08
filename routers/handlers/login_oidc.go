@@ -194,19 +194,36 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 		}
 
 		user := session.User
-		// Attach identity
-		identity := models.UserIdentity{
-			Subject: userInfo.Subject,
-			Email:   &userInfo.Email,
-			Issuer:  conf.Issuer,
-			UserID:  user.ID,
+
+		// Check if the is already in use!
+		existing, err := app.FindUserIdentity(userInfo.Subject, conf.Issuer, a.db, c.Request.Context())
+		if err == nil {
+			// If existing identity already belongs to user, ignroe and  just return success
+			if existing.UserID == user.ID {
+				// Ignore, do nothing
+			} else {
+				// Otherwise redirect to error (Identity in use!)
+				c.Redirect(http.StatusFound,
+					fmt.Sprintf("/failure?reason=add_identity_in_use&provider=%s&email=%s", oidc_name, userInfo.Email),
+				)
+				return
+			}
+		} else {
+			// Attach identity
+			identity := models.UserIdentity{
+				Subject: userInfo.Subject,
+				Email:   &userInfo.Email,
+				Issuer:  conf.Issuer,
+				UserID:  user.ID,
+			}
+			if err := gorm.G[models.UserIdentity](a.db).Create(c.Request.Context(), &identity); err != nil {
+				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+					"error": "Failed to add identity. Error: " + err.Error(),
+				})
+				return
+			}
 		}
-		if err := gorm.G[models.UserIdentity](a.db).Create(c.Request.Context(), &identity); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-				"error": "Failed to add identity. Error: " + err.Error(),
-			})
-			return
-		}
+
 		c.Redirect(http.StatusFound, "/success?reason=add_identity&provider="+oidc_name)
 		return
 
@@ -223,7 +240,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 		// Check if the identity user elevated with matches the user session!
 		identity, err := app.FindUserIdentity(userInfo.Subject, conf.Issuer, a.db, c.Request.Context())
 		if err != nil || identity.UserID != session.UserID {
-			c.Redirect(http.StatusFound, "/login-failure?reason=elevate_fail")
+			c.Redirect(http.StatusFound, "/failure?reason=elevate_fail")
 			return
 		}
 		session.ElevateNow(a.db, c.Request.Context())
@@ -236,7 +253,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 
 		// Require signup intent!
 		if intent != IntentSignup {
-			c.Redirect(http.StatusFound, fmt.Sprintf("/login-failure?reason=signup_required&email=%s", userInfo.Email))
+			c.Redirect(http.StatusFound, fmt.Sprintf("/failure?reason=signup_required&email=%s", userInfo.Email))
 			return
 		}
 
@@ -318,7 +335,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 
 					// Identity not registered.
 					// Should reject oauth, ask user to login with correct identity first, then connect provider when logged in
-					c.Redirect(http.StatusFound, fmt.Sprintf("/login-failure?reason=bad_identity&allowed=%s&email=%s", allowed_providers.String(), userInfo.Email))
+					c.Redirect(http.StatusFound, fmt.Sprintf("/failure?reason=bad_identity&allowed=%s&email=%s", allowed_providers.String(), userInfo.Email))
 					return
 				}
 				// Edge case here, the user has this identity registered but with a different subject.
@@ -340,7 +357,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 					allowed_providers.WriteString(provider_name)
 				}
 
-				c.Redirect(http.StatusFound, fmt.Sprintf("/login-failure?reason=bad_subject&expected=%s&received=%s&email=%s&allowed=%s", identity.Subject, userInfo.Subject, userInfo.Email, allowed_providers.String()))
+				c.Redirect(http.StatusFound, fmt.Sprintf("/failure?reason=bad_subject&expected=%s&received=%s&email=%s&allowed=%s", identity.Subject, userInfo.Subject, userInfo.Email, allowed_providers.String()))
 				return
 			} else {
 				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
