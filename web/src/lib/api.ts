@@ -178,4 +178,31 @@ export namespace api {
         const data = await res.json();
         return data["user"] as UserInfo;
     }
+
+    export interface PostSummary {
+        ID: number;
+        CreatedAt: string;
+        UpdatedAt: string;
+        DeletedAt: string | null;
+        Title: string;
+        Summary: string;
+        AllowPublic: boolean;
+        hid: string;
+    }
+
+    export async function listUserPosts(f: FetchLike, user_hid: string, page: string | number): Promise<Paginated<PostSummary>> {
+        const params = new URLSearchParams({ page: page.toString() });
+        const resp = await f(`/api/user/${user_hid}/posts?${params.toString()}`);
+        if (!resp.ok) {
+            console.error("Failed to fetch user posts. \nStatus: " + resp.status, "\nBody:\n" + await resp.text())
+            throw new Error('Failed to fetch user posts');
+        }
+        const data = await resp.json();
+        return {
+            items: data.posts,
+            page: data.page,
+            per_page: data.per_page,
+            total_pages: data.total_pages,
+        };
+    }
 }
