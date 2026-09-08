@@ -12,7 +12,7 @@
 <main class="p-4">
     <header class="flex flex-wrap gap-4">
         <p><span class="font-semibold">Published by</span>: <a class="classic" href="/u/{author.hid}">@{author.Username}</a></p>
-        {#if author.ID === data.user?.ID}
+        {#if author.hid === data.user?.hid}
             <a href="/me/editor?hid={data.post_data.hid}" class="underline">/edit</a>
         {/if}
         <div class="mr-auto"></div>

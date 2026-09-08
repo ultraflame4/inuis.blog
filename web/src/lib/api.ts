@@ -9,12 +9,13 @@ export namespace api {
         total_pages: number;
     }
 
-    export interface User {
-        ID: string;
-        Username: string;
-        CreatedAt: string;
-        DeletedAt: string;
-        UpdatedAt: string;
+    export interface UserInfo {
+        Username: string
+        CreatedAt: string
+        UpdatedAt: string
+        DeletedAt?: string | null
+        Roles?: string
+
         // Hid used to fetch user content in the database.
         hid: string
 
@@ -35,7 +36,7 @@ export namespace api {
         // Author id of the post
         UserID: number
         // Author of the post
-        User: User
+        User: UserInfo
         AllowPublic: boolean
 
     }
@@ -80,13 +81,13 @@ export namespace api {
 
     }
 
-    export async function fetchSession(f: FetchLike): Promise<{ is_elevated: boolean; user: User | null }> {
+    export async function fetchSession(f: FetchLike): Promise<{ is_elevated: boolean; user: UserInfo | null }> {
         const response = await f('/api/me');
         if (!response.ok) {
             return { user: null, is_elevated: false };
         }
         const data = await response.json();
-        const user: User = data.user;
+        const user: UserInfo = data.user;
         const is_elevated = data.session_elevated;
         return { user, is_elevated };
     }

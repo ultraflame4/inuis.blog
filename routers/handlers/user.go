@@ -10,11 +10,25 @@ import (
 	"gorm.io/gorm"
 )
 
+func (a *ApiHandler) GetUserPublicInfo(c *gin.Context) {
+	db := a.db
+	user_hid := c.Param("user_hid")
+	user, found := app.FindUserByHid(user_hid, db, c.Request.Context())
+	if !found {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"user": meta.MakeUserInfo(user, false),
+	})
+	return
+}
 
 func (a *ApiHandler) ListUserPublicPosts(c *gin.Context) {
 	db := a.db
 	user_hid := c.Param("user_hid")
-	user_id, found := app.FindUserByHid(user_hid, a.db, c.Request.Context())
+	user, found := app.FindUserByHid(user_hid, db, c.Request.Context())
 	if !found {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "user not found"})
 		return
@@ -22,8 +36,8 @@ func (a *ApiHandler) ListUserPublicPosts(c *gin.Context) {
 	pageQuery := meta.GetPagination(c)
 	ctx := c.Request.Context()
 
-	sql := gorm.G[models.Post](db).Where("user_id = ? AND allow_public = true", user_id)
-	sql = meta.ApplySqlPagination(pageQuery, sql);
+	sql := gorm.G[models.Post](db).Where("user_id = ? AND allow_public = true", user.ID)
+	sql = meta.ApplySqlPagination(pageQuery, sql)
 	total_count, err := sql.Count(ctx, "ID")
 	posts, err := sql.Find(ctx)
 	if err != nil {
@@ -40,16 +54,16 @@ func (a *ApiHandler) ListUserPublicPosts(c *gin.Context) {
 
 	for _, post := range posts {
 		summaries = append(summaries, meta.PostSummary{
-			Model:   post.Model,
-			Title:   post.Title,
-			Summary: post.Summary,
+			Model:       post.Model,
+			Title:       post.Title,
+			Summary:     post.Summary,
 			AllowPublic: post.AllowPublic,
 		})
 	}
 
 	c.JSON(http.StatusOK, Response{
 		PageMeta: meta.CreatePageMeta(pageQuery, int(total_count)),
-		Posts: summaries,
+		Posts:    summaries,
 	})
 
 }

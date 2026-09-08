@@ -47,6 +47,7 @@ func InitRouter(db *gorm.DB) *gin.Engine {
 	}
 	{
 		_user := _api.Group("/user")
+		_user.GET("/:user_hid", handlers.GetUserPublicInfo)
 		_user.GET("/:user_hid/posts", handlers.ListUserPublicPosts)
 	}
 

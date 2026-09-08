@@ -1,16 +1,21 @@
 package meta
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"github.com/ultraflame4/bytesblog/models"
+	"gorm.io/gorm"
+)
+
 type PageMeta struct {
 	// Page number
-	Page       int `json:"page"`
+	Page int `json:"page"`
 	// Items per page
-  	PerPage    int `json:"per_page"`
-   	// TotalItems number of items (includes other pages aswell)
-  	TotalItems      int `json:"total_items"`
-   	// Total number of pages
-  	TotalPages int `json:"total_pages"`
-
+	PerPage int `json:"per_page"`
+	// TotalItems number of items (includes other pages aswell)
+	TotalItems int `json:"total_items"`
+	// Total number of pages
+	TotalPages int `json:"total_pages"`
 }
 
 func CreatePageMeta(q PageQuery, total_count int) PageMeta {
@@ -21,20 +26,41 @@ func CreatePageMeta(q PageQuery, total_count int) PageMeta {
 		total_pages++
 	}
 	return PageMeta{
-		Page:  q.Page,
-		PerPage: q.Limit,
+		Page:       q.Page,
+		PerPage:    q.Limit,
 		TotalItems: total_count,
 		TotalPages: max(1, total_pages), // Always a minimum of 1 page
 	}
 }
 
-
-
 // Summarised version of a post.
 type PostSummary struct {
 	gorm.Model
-	Title string
-	Summary string
+	Title       string
+	Summary     string
 	AllowPublic bool
-	HID string `json:"hid"`
+	HID         string `json:"hid"`
+}
+
+type UserInfo struct {
+	Username  string
+	HID       string `json:"hid"`
+	CreatedAt time.Time
+	UpdatedAt time.Time 
+	DeletedAt gorm.DeletedAt `json:"DeletedAt,omitempty"`
+	Roles     string `json:"Roles,omitempty"`
+}
+
+func MakeUserInfo(userModel models.User, includeRoles bool) UserInfo {
+	info := UserInfo{
+		Username:  userModel.Username,
+		HID:       userModel.HID,
+		CreatedAt: userModel.CreatedAt,
+		UpdatedAt: userModel.UpdatedAt,
+		DeletedAt: userModel.DeletedAt,
+	}
+	if includeRoles {
+		info.Roles = userModel.Roles
+	}
+	return info
 }
