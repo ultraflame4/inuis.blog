@@ -220,6 +220,12 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 			})
 			return
 		}
+		// Check if the identity user elevated with matches the user session!
+		identity, err := app.FindUserIdentity(userInfo.Subject, conf.Issuer, a.db, c.Request.Context())
+		if err != nil || identity.UserID != session.UserID {
+			c.Redirect(http.StatusFound, "/login-failure?reason=elevate_fail")
+			return
+		}
 		session.ElevateNow(a.db, c.Request.Context())
 		c.Redirect(http.StatusFound, "/success?reason=session_elevated")
 		return
@@ -288,10 +294,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 
 	} else {
 		// Fetch identity
-		identity, err := gorm.G[models.UserIdentity](a.db).
-			Preload("User", nil).
-			Where("subject = ? AND issuer = ?", userInfo.Subject, conf.Issuer).
-			First(c.Request.Context())
+		identity, err := app.FindUserIdentity(userInfo.Subject, conf.Issuer, a.db, c.Request.Context())
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				// Here we already know there is a user with this email.
