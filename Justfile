@@ -28,3 +28,5 @@ _configure_client:
 
 build:
     just client build
+    rm -rf ./dist
+    mv ./web/build ./dist

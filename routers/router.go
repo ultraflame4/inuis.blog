@@ -2,6 +2,9 @@ package routers
 
 import (
 	"context"
+	"embed"
+	"io/fs"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/ultraflame4/bytesblog/internal/app"
@@ -10,9 +13,37 @@ import (
 	"gorm.io/gorm"
 )
 
-func InitRouter(db *gorm.DB) *gin.Engine {
+func subFS(parent fs.FS, dir string) fs.FS {
+	subFS, err := fs.Sub(parent, dir)
+	if err != nil {
+		panic(err)
+	}
+	return subFS
+}
+
+func InitRouter(db *gorm.DB, frontendFS embed.FS) *gin.Engine {
 	app.RegisterOIDCProviders(context.Background())
 	r := gin.Default()
+
+	// Serve SPA routes
+	{
+
+		// 1. Get the sub-filesystem for the "_app" folder
+		publicFS := subFS(frontendFS, "dist")
+
+		// Serve main _app resources dir
+		r.StaticFS("_app", http.FS(subFS(frontendFS, "dist/_app")))
+		r.StaticFileFS("/robots.txt", "robots.txt", http.FS(publicFS))
+
+		// Serve
+
+		// Fallback route for SPA routing
+		r.NoRoute(func(c *gin.Context) {
+			c.FileFromFS("spa.html", http.FS(publicFS))
+		})
+
+	}
+
 	handlers := handlers.NewApiHandler(db)
 	_api := r.Group("/api")
 	_api.Use(middlewares.PaginationQuery())

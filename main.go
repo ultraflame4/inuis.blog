@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"embed"
 	"fmt"
 	"log/slog"
 
@@ -11,6 +12,10 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
+
+//go:embed dist/*
+var frontendFS embed.FS
+
 
 func main() {
 	slog.Info("Connecting to database...")
@@ -53,6 +58,6 @@ func main() {
 		}
 	}
 
-	router := routers.InitRouter(db)
+	router := routers.InitRouter(db, frontendFS)
 	router.Run(aconfig.ServerAddress()) // listens on 0.0.0.0:8080 by default
 }
