@@ -54,12 +54,7 @@ func (a *ApiHandler) ListUserPublicPosts(c *gin.Context) {
 	}
 
 	for _, post := range posts {
-		summaries = append(summaries, meta.PostSummary{
-			Model:       post.Model,
-			Title:       post.Title,
-			Summary:     post.Summary,
-			AllowPublic: post.AllowPublic,
-		})
+		summaries = append(summaries, meta.CreatePostSummary(post))
 	}
 
 	c.JSON(http.StatusOK, Response{

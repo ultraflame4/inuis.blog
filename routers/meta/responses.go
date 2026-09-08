@@ -1,6 +1,7 @@
 package meta
 
 import (
+	"github.com/ultraflame4/bytesblog/models"
 	"gorm.io/gorm"
 )
 
@@ -37,4 +38,14 @@ type PostSummary struct {
 	Summary     string
 	AllowPublic bool
 	HID         string `json:"hid"`
+}
+
+func CreatePostSummary(post models.Post) PostSummary{
+	return PostSummary{
+		Model:       post.Model,
+		Title:       post.Title,
+		Summary:     post.Summary,
+		AllowPublic: post.AllowPublic,
+		HID: post.HID,
+	}
 }

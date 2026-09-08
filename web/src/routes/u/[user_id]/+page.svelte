@@ -19,6 +19,8 @@
 		}
 		await goto(`?${searchParams.toString()}`, { replaceState: true });
 	}
+
+	$inspect(author_posts)
 </script>
 
 <main class="min-h-page-content p-4">
