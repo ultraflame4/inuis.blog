@@ -16,8 +16,6 @@ export namespace api {
         DeletedAt?: string | null
         // Hid used to fetch user content in the database.
         hid: string
-        // May be omitted by server for security reasons
-        roles?: string
 
     }
 
