@@ -10,33 +10,74 @@
 
 	let allowed_providers = _allowed_providers.filter((x) => x.length > 0);
 
-	const reason_descriptions: Record<string, () => string> = {
-		bad_identity: () => `
-        Found Account (email: ${queries.get('email')})
-        Identity you are using is not connected to the your account!
-        Please login with these existing providers first
-        `,
-		bad_subject: () => `
-        Found Account (email: ${queries.get('email')})
-        Identity you are using does not match the expected subject!
-        Expected: ${queries.get('expected')}
-        Received: ${queries.get('received')}
-        Please login with these existing providers first
-        `,
-		signup_required: () => `
-        Account not found (email: ${queries.get('email')})
-        Please sign up to create an account first.
-        `,
-        elevate_fail: ()=> `
-        Did you login use the correct identity?
+	interface Reason {
+		title?: () => string;
+		desc: () => string;
+		hide_providers?: boolean;
+		links?: { label?: string; href: string }[];
+		show_cancel?: boolean;
+	}
+
+	const reasons: Record<string, Reason> = {
+		bad_identity: {
+			desc: () => `
+            Found Account (email: ${queries.get('email')})
+            Identity you are using is not connected to the your account!
+            Please login with these existing providers first
+            `
+		},
+		bad_subject: {
+			desc: () => `
+            Found Account (email: ${queries.get('email')})
+            Identity you are using does not match the expected subject!
+            Expected: ${queries.get('expected')}
+            Received: ${queries.get('received')}
+            Please login with these existing providers first
         `
+		},
+		signup_required: {
+			hide_providers: true,
+			desc: () => `
+            Account not found (email: ${queries.get('email')})
+            Please sign up to create an account first.
+            `,
+			links: [
+				{
+					label: 'Create Account',
+					href: '/signup'
+				}
+			]
+		},
+		elevate_fail: {
+			hide_providers: true,
+			show_cancel: true,
+			title: () => 'Elevate failed',
+			desc: () => `
+			Failed to verify user to elevate session.
+			Session elevation is required for this action.
+			-
+			Did you verify using correct identity?
+			-
+			`,
+			links: [
+				{
+					label: 'Retry',
+					href: '/me/elevate'
+				}
+			]
+		}
 	};
 
-	const desc_lines = reason_descriptions[fail_reason]?.()?.split('\n');
+	const title = reasons[fail_reason]?.title?.() ?? 'Login failed';
+	const desc_lines = reasons[fail_reason]?.desc()?.split('\n');
+	const hide_providers = reasons[fail_reason]?.hide_providers ?? false;
+	const links = reasons[fail_reason]?.links ?? [];
+	const show_close = reasons[fail_reason]?.show_cancel ?? false;
+
 </script>
 
 <main class="min-h-page-content space-y-4 p-4 text-center">
-	<h2 class="classic text-center">Login failed</h2>
+	<h2 class="classic text-center">{title}</h2>
 	<h3 class="text-center">
 		<code class="border border-divider-light px-2 py-1 text-link">{fail_reason}</code>
 	</h3>
@@ -45,8 +86,10 @@
 			<p class="mb-4">{l}</p>
 		{/each}
 	</div>
-	{#if fail_reason === 'signup_required'}
-		<a href="/signup" class="classic text-center font-mono"> [Create Account] </a>
+
+	<!-- svelte-ignore block_empty -->
+	{#if hide_providers}
+
 	{:else if allowed_providers.length > 0}
 		<div class="flex flex-col items-center gap-4">
 			{#each allowed_providers as provider}
@@ -59,5 +102,16 @@
 			<p>No identity providers detected.</p>
 			<p>Please contact the administrator to recover access.</p>
 		</div>
+	{/if}
+
+	{#each links as link}
+		<a href={link.href} class="classic text-center font-mono no-underline hover:underline"
+			>[{link.label ?? link.href}]</a
+		>
+	{/each}
+
+	{#if show_close}
+	    <br/>
+	    <button class="text-danger px-4" onclick={()=>window.close()}>Close</button>
 	{/if}
 </main>
