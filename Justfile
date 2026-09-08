@@ -30,3 +30,5 @@ build:
     just client build
     rm -rf ./dist
     mv ./web/build ./dist
+    mkdir -p ./bin/app
+    go build -o ./bin/app .
