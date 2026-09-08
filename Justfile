@@ -26,9 +26,15 @@ _configure_client:
     npm install
 
 
+# Build the client, and go server into a single binary
 build:
     just client build
     rm -rf ./dist
     mv ./web/build ./dist
     mkdir -p ./bin/app
     go build -o ./bin/app .
+
+
+# Builds and run the binary
+build-x: build
+    ./bin/app/bytesblog.exe
