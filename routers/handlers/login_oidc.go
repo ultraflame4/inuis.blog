@@ -38,10 +38,15 @@ func pkceChallenge(verifier string) string {
 	return base64.RawURLEncoding.EncodeToString(sum[:])
 }
 
-var oauth2_SelectAccount = oauth2.SetAuthURLParam("prompt", "select_account");
+var oauth2_SelectAccount = oauth2.SetAuthURLParam("prompt", "select_account")
+
+// User wants to add a new identity
+const IntentAddIdentity = "add_identity"
+const IntentElevate = "elevate"
+const IntentSignup = "signup"
 
 // Handlers
-func (*ApiHandler) StartOauthLoginFlow(c *gin.Context) {
+func (a *ApiHandler) StartOauthLoginFlow(c *gin.Context) {
 	oidc_name := strings.ToUpper(c.Param("oidc"))
 	config, ok := app.GetOidcProvider(oidc_name)
 	if !ok {
@@ -72,7 +77,20 @@ func (*ApiHandler) StartOauthLoginFlow(c *gin.Context) {
 	setCallbackCookie(c, "intent", intent)
 	// -- end
 
-	
+	if intent == IntentSignup && (a.config.ALLOW_SIGNUP || a.config.IsAdminless(a.db, c.Request.Context())) {
+		// Check if invite code exists before proceeding with oauth flow
+		if len(inviteCode) != 0 && app.VerifyInviteCode(a.db, c.Request.Context(), inviteCode) {
+
+		} else {
+			// Invite code is not valid! Throw error
+			c.Redirect(http.StatusFound, "/failure?reason=bad_invite")
+			return
+		}
+	} else {
+		c.Redirect(http.StatusFound, "/failure?reason=signup_disable")
+		return
+	}
+
 	if len(config.Config.ClientSecret) == 0 {
 		// No client secret. Default to pkce
 		pkceVerifier, err := app.RandString(32)
@@ -178,10 +196,6 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 	}
 
 	intent, _ := c.Cookie("intent")
-	// User wants to add a new identity
-	const IntentAddIdentity = "add_identity"
-	const IntentElevate = "elevate"
-	const IntentSignup = "signup"
 
 	var user models.User
 

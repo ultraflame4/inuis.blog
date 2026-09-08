@@ -14,7 +14,9 @@ import (
 // Returns the invite code if valid, nil otherwise.
 //
 // This will also delete the invite code from the database (if expired or single use).
-func ConsumeInviteCode(db *gorm.DB, ctx context.Context, code string) *models.SignupInviteCode {
+//
+// If `consume` is true, invide code is deleted after use
+func CheckInviteCode(db *gorm.DB, ctx context.Context, code string, consume bool) *models.SignupInviteCode {
 	var inviteCode models.SignupInviteCode
 	if err := db.WithContext(ctx).Where("code = ?", code).First(&inviteCode).Error; err != nil {
 		slog.Error("Failed to find invite code", "error", err)
@@ -22,13 +24,25 @@ func ConsumeInviteCode(db *gorm.DB, ctx context.Context, code string) *models.Si
 	}
 	expired := inviteCode.IsExpired()
 	// Delete the invite code from the database if expired or is single use.
-	if expired || inviteCode.SingleUse {
+	if (expired || inviteCode.SingleUse) && consume {
 		db.WithContext(ctx).Delete(inviteCode)
 	}
 	if expired {
 		return nil
 	}
 	return &inviteCode
+}
+
+// Returns the invite code if valid, nil otherwise.
+//
+// This will also delete the invite code from the database (if expired or single use).
+func ConsumeInviteCode(db *gorm.DB, ctx context.Context, code string) *models.SignupInviteCode {
+	return CheckInviteCode(db, ctx, code, true)
+}
+
+// Returns true if invite code is valid.
+func VerifyInviteCode(db *gorm.DB, ctx context.Context, code string) bool {
+	return CheckInviteCode(db, ctx, code, false) != nil
 }
 
 // Generates and inserts a new invite code into the database.
@@ -82,11 +96,10 @@ func PurgeExpiredInviteCodes(db *gorm.DB, ctx context.Context) error {
 	return nil
 }
 
-
 // Generate admin invite codes
 func GenerateAdminInviteCode(db *gorm.DB, ctx context.Context) (string, error) {
 	validity := time.Hour * 1
-	
+
 	return GenerateInviteCode(db, ctx, &validity, true, []string{"admin"})
 }
 

@@ -1,11 +1,14 @@
 package app
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"strconv"
 	"strings"
 	"sync"
+
+	"gorm.io/gorm"
 )
 
 func getEnv(key, fallback string) string {
@@ -42,6 +45,12 @@ type Config struct {
 	// 
 	// If parsing fails, require invite code will be enabled as a precautionary measure.
 	RequireInviteCode bool
+	// Disable signups and creation of new accounts
+	// 
+	// The enviromental variable is parsed using `strconv.ParseBool` (https://pkg.go.dev/strconv#ParseBool)
+	// 
+	// If parsing fails, it will be disabled as a precautionary measure.
+	ALLOW_SIGNUP bool
 }
 
 // Load config from env
@@ -59,6 +68,10 @@ func readConfigFromEnv() Config {
 	if err != nil {
 		requireInviteCode = true
 	}
+	allowSignup, err := strconv.ParseBool(strings.ToLower(getEnv("ALLOW_SIGNUP", "true")))
+	if err != nil {
+		allowSignup = true
+	}
 	return Config{
 		Host:              getEnv("HOST", "localhost"),
 		Port:              getEnv("PORT", "8080"),
@@ -68,6 +81,7 @@ func readConfigFromEnv() Config {
 		BrandName:         BrandName,
 		CopyrightName:     getEnv("COPYRIGHT_NAME", BrandName),
 		RequireInviteCode: requireInviteCode,
+		ALLOW_SIGNUP: allowSignup,
 	}
 }
 
@@ -105,4 +119,8 @@ func (c *Config) PublicServerAddr() string {
 		return strings.TrimSuffix(*c.ProxiedAddress, "/")
 	}
 	return c.ServerAddress()
+}
+
+func (c *Config) IsAdminless(db *gorm.DB, ctx context.Context) bool {
+	return CountUsersWithRole("admin", db, ctx) == 0
 }

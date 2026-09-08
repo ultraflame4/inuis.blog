@@ -46,7 +46,8 @@ export namespace api {
     export interface AppMeta {
         brand_name: string;
         copyright_name: string;
-        requires_invite_code: boolean;
+        require_invite_code: boolean;
+        allow_signup: boolean;
     }
 
     export type FetchLike = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>

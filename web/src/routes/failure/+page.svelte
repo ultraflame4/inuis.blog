@@ -48,6 +48,36 @@
 				}
 			]
 		},
+		signup_disabled: {
+			hide_providers: true,
+			title: () => `Signup Failed!`,
+			desc: () => `
+			Signup has been disabled on this server,
+
+			Sorry, try again next time, or maybe don't. :shrug:
+            `,
+			links: [
+				{
+					label: 'Login',
+					href: '/login'
+				}
+			]
+		},
+		bad_invite: {
+			hide_providers: true,
+			title: () => `Bad Invite Code`,
+			desc: () => `
+			This invite code is not valid, or has expired.
+			-
+			Who sent you this?
+            `,
+			links: [
+				{
+					label: 'Login',
+					href: '/login'
+				}
+			]
+		},
 		elevate_fail: {
 			hide_providers: true,
 			show_cancel: true,
@@ -76,7 +106,6 @@
 
 			`,
 			links: [
-		
 				{
 					label: 'Back to Settings',
 					href: '/me/settings'
