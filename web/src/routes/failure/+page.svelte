@@ -78,6 +78,21 @@
 				}
 			]
 		},
+		require_invite: {
+			hide_providers: true,
+			title: () => `Invitation only!`,
+			desc: () => `
+			Sorry, this is a private party.
+			-
+			No invitation, no entry.
+            `,
+			links: [
+				{
+					label: 'Login',
+					href: '/login'
+				}
+			]
+		},
 		elevate_fail: {
 			hide_providers: true,
 			show_cancel: true,

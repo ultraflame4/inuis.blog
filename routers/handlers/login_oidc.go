@@ -76,14 +76,18 @@ func (a *ApiHandler) StartOauthLoginFlow(c *gin.Context) {
 	intent := c.Query("intent")
 	setCallbackCookie(c, "intent", intent)
 	// -- end
-
-	if intent == IntentSignup && (a.config.ALLOW_SIGNUP || a.config.IsAdminless(a.db, c.Request.Context())) {
+	adminless := a.config.IsAdminless(a.db, c.Request.Context())
+	// Check if signup is enabled if intent is to signup
+	if intent == IntentSignup && (a.config.ALLOW_SIGNUP || adminless) {
 		// Check if invite code exists before proceeding with oauth flow
-		if len(inviteCode) != 0 && app.VerifyInviteCode(a.db, c.Request.Context(), inviteCode) {
-
-		} else {
-			// Invite code is not valid! Throw error
-			c.Redirect(http.StatusFound, "/failure?reason=bad_invite")
+		if len(inviteCode) != 0 {
+			if !app.VerifyInviteCode(a.db, c.Request.Context(), inviteCode) {
+				// Invite code is not valid! Throw error
+				c.Redirect(http.StatusFound, "/failure?reason=bad_invite")
+				return
+			}
+		} else if a.config.RequireInviteCode || adminless {
+			c.Redirect(http.StatusFound, "/failure?reason=require_invite")
 			return
 		}
 	} else {
