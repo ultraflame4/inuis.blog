@@ -26,10 +26,13 @@
 		signup_required: () => `
         Account not found (email: ${queries.get('email')})
         Please sign up to create an account first.
+        `,
+        elevate_fail: ()=> `
+        Did you login use the correct identity?
         `
 	};
 
-	const desc_lines = reason_descriptions[fail_reason]().split('\n');
+	const desc_lines = reason_descriptions[fail_reason]?.()?.split('\n');
 </script>
 
 <main class="min-h-page-content space-y-4 p-4 text-center">
@@ -43,9 +46,7 @@
 		{/each}
 	</div>
 	{#if fail_reason === 'signup_required'}
-		<a href="/signup" class="classic text-center font-mono">
-			[Create Account]
-		</a>
+		<a href="/signup" class="classic text-center font-mono"> [Create Account] </a>
 	{:else if allowed_providers.length > 0}
 		<div class="flex flex-col items-center gap-4">
 			{#each allowed_providers as provider}
