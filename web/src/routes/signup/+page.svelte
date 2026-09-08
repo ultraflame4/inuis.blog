@@ -22,7 +22,7 @@
 			{/each}
 		</ul>
 
-		{#if data.app_meta.requires_invite_code || inviteCode}
+		{#if data.app_meta.require_invite_code || inviteCode}
 			<div class="flex flex-col gap-1">
 				<label for="inp-invite_code">This server has enabled invite only.</label>
 				<input bind:value={inviteCode} type="text" id="inp-invite_code" name="invite_code" class="border border-ink h-10 text-center text-lg placeholder:text-ink-muted  tracking-wider" placeholder="INVITE CODE" />
