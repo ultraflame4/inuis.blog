@@ -20,8 +20,8 @@
 </script>
 
 <main class="p-4 min-h-page-content">
-	<p class="my-4 border p-4 text-lg">
-		Hello <span class="italic">{data.user.Username}</span>, writing today?
+	<p class="my-4 text-lg">
+		Welcome back: <code>{data.user.Username}</code>
 	</p>
 
 	<div class="classic flex flex-wrap items-baseline gap-x-4">

@@ -7,13 +7,13 @@
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 <header class="mx-4 flex items-center gap-2 h-(--navbar-height)">
-    <h1 class="text-2xl font-bold text-ink"><a href="/">{ data.app_meta.brand_name }</a></h1>
+    <h1 class="text-xl text-ink"><a href="/">[{ data.app_meta.brand_name }]</a></h1>
 
 
     {#if !!data.user}
         <a class="classic m-0" href="/me">/me</a>
         <div class="ml-auto"></div>
-        <a class="classic text-ink m-0" href="/me/settings">Account Settings</a>
+        <a class="classic text-ink m-0" href="/me/settings">Settings</a>
     {:else}
         <div class="ml-auto"></div>
         <a class="classic m-0" href="/signup">Signup</a>

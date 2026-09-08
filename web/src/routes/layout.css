@@ -45,7 +45,7 @@
 	}
 
 	code {
-		@apply rounded-sm bg-paper-muted px-1 py-0.5;
+        @apply bg-paper-subtle px-2 py-0.5 rounded-md
 	}
 
 
