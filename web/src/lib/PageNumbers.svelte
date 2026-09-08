@@ -2,7 +2,7 @@
 	import type { api } from './api';
 
 	interface Props {
-		page_data: api.Paginated<any>;
+		page_data: api.PageMeta;
 		url: string;
 		/**
 		 * Query parameter to use. Defaults to "page". Useful to change if need multiple PageNumbers in a single page.

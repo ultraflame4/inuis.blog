@@ -45,11 +45,11 @@
 		</form>
 	</div>
 
-	{#if author_posts.items.length === 0}
+	{#if author_posts.posts.length === 0}
 		<p class="text-ink-muted">No posts yet.</p>
 	{:else}
 		<ul class="flex flex-wrap items-center justify-center gap-4 sm:justify-start">
-			{#each author_posts.items as post, index}
+			{#each author_posts.posts as post, index}
 				<li
 					class="grid h-38 w-full gap-2 overflow-hidden rounded-2xl border px-4 py-3 sm:h-36 sm:w-96"
 					style="grid-template-columns: auto 1fr; grid-template-rows: auto 1fr auto;"

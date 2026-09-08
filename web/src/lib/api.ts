@@ -2,12 +2,16 @@ import { asFormData } from "./utils";
 
 export namespace api {
 
-    export interface Paginated<T> {
-        items: T[];
+    export interface PageMeta {
         page: number;
         per_page: number;
         total_pages: number;
     }
+
+
+    export type Paginated<T, K extends string = "items"> = {
+        [P in K]: T[];
+    } & PageMeta
 
     export interface UserInfo {
         Username: string
@@ -56,7 +60,7 @@ export namespace api {
         return app_meta;
     }
 
-    export async function listPosts(f: FetchLike, page: string | number, filter?: string, search?: string): Promise<Paginated<Post>> {
+    export async function listPosts(f: FetchLike, page: string | number, filter?: string, search?: string): Promise<Paginated<PostSummary>> {
 
         const params = new URLSearchParams({ page: page.toString(), filter: filter ?? "", q: search ?? "" });
 
@@ -65,11 +69,22 @@ export namespace api {
             console.error("Failed to fetch user posts. \nStatus: " + resp.status, "\nBody:\n" + await resp.text())
             throw new Error('Failed to fetch user posts');
         }
-        const user_posts: Paginated<any> = await resp.json();
+        const user_posts: Paginated<PostSummary> = await resp.json();
         console.info(user_posts)
         return user_posts;
     }
 
+    export async function listUserPosts(f: FetchLike, user_hid: string, page: string | number, filter?: string, search?: string): Promise<Paginated<PostSummary, "posts">> {
+        const params = new URLSearchParams({ page: page.toString(), filter: filter ?? "", q: search ?? "" });
+
+        const resp = await f(`/api/user/${user_hid}/posts?${params.toString()}`);
+        if (!resp.ok) {
+            console.error("Failed to fetch user posts. \nStatus: " + resp.status, "\nBody:\n" + await resp.text())
+            throw new Error('Failed to fetch user posts');
+        }
+        const results: Paginated<PostSummary, "posts"> = await resp.json();
+        return results;
+    }
     export async function deletePost(f: FetchLike, id: string): Promise<void> {
         const resp = await f(`/api/me/posts/${id}`, { method: 'DELETE' });
         if (!resp.ok) {
@@ -190,19 +205,4 @@ export namespace api {
         hid: string;
     }
 
-    export async function listUserPosts(f: FetchLike, user_hid: string, page: string | number): Promise<Paginated<PostSummary>> {
-        const params = new URLSearchParams({ page: page.toString() });
-        const resp = await f(`/api/user/${user_hid}/posts?${params.toString()}`);
-        if (!resp.ok) {
-            console.error("Failed to fetch user posts. \nStatus: " + resp.status, "\nBody:\n" + await resp.text())
-            throw new Error('Failed to fetch user posts');
-        }
-        const data = await resp.json();
-        return {
-            items: data.posts,
-            page: data.page,
-            per_page: data.per_page,
-            total_pages: data.total_pages,
-        };
-    }
 }
