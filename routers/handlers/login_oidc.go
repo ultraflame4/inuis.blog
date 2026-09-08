@@ -38,6 +38,8 @@ func pkceChallenge(verifier string) string {
 	return base64.RawURLEncoding.EncodeToString(sum[:])
 }
 
+var oauth2_SelectAccount = oauth2.SetAuthURLParam("prompt", "select_account");
+
 // Handlers
 func (*ApiHandler) StartOauthLoginFlow(c *gin.Context) {
 	oidc_name := strings.ToUpper(c.Param("oidc"))
@@ -70,6 +72,9 @@ func (*ApiHandler) StartOauthLoginFlow(c *gin.Context) {
 	setCallbackCookie(c, "intent", intent)
 	// -- end
 
+
+	 
+	
 	if len(config.Config.ClientSecret) == 0 {
 		// No client secret. Default to pkce
 		pkceVerifier, err := app.RandString(32)
@@ -85,6 +90,7 @@ func (*ApiHandler) StartOauthLoginFlow(c *gin.Context) {
 			config.Config.AuthCodeURL(state,
 				oauth2.SetAuthURLParam("code_challenge", challenge),
 				oauth2.SetAuthURLParam("code_challenge_method", "S256"),
+				oauth2_SelectAccount,
 			))
 		return
 	} else {
@@ -92,7 +98,7 @@ func (*ApiHandler) StartOauthLoginFlow(c *gin.Context) {
 		// Use to prevent conflicts when switching provider flows.
 		setCallbackCookie(c, "pkceVerifier", "false")
 
-		c.Redirect(http.StatusFound, config.Config.AuthCodeURL(state))
+		c.Redirect(http.StatusFound, config.Config.AuthCodeURL(state, oauth2_SelectAccount))
 		return
 	}
 	// Nothing below here. Requests are fully handled in if-else statement
