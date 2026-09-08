@@ -54,6 +54,11 @@ OIDC_GOOGLE_CLIENT="...google app client id..."
 OIDC_GOOGLE_SECRET="...google app client secret..."
 ```
 
+## Robots.txt
+Unfortunately, there is no plans to make robots.txt configurable yet.
+
+Your best bet is to use a reverse proxy, or hide behind cloudflare to configure the crawling behaviour.
+
 # API Routes
 See [API_SPECS.md](API_SPECS.md) for details on the API routes.
 
