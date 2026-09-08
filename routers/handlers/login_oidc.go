@@ -56,12 +56,19 @@ func (*ApiHandler) StartOauthLoginFlow(c *gin.Context) {
 	}
 	setCallbackCookie(c, "state", state)
 
-	if inviteCode, exists := c.GetQuery("invite_code"); exists {
-		setCallbackCookie(c, "inviteCode", inviteCode)
-	}
+	// -- Store query options in cookies
+	// You might be wondering, why are we not only setting the cookies if query exists.
+	// Because:
+	// 1. If query don't exists, we need to clear the cookie.
+	// 2. So why not, just set the cookies anyways regardless if query exists or not
+	// 3. If query doesn't exist, the values will be "" (empty). We can check for that on the callback.
+
+	inviteCode := c.Query("invite_code")
+	setCallbackCookie(c, "inviteCode", inviteCode)
 
 	intent := c.Query("intent")
 	setCallbackCookie(c, "intent", intent)
+	// -- end
 
 	if len(config.Config.ClientSecret) == 0 {
 		// No client secret. Default to pkce
@@ -232,11 +239,14 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 
 		// Check for invite code requirements
 		// - Get invite code from cookie
-		inviteCode_s, err := c.Cookie("inviteCode")
+		// - Can safely ignore error, inciteCode_s should be empty if not present. (or has been reset by login)
+		inviteCode_s, _ := c.Cookie("inviteCode")
+		inviteCode_present := len(inviteCode_s) != 0
+
 		var grantRoles string
 		// - Do invite code checks if: 1. required, 2. invite code is present.
-		if a.config.RequireInviteCode || err == nil {
-			if err != nil || inviteCode_s == "" {
+		if a.config.RequireInviteCode || inviteCode_present {
+			if !inviteCode_present {
 				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 					"error": "Invite code required.",
 				})
@@ -245,7 +255,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 			inviteCode := app.ConsumeInviteCode(a.db, c.Request.Context(), inviteCode_s)
 			if inviteCode == nil {
 				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-					"error": "Invite code has expired or is invalid.",
+					"error":       "Invite code has expired or is invalid.",
 					"invite_code": inviteCode_s,
 				})
 				return
@@ -268,9 +278,9 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 			Issuer:  conf.Issuer,
 		}
 
-		new_user, err := app.CreateUser(username, identity, grantRoles, a.db, c.Request.Context());
+		new_user, err := app.CreateUser(username, identity, grantRoles, a.db, c.Request.Context())
 		if err != nil {
-			c.AbortWithStatus(http.StatusInternalServerError);
+			c.AbortWithStatus(http.StatusInternalServerError)
 			return
 		}
 		user = new_user
