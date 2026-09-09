@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/coreos/go-oidc"
 	"github.com/gin-gonic/gin"
 	"github.com/ultraflame4/inuis/internal/app"
 	"github.com/ultraflame4/inuis/models"
@@ -126,7 +127,7 @@ func (a *ApiHandler) StartOauthLoginFlow(c *gin.Context) {
 
 func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 	oidc_name := strings.ToUpper(c.Param("oidc"))
-	conf, ok := app.GetOidcProvider(oidc_name)
+	provider, ok := app.GetOidcProvider(oidc_name)
 	if !ok {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
 			"error": "Unknown OIDC Provider",
@@ -154,7 +155,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 
 	var oauth2Token *oauth2.Token
 	if verifier, err := c.Cookie("pkceVerifier"); err == nil && verifier != "false" {
-		token, err := conf.Config.Exchange(
+		token, err := provider.Config.Exchange(
 			ctx,
 			c.Query("code"),
 			oauth2.SetAuthURLParam("code_verifier", verifier),
@@ -168,7 +169,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 		oauth2Token = token
 	} else {
 
-		token, err := conf.Config.Exchange(ctx, c.Query("code"))
+		token, err := provider.Config.Exchange(ctx, c.Query("code"))
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 				"error": "Failed to exchange token: " + err.Error(),
@@ -178,7 +179,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 		oauth2Token = token
 	}
 
-	userInfo, err := conf.Provider.UserInfo(ctx, oauth2.StaticTokenSource(oauth2Token))
+	idtoken, err := provider.Provider.UserInfo(ctx, oauth2.StaticTokenSource(oauth2Token))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to get userinfo: " + err.Error(),
@@ -189,7 +190,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 	// ---- Get / Create user
 
 	// Find existing identities with this email.
-	existing, err := gorm.G[models.UserIdentity](a.db).Where("email = ?", userInfo.Email).Find(c.Request.Context())
+	existing, err := gorm.G[models.UserIdentity](a.db).Where("email = ?", idtoken.Email).Find(c.Request.Context())
 	existing_issuers := make([]string, 0, len(existing))
 	for _, e := range existing {
 		existing_issuers = append(existing_issuers, e.Issuer)
@@ -205,200 +206,60 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 
 	switch intent {
 	case IntentAddIdentity:
-		// Cant add identity if the user is not logged in.
-		sid, _ := c.Cookie(middlewares.COOKIE_SESSION_TOKEN)
-		session := app.GetSession(a.db, c.Request.Context(), sid)
-		if session == nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"error": "User not logged in.",
-			})
-			return
-		}
-
-		user := session.User
-
-		// Check if the is already in use!
-		existing, err := app.FindUserIdentity(userInfo.Subject, conf.Issuer, a.db, c.Request.Context())
-		if err == nil {
-			// If existing identity already belongs to user, ignroe and  just return success
-			if existing.UserID == user.ID {
-				// Ignore, do nothing
-			} else {
-				// Otherwise redirect to error (Identity in use!)
-				c.Redirect(http.StatusFound,
-					fmt.Sprintf("/failure?reason=add_identity_in_use&provider=%s&email=%s", oidc_name, userInfo.Email),
-				)
-				return
-			}
-		} else {
-			// Attach identity
-			identity := models.UserIdentity{
-				Subject: userInfo.Subject,
-				Email:   &userInfo.Email,
-				Issuer:  conf.Issuer,
-				UserID:  user.ID,
-			}
-			if err := gorm.G[models.UserIdentity](a.db).Create(c.Request.Context(), &identity); err != nil {
-				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-					"error": "Failed to add identity. Error: " + err.Error(),
-				})
-				return
-			}
-		}
-
-		c.Redirect(http.StatusFound, "/success?reason=add_identity&provider="+oidc_name)
+		a.handleIntentAddIdentity(c, idtoken, provider, oidc_name)
 		return
-
 	case IntentElevate:
-		// Cant elevate if the user is not logged in.
-		sid, _ := c.Cookie(middlewares.COOKIE_SESSION_TOKEN)
-		session := app.GetSession(a.db, c.Request.Context(), sid)
-		if session == nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"error": "User not logged in.",
-			})
-			return
-		}
-		// Check if the identity user elevated with matches the user session!
-		identity, err := app.FindUserIdentity(userInfo.Subject, conf.Issuer, a.db, c.Request.Context())
-		if err != nil || identity.UserID != session.UserID {
-			c.Redirect(http.StatusFound, "/failure?reason=elevate_fail")
-			return
-		}
-		session.ElevateNow(a.db, c.Request.Context())
-		c.Redirect(http.StatusFound, "/success?reason=session_elevated")
+		a.handleIntentElevate(c, idtoken, provider)
 		return
 	}
 
-	// No identities with this email found. Create a new user.
+	// No identities with this email found.
+	// Require signup flow.
 	if len(existing) == 0 {
-
 		// Require signup intent!
 		if intent != IntentSignup {
-			c.Redirect(http.StatusFound, fmt.Sprintf("/failure?reason=signup_required&email=%s", userInfo.Email))
+			c.Redirect(http.StatusFound, fmt.Sprintf("/failure?reason=signup_required&email=%s", idtoken.Email))
 			return
 		}
 
-		// Create empty user
-		user = models.User{}
 
-		// Check for invite code requirements
-		// - Get invite code from cookie
-		// - Can safely ignore error, inciteCode_s should be empty if not present. (or has been reset by login)
-		inviteCode_s, _ := c.Cookie("inviteCode")
-		inviteCode_present := len(inviteCode_s) != 0
-
-		var grantRoles string
-		// - Do invite code checks if: 1. required, 2. invite code is present.
-		if a.config.RequireInviteCode || inviteCode_present {
-			if !inviteCode_present {
-				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-					"error": "Invite code required.",
-				})
-				return
-			}
-			inviteCode := app.ConsumeInviteCode(a.db, c.Request.Context(), inviteCode_s)
-			if inviteCode == nil {
-				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-					"error":       "Invite code has expired or is invalid.",
-					"invite_code": inviteCode_s,
-				})
-				return
-			}
-			slog.Info("Invite code consumed: " + inviteCode_s)
-			grantRoles = *inviteCode.GrantRoles
-		}
-
-		slog.Info("Creating new user for email: " + userInfo.Email)
-		// Create new user
-		email_parts := strings.SplitN(userInfo.Email, "@", 2)
-		discriminator_hash := sha256.Sum256([]byte(email_parts[1]))
-		discriminator := base64.RawURLEncoding.EncodeToString(discriminator_hash[:])[:8]
-		// Create user
-		username := email_parts[0] + "_" + discriminator
-
-		identity := models.UserIdentity{
-			Subject: userInfo.Subject,
-			Email:   &userInfo.Email,
-			Issuer:  conf.Issuer,
-		}
-
-		new_user, err := app.CreateUser(username, identity, grantRoles, a.db, c.Request.Context())
-		if err != nil {
-			c.AbortWithStatus(http.StatusInternalServerError)
+		new_user, ok := a.createUser(c, idtoken, provider)
+		if !ok {
 			return
 		}
 		user = new_user
-		slog.Info("Created user: " + user.Username)
 
 	} else {
-		// Fetch identity
-		identity, err := app.FindUserIdentity(userInfo.Subject, conf.Issuer, a.db, c.Request.Context())
+		// Fetch identity using subject and issuer
+		identity, err := app.FindUserIdentity(idtoken.Subject, provider.Issuer, a.db, c.Request.Context())
 		if err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				// Here we already know there is a user with this email.
-
-				// There is a technically an edge case here where the user has identity registered, but not with the same subject
-				// AKA their subject for the identity has changed somehow. (eg. IDP changed but using same domain)
-				// We are going to ignore this edge case and treat it as a "bad_identity" error.
-
-				// Try get expected identity for this user via issuer, from the list of user's existing identities
-				ident_idx := slices.Index(existing_issuers, conf.Issuer)
-				// If not found, return "bad_identity" error.
-				if ident_idx == -1 {
-					var allowed_providers strings.Builder
-					for idx, value := range existing {
-						provider_name := strings.ToLower(app.FindProviderName(value.Issuer))
-						if idx != 0 {
-							allowed_providers.WriteByte(',')
-						}
-						allowed_providers.WriteString(provider_name)
-					}
-
-					// Identity not registered.
-					// Should reject oauth, ask user to login with correct identity first, then connect provider when logged in
-					c.Redirect(http.StatusFound, fmt.Sprintf("/failure?reason=bad_identity&allowed=%s&email=%s", allowed_providers.String(), userInfo.Email))
-					return
-				}
-				// Edge case here, the user has this identity registered but with a different subject.
-				// Should reject oauth, and return "bad_subject" error.
-
-				// Retrieve the user's existing identity for this issuer
-				identity := existing[ident_idx]
-
-				var allowed_providers strings.Builder
-				for idx, value := range existing {
-					// Skip the current provider, as it's subject field is now non-working
-					if value.Issuer == conf.Issuer {
-						continue
-					}
-					provider_name := strings.ToLower(app.FindProviderName(value.Issuer))
-					if idx != 0 {
-						allowed_providers.WriteByte(',')
-					}
-					allowed_providers.WriteString(provider_name)
-				}
-
-				c.Redirect(http.StatusFound, fmt.Sprintf("/failure?reason=bad_subject&expected=%s&received=%s&email=%s&allowed=%s", identity.Subject, userInfo.Subject, userInfo.Email, allowed_providers.String()))
-				return
-			} else {
-				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-					"error": "Failed to fetch user identity: " + err.Error(),
-				})
-			}
+			// User exists but we cannot verify that the identity they logged in with is valid / connected to the account.
+			a.handleIdentityError(err, existing_issuers, provider, existing, c, idtoken)
 			return
 		}
 		// Continue to get user object
-		slog.Info("Found user identity: %s %s (sub: %s)\n", identity.Email, identity.Issuer, identity.Subject)
+		slog.Info("Found user identity" ,"email", identity.Email, "issuer", identity.Issuer, "sub", identity.Subject)
 		user = identity.User
 	}
 
 	// Revoke any existings session from same browser / cookie
+	session, aborted := a.loginUserSession(ctx, c, user)
+	if aborted {
+		return
+	}
+
+	c.SetCookie("session_token", string(session.Token), a.config.MaxSessionAge, "", "", false, true)
+
+	c.Redirect(http.StatusFound, "/me")
+
+}
+
+// Logins and creates the user ssession
+func (a *ApiHandler) loginUserSession(ctx context.Context, c *gin.Context, user models.User) (*models.UserSession, bool) {
 	if existing_session, err := c.Cookie("session_token"); err == nil {
 		slog.Debug("Revoking existing session with token: " + existing_session)
-
 		if err := app.RevokeSessionToken(a.db, ctx, existing_session); err != nil {
-			slog.Error("Failed to revoke existing session: " + err.Error())
+			slog.Warn("Failed to revoke existing session: " + err.Error())
 		}
 	}
 	// Create user session
@@ -408,21 +269,187 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to create session: " + err.Error(),
 		})
+		return nil, true
+	}
+	return session, false
+}
+
+// Handle errors when fetching existing user's identity
+func (*ApiHandler) handleIdentityError(err error, existing_issuers []string, conf app.OidcProvider, existing []models.UserIdentity, c *gin.Context, userInfo *oidc.UserInfo) {
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		// existing user has identity from the provider
+		// but our records does not have it recorded.
+		//
+		// User likely did not connect the identity with us.
+
+		// Check if this identity provider is registed with user
+		// If not found, return "bad_identity" error.
+		ident_idx := slices.Index(existing_issuers, conf.Issuer)
+		if ident_idx == -1 {
+			// List known identities for existing user
+			var allowed_providers strings.Builder
+			for idx, value := range existing {
+				provider_name := strings.ToLower(app.FindProviderName(value.Issuer))
+				if idx != 0 {
+					allowed_providers.WriteByte(',')
+				}
+				allowed_providers.WriteString(provider_name)
+			}
+
+			// Identity not registered.
+			// Should reject oauth, ask user to login with correct identity first, then connect provider when logged in
+			c.Redirect(http.StatusFound, fmt.Sprintf("/failure?reason=bad_identity&allowed=%s&email=%s", allowed_providers.String(), userInfo.Email))
+			return
+		}
+		// Edge case here, the user has this identity registered but with as different subject.
+		// This can happen when the server changes the OIDC client token, or secret
+		// Should reject oauth, and return "bad_subject" error.
+
+		// Get user's identity, and show the expected subject value. And also include a list of providers
+		// the user can log in with.
+		identity := existing[ident_idx]
+		var allowed_providers strings.Builder
+		for idx, value := range existing {
+			// Skip the current provider, as it's subject field is now non-working
+			if value.Issuer == conf.Issuer {
+				continue
+			}
+			provider_name := strings.ToLower(app.FindProviderName(value.Issuer))
+			if idx != 0 {
+				allowed_providers.WriteByte(',')
+			}
+			allowed_providers.WriteString(provider_name)
+		}
+
+		c.Redirect(http.StatusFound, fmt.Sprintf("/failure?reason=bad_subject&expected=%s&received=%s&email=%s&allowed=%s", identity.Subject, userInfo.Subject, userInfo.Email, allowed_providers.String()))
+		return
+	} else {
+		// Generic catch all error
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to fetch user identity: " + err.Error(),
+		})
+	}
+	return
+}
+
+func (a *ApiHandler) createUser(c *gin.Context, userInfo *oidc.UserInfo, conf app.OidcProvider) (models.User, bool) {
+	user := models.User{}
+
+	// Check for invite code requirements
+	// - Get invite code from cookie
+	// - Can safely ignore error, inciteCode_s should be empty if not present. (or has been reset by login)
+	inviteCode_s, _ := c.Cookie("inviteCode")
+	inviteCode_present := len(inviteCode_s) != 0
+
+	var grantRoles string
+	// - Do invite code checks if: 1. required, 2. invite code is present.
+	if a.config.RequireInviteCode || inviteCode_present {
+		if !inviteCode_present {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"error": "Invite code required.",
+			})
+			return user, false
+		}
+		inviteCode := app.ConsumeInviteCode(a.db, c.Request.Context(), inviteCode_s)
+		if inviteCode == nil {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"error":       "Invite code has expired or is invalid.",
+				"invite_code": inviteCode_s,
+			})
+			return user, false
+		}
+		slog.Info("Invite code consumed: " + inviteCode_s)
+		grantRoles = *inviteCode.GrantRoles
+	}
+
+	slog.Info("Creating new user for email: " + userInfo.Email)
+	// Create new user
+	email_parts := strings.SplitN(userInfo.Email, "@", 2)
+	discriminator_hash := sha256.Sum256([]byte(email_parts[1]))
+	discriminator := base64.RawURLEncoding.EncodeToString(discriminator_hash[:])[:8]
+	// Create user
+	username := email_parts[0] + "_" + discriminator
+
+	identity := models.UserIdentity{
+		Subject: userInfo.Subject,
+		Email:   &userInfo.Email,
+		Issuer:  conf.Issuer,
+	}
+
+	new_user, err := app.CreateUser(username, identity, grantRoles, a.db, c.Request.Context())
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return user, false
+	}
+	user = new_user
+	slog.Info("Created user: " + user.Username)
+	return user, true
+}
+
+func (a *ApiHandler) handleIntentElevate(c *gin.Context, userInfo *oidc.UserInfo, conf app.OidcProvider) {
+	// Cant elevate if the user is not logged in.
+	sid, _ := c.Cookie(middlewares.COOKIE_SESSION_TOKEN)
+	session := app.GetSession(a.db, c.Request.Context(), sid)
+	if session == nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			"error": "User not logged in.",
+		})
+		return
+	}
+	// Check if the identity user elevated with matches the user session!
+	identity, err := app.FindUserIdentity(userInfo.Subject, conf.Issuer, a.db, c.Request.Context())
+	if err != nil || identity.UserID != session.UserID {
+		c.Redirect(http.StatusFound, "/failure?reason=elevate_fail")
+		return
+	}
+	session.ElevateNow(a.db, c.Request.Context())
+	c.Redirect(http.StatusFound, "/success?reason=session_elevated")
+	return
+}
+
+func (a *ApiHandler) handleIntentAddIdentity(c *gin.Context, userInfo *oidc.UserInfo, conf app.OidcProvider, oidc_name string)  {
+	// Cant add identity if the user is not logged in.
+	sid, _ := c.Cookie(middlewares.COOKIE_SESSION_TOKEN)
+	session := app.GetSession(a.db, c.Request.Context(), sid)
+	if session == nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			"error": "User not logged in.",
+		})
 		return
 	}
 
-	// resp := struct {
-	// 	OAuth2Token *oauth2.Token
-	// 	UserInfo    *oidc.UserInfo
-	// 	User        *models.User
-	// 	Session     *models.UserSession
-	// }{oauth2Token, userInfo, &user, session}
+	user := session.User
 
-	c.SetCookie("session_token", string(session.Token), a.config.MaxSessionAge, "", "", false, true)
+	// Check if the is already in use!
+	existing, err := app.FindUserIdentity(userInfo.Subject, conf.Issuer, a.db, c.Request.Context())
+	if err == nil {
+		// If existing identity already belongs to user, ignroe and  just return success
+		if existing.UserID == user.ID {
+			// Ignore, do nothing
+		} else {
+			// Otherwise redirect to error (Identity in use!)
+			c.Redirect(http.StatusFound,
+				fmt.Sprintf("/failure?reason=add_identity_in_use&provider=%s&email=%s", oidc_name, userInfo.Email),
+			)
+			return
+		}
+	} else {
+		// Attach identity
+		identity := models.UserIdentity{
+			Subject: userInfo.Subject,
+			Email:   &userInfo.Email,
+			Issuer:  conf.Issuer,
+			UserID:  user.ID,
+		}
+		if err := gorm.G[models.UserIdentity](a.db).Create(c.Request.Context(), &identity); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+				"error": "Failed to add identity. Error: " + err.Error(),
+			})
+			return
+		}
+	}
 
-	// c.JSON(http.StatusOK, resp)
-	c.Redirect(http.StatusFound, "/me")
-
+	c.Redirect(http.StatusFound, "/success?reason=add_identity&provider="+oidc_name)
 }
 
 func (a *ApiHandler) ListLoginProviders(c *gin.Context) {
