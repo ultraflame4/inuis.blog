@@ -1,7 +1,10 @@
 package handlers
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
+	"github.com/ultraflame4/inuis/internal/app"
 )
 
 func (a *ApiHandler) GetAppMeta(c *gin.Context) {
@@ -14,4 +17,9 @@ func (a *ApiHandler) GetAppMeta(c *gin.Context) {
 		"require_invite_code": a.config.RequireInviteCode || adminless || !a.config.ALLOW_SIGNUP,
 		"allow_signup":        a.config.ALLOW_SIGNUP,
 	})
+}
+
+func (a *ApiHandler) ListProviders(c *gin.Context) {
+	providers := app.GetProviders()
+	c.JSON(http.StatusOK, providers)
 }

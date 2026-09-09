@@ -483,8 +483,3 @@ func (a *ApiHandler) handleIntentAddIdentity(c *gin.Context, userInfo *oidc.User
 
 	c.Redirect(http.StatusFound, "/success?reason=add_identity&provider="+oidc_name)
 }
-
-func (a *ApiHandler) ListLoginProviders(c *gin.Context) {
-	providers := app.GetProviders()
-	c.JSON(http.StatusOK, providers)
-}

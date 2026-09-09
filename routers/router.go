@@ -53,7 +53,7 @@ func InitRouter(db *gorm.DB, frontendFS embed.FS) *gin.Engine {
 		_api.GET("/meta", handlers.GetAppMeta)
 	}
 	{
-		_api.GET("/oidc/providers", handlers.ListLoginProviders)
+		_api.GET("/oidc/providers", handlers.ListProviders)
 		_api.GET("/oidc/:oidc/login", handlers.StartOauthLoginFlow)
 		_api.GET("/oidc/:oidc/callback", handlers.AcceptOAuthCallback)
 	}
