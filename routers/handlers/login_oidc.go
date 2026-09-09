@@ -11,6 +11,7 @@ import (
 	"slices"
 	"strings"
 	"time"
+
 	"github.com/coreos/go-oidc"
 	"github.com/gin-gonic/gin"
 	"github.com/ultraflame4/inuis/internal/app"
@@ -37,6 +38,36 @@ func pkceChallenge(verifier string) string {
 	sum := sha256.Sum256([]byte(verifier))
 	return base64.RawURLEncoding.EncodeToString(sum[:])
 }
+
+
+// Retrieves session from cookie, aborts with error if session is non-existent or invalid.
+//
+// You probably want `meta.GetSession` instead which is protected on the middleware level.
+//
+// Should only use this when your endpoint has features that *may* require an authenticated session.
+// Such as:
+// - Elevation
+// - Action(s) on protected resource
+//
+// Even then, you should try to seperate the protected / unprotected functionality into seperate
+// endpoints to prevent confusion.
+//
+// This method really only exists for Oauth callback where a single only a single endpoint is used
+// for callbacks by Identity Providers. (Having multiple makes it inconvenient, especially if we add more feautres / intents).
+//
+// Returns (user session, aborted)
+func (a* ApiHandler) checkSession(c *gin.Context) (*models.UserSession, bool){
+	sid, _ := c.Cookie(middlewares.COOKIE_SESSION_TOKEN)
+	s:= app.GetSession(a.db, c.Request.Context(), sid)
+	if s == nil{
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			"error": "User not logged in.",
+		})
+		return nil, true
+	}
+	return s, false
+}
+
 
 var oauth2_SelectAccount = oauth2.SetAuthURLParam("prompt", "select_account")
 
@@ -391,12 +422,8 @@ func (a *ApiHandler) createUser(c *gin.Context, userInfo *oidc.UserInfo, conf ap
 
 func (a *ApiHandler) handleIntentElevate(c *gin.Context, userInfo *oidc.UserInfo, conf app.OidcProvider) {
 	// Cant elevate if the user is not logged in.
-	sid, _ := c.Cookie(middlewares.COOKIE_SESSION_TOKEN)
-	session := app.GetSession(a.db, c.Request.Context(), sid)
-	if session == nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"error": "User not logged in.",
-		})
+	session, aborted := a.checkSession(c)
+	if aborted {
 		return
 	}
 	// Check if the identity user elevated with matches the user session!
@@ -412,12 +439,8 @@ func (a *ApiHandler) handleIntentElevate(c *gin.Context, userInfo *oidc.UserInfo
 
 func (a *ApiHandler) handleIntentAddIdentity(c *gin.Context, userInfo *oidc.UserInfo, conf app.OidcProvider, oidc_name string)  {
 	// Cant add identity if the user is not logged in.
-	sid, _ := c.Cookie(middlewares.COOKIE_SESSION_TOKEN)
-	session := app.GetSession(a.db, c.Request.Context(), sid)
-	if session == nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"error": "User not logged in.",
-		})
+	session, aborted := a.checkSession(c)
+	if aborted {
 		return
 	}
 
