@@ -2,7 +2,6 @@ package app
 
 import (
 	"context"
-
 	"github.com/ultraflame4/inuis/models"
 	"gorm.io/gorm"
 )
@@ -43,4 +42,8 @@ func FindUserIdentity(subject string, issuer string, db *gorm.DB, ctx context.Co
 		Where("subject = ? AND issuer = ?", subject, issuer).
 		First(ctx)
 	return identity, err
+}
+
+func FindUserIdentitiesByEmail(email string, db *gorm.DB, ctx context.Context) ([]models.UserIdentity, error){
+	 return gorm.G[models.UserIdentity](db).Where("email = ?", email).Find(ctx)
 }

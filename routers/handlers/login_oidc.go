@@ -11,7 +11,6 @@ import (
 	"slices"
 	"strings"
 	"time"
-
 	"github.com/coreos/go-oidc"
 	"github.com/gin-gonic/gin"
 	"github.com/ultraflame4/inuis/internal/app"
@@ -187,29 +186,34 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 		return
 	}
 
-	// ---- Get / Create user
-
-	// Find existing identities with this email.
-	existing, err := gorm.G[models.UserIdentity](a.db).Where("email = ?", idtoken.Email).Find(c.Request.Context())
-	existing_issuers := make([]string, 0, len(existing))
-	for _, e := range existing {
-		existing_issuers = append(existing_issuers, e.Issuer)
-	}
-	if err != nil {
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
 
 	intent, _ := c.Cookie("intent")
 
 	var user models.User
 
+	// --- Active Session flows ---
+	// - These intents require an active session
 	switch intent {
 	case IntentAddIdentity:
 		a.handleIntentAddIdentity(c, idtoken, provider, oidc_name)
 		return
 	case IntentElevate:
 		a.handleIntentElevate(c, idtoken, provider)
+		return
+	}
+
+	// --- Login Session + Signup Flow ---
+	// - When logging in or signing up
+	// - Flow creates new active session
+
+	// Find existing identities with this email.
+	existing, err := app.FindUserIdentitiesByEmail(idtoken.Email, a.db, c.Request.Context())
+	existing_issuers := make([]string, 0, len(existing))
+	for _, e := range existing {
+		existing_issuers = append(existing_issuers, e.Issuer)
+	}
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 
@@ -249,7 +253,6 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 	}
 
 	c.SetCookie("session_token", string(session.Token), a.config.MaxSessionAge, "", "", false, true)
-
 	c.Redirect(http.StatusFound, "/me")
 
 }
