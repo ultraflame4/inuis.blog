@@ -39,7 +39,6 @@ func pkceChallenge(verifier string) string {
 	return base64.RawURLEncoding.EncodeToString(sum[:])
 }
 
-
 // Retrieves session from cookie, aborts with error if session is non-existent or invalid.
 //
 // You probably want `meta.GetSession` instead which is protected on the middleware level.
@@ -56,10 +55,10 @@ func pkceChallenge(verifier string) string {
 // for callbacks by Identity Providers. (Having multiple makes it inconvenient, especially if we add more feautres / intents).
 //
 // Returns (user session, aborted)
-func (a* ApiHandler) checkSession(c *gin.Context) (*models.UserSession, bool){
+func (a *ApiHandler) checkSession(c *gin.Context) (*models.UserSession, bool) {
 	sid, _ := c.Cookie(middlewares.COOKIE_SESSION_TOKEN)
-	s:= app.GetSession(a.db, c.Request.Context(), sid)
-	if s == nil{
+	s := app.GetSession(a.db, c.Request.Context(), sid)
+	if s == nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 			"error": "User not logged in.",
 		})
@@ -67,7 +66,6 @@ func (a* ApiHandler) checkSession(c *gin.Context) (*models.UserSession, bool){
 	}
 	return s, false
 }
-
 
 var oauth2_SelectAccount = oauth2.SetAuthURLParam("prompt", "select_account")
 
@@ -142,10 +140,10 @@ func (a *ApiHandler) StartOauthLoginFlow(c *gin.Context) {
 	// Nothing below here. Requests are fully handled in if-else statement
 }
 
-func (a *ApiHandler) handleAllowSignupsPrechecks( inviteCode string, c *gin.Context) bool {
+func (a *ApiHandler) handleAllowSignupsPrechecks(inviteCode string, c *gin.Context) bool {
 	adminless := a.config.IsAdminless(a.db, c.Request.Context())
 	require_invite := a.config.RequireInviteCode || adminless
-	if (a.config.ALLOW_SIGNUP || adminless) {
+	if a.config.ALLOW_SIGNUP || adminless {
 		// Check if invite code exists before proceeding with oauth flow
 		has_invite := len(inviteCode) != 0
 		if has_invite {
@@ -164,7 +162,6 @@ func (a *ApiHandler) handleAllowSignupsPrechecks( inviteCode string, c *gin.Cont
 	}
 	return false
 }
-
 
 func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 	oidc_name := strings.ToUpper(c.Param("oidc"))
@@ -228,7 +225,6 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 		return
 	}
 
-
 	intent, _ := c.Cookie("intent")
 
 	var user models.User
@@ -268,7 +264,6 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 			return
 		}
 
-
 		new_user, ok := a.createUser(c, idtoken, provider)
 		if !ok {
 			return
@@ -284,7 +279,7 @@ func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 			return
 		}
 		// Continue to get user object
-		slog.Info("Found user identity" ,"email", identity.Email, "issuer", identity.Issuer, "sub", identity.Subject)
+		slog.Info("Found user identity", "email", identity.Email, "issuer", identity.Issuer, "sub", identity.Subject)
 		user = identity.User
 	}
 
@@ -448,7 +443,7 @@ func (a *ApiHandler) handleIntentElevate(c *gin.Context, userInfo *oidc.UserInfo
 	return
 }
 
-func (a *ApiHandler) handleIntentAddIdentity(c *gin.Context, userInfo *oidc.UserInfo, conf app.OidcProvider, oidc_name string)  {
+func (a *ApiHandler) handleIntentAddIdentity(c *gin.Context, userInfo *oidc.UserInfo, conf app.OidcProvider, oidc_name string) {
 	// Cant add identity if the user is not logged in.
 	session, aborted := a.checkSession(c)
 	if aborted {
