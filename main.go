@@ -13,7 +13,7 @@ import (
 	"gorm.io/gorm"
 )
 
-//go:embed dist/*
+//go:embed embed/*
 var frontendFS embed.FS
 
 
@@ -45,11 +45,11 @@ func main() {
 ╔═══════════════════════════════════════════════════════════════════════════════════════╗
 ║                                      Admin Setup                                      ║
 ╚═══════════════════════════════════════════════════════════════════════════════════════╝
-                                                            
-	Create the initial admin user by opening this URL:        
-	                                                        
+
+	Create the initial admin user by opening this URL:
+
 	http://%s
-	                                                        
+
 	Follow the instructions to complete the setup.
 
 ╔═══════════════════════════════════════════════════════════════════════════════════════╗

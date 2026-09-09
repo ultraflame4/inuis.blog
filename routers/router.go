@@ -4,6 +4,7 @@ import (
 	"context"
 	"embed"
 	"io/fs"
+	"log/slog"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -29,19 +30,20 @@ func InitRouter(db *gorm.DB, frontendFS embed.FS) *gin.Engine {
 	{
 
 		// 1. Get the sub-filesystem for the "_app" folder
-		publicFS := subFS(frontendFS, "dist")
-
-		// Serve main _app resources dir
-		r.StaticFS("_app", http.FS(subFS(frontendFS, "dist/_app")))
-		r.StaticFileFS("/robots.txt", "robots.txt", http.FS(publicFS))
-
-		// Serve
-
-		// Fallback route for SPA routing
-		r.NoRoute(func(c *gin.Context) {
-			c.FileFromFS("spa.html", http.FS(publicFS))
-		})
-
+		embedFS := subFS(frontendFS, "embed")
+		distFS, err := fs.Sub(embedFS, "dist")
+		if err == nil {
+			slog.Info("Configuring SPA routes")
+			// Serve main _app resources dir
+			r.StaticFS("_app", http.FS(subFS(distFS, "_app")))
+			r.StaticFileFS("/robots.txt", "robots.txt", http.FS(distFS))
+			// Fallback route for SPA routing
+			r.NoRoute(func(c *gin.Context) {
+				c.FileFromFS("spa.html", http.FS(distFS))
+			})
+		} else {
+			slog.Warn("Failed to serve SPA routes! (If this is development this is fine)", "error", err)
+		}
 	}
 
 	handlers := handlers.NewApiHandler(db)

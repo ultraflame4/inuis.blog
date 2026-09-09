@@ -29,12 +29,12 @@ _configure_client:
 # Build the client, and go server into a single binary
 build:
     just client build
-    rm -rf ./dist
-    mv ./web/build ./dist
+    rm -rf ./embed/dist
+    mv ./web/build ./embed/dist
     mkdir -p ./bin
     go build -o ./bin/app .
 
 
 # Builds and run the binary
 build-x: build
-    ./bin/app/app.exe
+    ./bin/app
