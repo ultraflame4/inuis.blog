@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/ultraflame4/inuis/models"
 	"gorm.io/gorm"
 )
@@ -51,6 +50,7 @@ func DeleteSession(db *gorm.DB, ctx context.Context, sessionID uint) error {
 	err := db.WithContext(ctx).Delete(&session).Error
 	return err
 }
+
 /**
  * Revokes all of the given user's sessions, deleting them from the database.
  */
@@ -77,7 +77,7 @@ func RevokeSessionToken(db *gorm.DB, ctx context.Context, sessionToken string) e
 //
 // This will also preload the user associated with the session.
 func GetSession(db *gorm.DB, ctx context.Context, sessionToken string) *models.UserSession {
-	if len(sessionToken) == 0{
+	if len(sessionToken) == 0 {
 		return nil
 	}
 	session, err := gorm.G[models.UserSession](db).
