@@ -13,7 +13,7 @@ import (
 	"gorm.io/gorm"
 )
 
-//go:embed embed/*
+//go:embed all:embed
 var frontendFS embed.FS
 
 

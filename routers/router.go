@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"log/slog"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/ultraflame4/inuis/internal/app"
@@ -35,10 +36,13 @@ func InitRouter(db *gorm.DB, frontendFS embed.FS) *gin.Engine {
 		if err == nil {
 			slog.Info("Configuring SPA routes")
 			// Serve main _app resources dir
-			r.StaticFS("_app", http.FS(subFS(distFS, "_app")))
+			r.StaticFS("/_app", http.FS(subFS(distFS, "_app")))
 			r.StaticFileFS("/robots.txt", "robots.txt", http.FS(distFS))
 			// Fallback route for SPA routing
 			r.NoRoute(func(c *gin.Context) {
+				if strings.HasPrefix(c.Request.URL.Path, "/_app"){
+					slog.Warn("Unable to find _app/* resource", "url", c.Request.URL.Path)
+				}
 				c.FileFromFS("spa.html", http.FS(distFS))
 			})
 		} else {
