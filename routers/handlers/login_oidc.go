@@ -107,25 +107,13 @@ func (a *ApiHandler) StartOauthLoginFlow(c *gin.Context) {
 	intent := c.Query("intent")
 	setCallbackCookie(c, "intent", intent)
 	// -- end
-	adminless := a.config.IsAdminless(a.db, c.Request.Context())
-	// Check if signup is enabled if intent is to signup
-	if intent == IntentSignup && (a.config.ALLOW_SIGNUP || adminless) {
-		// Check if invite code exists before proceeding with oauth flow
-		if len(inviteCode) != 0 {
-			if !app.VerifyInviteCode(a.db, c.Request.Context(), inviteCode) {
-				// Invite code is not valid! Throw error
-				c.Redirect(http.StatusFound, "/failure?reason=bad_invite")
-				return
-			}
-		} else if a.config.RequireInviteCode || adminless {
-			c.Redirect(http.StatusFound, "/failure?reason=require_invite")
+
+	// If intent is to signup, do some prechecks before we start oauth flow
+	if intent == IntentSignup {
+		if fail := a.handleAllowSignupsPrechecks(inviteCode, c); fail {
 			return
 		}
-	} else {
-		c.Redirect(http.StatusFound, "/failure?reason=signup_disable")
-		return
 	}
-
 	if len(config.Config.ClientSecret) == 0 {
 		// No client secret. Default to pkce
 		pkceVerifier, err := app.RandString(32)
@@ -148,12 +136,35 @@ func (a *ApiHandler) StartOauthLoginFlow(c *gin.Context) {
 		// Not pkce flow. remove set pkce cookie to false
 		// Use to prevent conflicts when switching provider flows.
 		setCallbackCookie(c, "pkceVerifier", "false")
-
 		c.Redirect(http.StatusFound, config.Config.AuthCodeURL(state, oauth2_SelectAccount))
 		return
 	}
 	// Nothing below here. Requests are fully handled in if-else statement
 }
+
+func (a *ApiHandler) handleAllowSignupsPrechecks( inviteCode string, c *gin.Context) bool {
+	adminless := a.config.IsAdminless(a.db, c.Request.Context())
+	require_invite := a.config.RequireInviteCode || adminless
+	if (a.config.ALLOW_SIGNUP || adminless) {
+		// Check if invite code exists before proceeding with oauth flow
+		has_invite := len(inviteCode) != 0
+		if has_invite {
+			// Check if invite code is valid
+			if valid := app.VerifyInviteCode(a.db, c.Request.Context(), inviteCode); !valid {
+				c.Redirect(http.StatusFound, "/failure?reason=bad_invite")
+				return true
+			}
+		} else if require_invite {
+			c.Redirect(http.StatusFound, "/failure?reason=require_invite")
+			return true
+		}
+	} else {
+		c.Redirect(http.StatusFound, "/failure?reason=signup_disable")
+		return true
+	}
+	return false
+}
+
 
 func (a *ApiHandler) AcceptOAuthCallback(c *gin.Context) {
 	oidc_name := strings.ToUpper(c.Param("oidc"))
