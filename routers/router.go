@@ -32,6 +32,7 @@ func InitRouter(db *gorm.DB, frontendFS embed.FS) *gin.Engine {
 
 		// 1. Get the sub-filesystem for the "_app" folder
 		embedFS := subFS(frontendFS, "embed")
+		// Note: fs.Sub does not seem to throw an error if dist/ does not exists
 		distFS, err := fs.Sub(embedFS, "dist")
 		if err == nil {
 			slog.Info("Configuring SPA routes")
