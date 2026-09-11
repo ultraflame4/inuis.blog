@@ -10,13 +10,13 @@
 
 
 <main class="p-4">
-    <header class="flex flex-wrap gap-4">
-        <p><span class="font-semibold">Published by</span>: <a class="classic" href="/u/{author.hid}">@{author.Username}</a></p>
+    <header class="flex flex-wrap gap-x-4 ">
+        <p><span class="font-semibold">Author</span>: <a href="/u/{author.hid}">@{author.Username}</a></p>
         {#if author.hid === data.user?.hid}
             <a href="/me/editor?hid={data.post_data.hid}" class="underline">/edit</a>
         {/if}
         <div class="mr-auto"></div>
-        <p><span class="font-semibold">Last updated</span>: {humanizeDate(data.post_data.UpdatedAt)}</p>
+        <p><span class="font-semibold">Updated</span>: {humanizeDate(data.post_data.UpdatedAt)}</p>
     </header>
     <MarkdownContent source={body} />
     <hr/>

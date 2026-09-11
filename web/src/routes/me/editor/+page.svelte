@@ -108,13 +108,14 @@
 </script>
 
 <svelte:window on:beforeunload={warn_unsaved} />
-<nav class="classic px-4">
-	<a href="/me">&lt&lt; Back</a>
-</nav>
+
 <main
-	class="grid h-page-content gap-2 overflow-hidden p-4"
-	style="grid-template-rows: auto 1fr auto;"
+	class="grid h-page-content overflow-hidden p-4"
+	style="grid-template-rows: auto auto 1fr auto;"
 >
+	<nav>
+		<a href="/me">&lt&lt; Back</a>
+	</nav>
 	<div class="flex flex-wrap items-center gap-1">
 		<h2 class="font-bold">Title: {title}</h2>
 		<div class="ml-auto"></div>
@@ -170,7 +171,7 @@
 	>
 		<MarkdownContent source={preview_content} />
 	</div>
-	<div class="classic flex flex-wrap">
+	<div class="mt-4 flex flex-wrap">
 		<button class="text-danger disabled:text-inherit" disabled={!can_delete} onclick={delete_post}>
 			{#if published}
 				Cannot delete published posts. Make it private first.
@@ -184,16 +185,4 @@
 
 		<a href="/posts/{post_hid}" class="my-0">View post page</a>
 	</div>
-	<br />
 </main>
-
-<dialog id="confirmDialog">
-	<form method="dialog">
-		<p>What is your favorite programming language?</p>
-		<input type="text" id="userInput" placeholder="Type here..." />
-		<div>
-			<button value="cancel">Cancel</button>
-			<button id="confirmBtn" value="default">Submit</button>
-		</div>
-	</form>
-</dialog>
