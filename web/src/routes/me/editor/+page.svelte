@@ -116,43 +116,24 @@
 	<nav>
 		<a href="/me">&lt&lt; Back</a>
 	</nav>
-	<div class="flex flex-wrap items-center gap-1">
-		<h2 class="font-bold">Title: {title}</h2>
+	<div class="my-4 flex flex-wrap items-center gap-4 text-sm">
+		<h2 class="text-base font-bold">Title: {title}</h2>
+		<a href="/posts/{post_hid}" class="my-0">View Post</a>
 		<div class="ml-auto"></div>
-		<span class="mx-2 text-sm" class:font-bold={unsaved_changes}>
+		<span class="text-sm" class:font-bold={unsaved_changes}>
 			{#if unsaved_changes}
 				[Unsaved changes]
 			{:else}
 				[Up to date]
 			{/if}
 		</span>
-		<div class="flex items-center gap-2">
-			<button class="classic" class:hidden={!showPreview} onclick={() => enablePreview(false)}>
-				View Editor
-			</button>
-			<button class="classic" class:hidden={showPreview} onclick={() => enablePreview(true)}>
-				View Preview
-			</button>
-			<button
-				class="classic"
-				disabled={saving_post != null || deleting_post != null}
-				onclick={save_post}>Save</button
-			>
 
-			{#if !published}
-				<button
-					class="classic"
-					disabled={publishing_post != null || deleting_post != null}
-					onclick={() => publish_post(true)}>Publish</button
-				>
-			{:else}
-				<button
-					class="classic"
-					disabled={publishing_post != null || deleting_post != null}
-					onclick={() => publish_post(false)}>Make Private</button
-				>
-			{/if}
-		</div>
+		<button class="w-32" class:hidden={!showPreview} onclick={() => enablePreview(false)}>
+			Switch Editor
+		</button>
+		<button class="w-32" class:hidden={showPreview} onclick={() => enablePreview(true)}>
+			Switch Preview
+		</button>
 	</div>
 	<Editor
 		bind:view
@@ -171,7 +152,7 @@
 	>
 		<MarkdownContent source={preview_content} />
 	</div>
-	<div class="mt-4 flex flex-wrap">
+	<div class="mt-4 flex flex-wrap text-sm">
 		<button class="text-danger disabled:text-inherit" disabled={!can_delete} onclick={delete_post}>
 			{#if published}
 				Cannot delete published posts. Make it private first.
@@ -183,6 +164,25 @@
 		</button>
 		<div class="my-0 mr-auto"></div>
 
-		<a href="/posts/{post_hid}" class="my-0">View post page</a>
+		<div class="flex gap-2">
+			{#if !published}
+				<button
+					disabled={publishing_post != null || deleting_post != null}
+					onclick={() => publish_post(true)}
+				>
+					Publish
+				</button>
+			{:else}
+				<button
+					disabled={publishing_post != null || deleting_post != null}
+					onclick={() => publish_post(false)}
+				>
+					Make Private
+				</button>
+			{/if}
+			<button disabled={saving_post != null || deleting_post != null} onclick={save_post}>
+				Save
+			</button>
+		</div>
 	</div>
 </main>
