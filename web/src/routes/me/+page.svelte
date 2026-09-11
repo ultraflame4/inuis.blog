@@ -16,10 +16,9 @@
 		}
 		await goto(`?${searchParams.toString()}`, { replaceState: true });
 	}
-
 </script>
 
-<main class="p-4 min-h-page-content">
+<main class="min-h-page-content p-4">
 	<p class="my-4 text-lg">
 		Welcome back: <code>{data.user.Username}</code>
 	</p>

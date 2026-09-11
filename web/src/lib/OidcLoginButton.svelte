@@ -41,7 +41,7 @@
 	href={getHref()}
 	class="flex w-64 overflow-hidden rounded-xl border border-ink p-4
 	    text-sm font-semibold text-nowrap text-ellipsis no-underline
-		 data-disabled:border-divider data-disabled:text-divider {className}"
+		 data-disabled:border-divider data-disabled:text-divider data-disabled:cursor-default {className}"
 	data-disabled={disabled || !invite_valid || undefined}
 >
 	<span class="mr-auto underline">{prefix ?? 'Sign in with'}</span>

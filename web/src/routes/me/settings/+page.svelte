@@ -1,47 +1,44 @@
 <script lang="ts">
-	import { invalidateAll } from "$app/navigation";
-	import { app } from "$lib";
-	import { api } from "$lib/api";
-	import OidcLoginButton from "$lib/OidcLoginButton.svelte";
-	import { humanizeDate } from "$lib/utils";
-	import { onMount } from "svelte";
+	import { invalidateAll } from '$app/navigation';
+	import { app } from '$lib';
+	import { api } from '$lib/api';
+	import OidcLoginButton from '$lib/OidcLoginButton.svelte';
+	import { humanizeDate } from '$lib/utils';
+	import { onMount } from 'svelte';
 
+	const { data } = $props();
 
-	const { data } = $props()
-
-   	const added_providers: string[] = $derived(data['connected_providers'] ?? []);
-   	const providers: string[] = $derived(data['providers']);
+	const added_providers: string[] = $derived(data['connected_providers'] ?? []);
+	const providers: string[] = $derived(data['providers']);
 
 	async function disconnectProvider(p: string) {
-		if (!confirm("Are you sure you want to disconnect this provider?")) return;
-		if (!await app.elevateSession()) {
-			alert("Failed to verify user.");
+		if (!confirm('Are you sure you want to disconnect this provider?')) return;
+		if (!(await app.elevateSession())) {
+			alert('Failed to verify user.');
 			return;
 		}
-		try{
-		    await api.disconnectOidcProvider(fetch, p);
-			invalidateAll()
-		}
-		catch(e){
-		    alert("Action failed: " + e)
+		try {
+			await api.disconnectOidcProvider(fetch, p);
+			invalidateAll();
+		} catch (e) {
+			alert('Action failed: ' + e);
 		}
 	}
 
 	let updating_username = $state<Promise<void> | null>(null);
 	async function updateUsername() {
 		if (updating_username == null) {
-		    const inp = document.getElementById("inp-change-username")! as HTMLInputElement
+			const inp = document.getElementById('inp-change-username')! as HTMLInputElement;
 			if (inp.value == data.user.Username) return;
 			if (inp.value == '') return;
-		    updating_username = api.updateUsername(fetch, inp.value).then(x=> {
-				updating_username = null
-				inp.value=""
-				invalidateAll()
-			})
+			updating_username = api.updateUsername(fetch, inp.value).then((x) => {
+				updating_username = null;
+				inp.value = '';
+				invalidateAll();
+			});
 		}
-		await updating_username
+		await updating_username;
 	}
-
 </script>
 
 <main class="px-4">
@@ -68,7 +65,7 @@
 	</p>
 	<ul class="space-y-2">
 		{#each providers as p}
-			<li class="flex items-center gap-4">
+			<li class="flex h-full items-center gap-4">
 				{#if added_providers.includes(p)}
 					<OidcLoginButton
 						class="data-disabled:text-success"
@@ -77,9 +74,12 @@
 						prefix="Connected"
 						disabled
 					/>
-					<button onclick={() => disconnectProvider(p)} class="cursor-pointer text-danger underline"
-						>Disconnect</button
+					<button
+						onclick={() => disconnectProvider(p)}
+						class="border-none bg-transparent h-fit cursor-pointer text-danger hover:underline"
 					>
+						[Disconnect]
+					</button>
 				{:else}
 					<OidcLoginButton provider_id={p} intent={'add_identity'} prefix="Connect to" />
 				{/if}
