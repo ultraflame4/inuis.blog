@@ -143,6 +143,7 @@
 			if (changed) unsaved_changes = true;
 			updateTitle(view);
 		}}
+		handleSave={save_post}
 	/>
 
 	<div
