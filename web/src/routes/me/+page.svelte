@@ -40,14 +40,14 @@
 
 		<a href="/me/editor" class="self-center">/New Post</a>
 		<form
-			class="my-0 ml-auto flex h-6 grow gap-2 sm:grow-0"
+			class="my-0 ml-auto flex h-7 grow gap-2 sm:grow-0"
 			onsubmit={(e) => {
 				update_query('q', searchQuery);
 				e.preventDefault();
 			}}
 		>
-			<input class="my-0 h-6 grow" bind:value={searchQuery} />
-			<button type="submit" class="my-0">Search</button>
+			<input class="h-full  my-0 grow" bind:value={searchQuery} />
+			<button type="submit" class="h-full my-0">Search</button>
 		</form>
 	</div>
 	<ul class="flex flex-wrap items-center justify-center gap-4 sm:justify-start">
