@@ -2,20 +2,14 @@
 	import { goto, invalidate } from '$app/navigation';
 	import { page } from '$app/state';
 	import PageNumbers from '$lib/PageNumbers.svelte';
-	import { humanizeDate, nullish } from '$lib/utils';
+	import SearchBar from '$lib/SearchBar.svelte';
+	import { humanizeDate, nullish, updateSearchParams } from '$lib/utils';
 
 	const { data } = $props();
 
-	let searchQuery = $state(page.url.searchParams.get('q') ?? '');
+	let searchQuery = $derived(page.url.searchParams.get('q') ?? '');
 
-	async function update_query(key: string, value: string | null | undefined) {
-		// await invalidate('data:posts')
-		const searchParams = new URLSearchParams(page.url.searchParams);
-		if (!nullish(value)) {
-			searchParams.set(key, value);
-		}
-		await goto(`?${searchParams.toString()}`, { replaceState: true });
-	}
+	const update_query = updateSearchParams;
 </script>
 
 <main class="min-h-page-content p-4">
@@ -39,16 +33,8 @@
 		<div class="mr-auto h-4 w-0 border bg-black sm:mr-0"></div>
 
 		<a href="/me/editor" class="self-center">/New Post</a>
-		<form
-			class="my-0 ml-auto flex h-7 grow gap-2 sm:grow-0"
-			onsubmit={(e) => {
-				update_query('q', searchQuery);
-				e.preventDefault();
-			}}
-		>
-			<input class="h-full  my-0 grow" bind:value={searchQuery} />
-			<button type="submit" class="h-full my-0">Search</button>
-		</form>
+		<div class="ml-auto"></div>
+		<SearchBar />
 	</div>
 	<ul class="flex flex-wrap items-center justify-center gap-4 sm:justify-start">
 		{#each data.user_posts.items as post, index}

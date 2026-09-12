@@ -1,25 +1,15 @@
 <script lang="ts">
 	import PageNumbers from '$lib/PageNumbers.svelte';
 	import { page } from '$app/state';
-	import { humanizeDate, nullish } from '$lib/utils';
-	import { goto } from '$app/navigation';
+	import { humanizeDate, updateSearchParams } from '$lib/utils';
+	import SearchBar from '$lib/SearchBar.svelte';
 
 	const { data } = $props();
 
 	const author = $derived(data.author);
 	const author_posts = $derived(data.author_posts);
 
-	let searchQuery = $state(page.url.searchParams.get('q') ?? '');
-	async function update_query(key: string, value: string | null | undefined) {
-		// await invalidate('data:posts')
-		const searchParams = new URLSearchParams(page.url.searchParams);
-		if (!nullish(value)) {
-			searchParams.set(key, value);
-		}
-		await goto(`?${searchParams.toString()}`, { replaceState: true });
-	}
-
-	$inspect(author_posts);
+	let searchQuery = $derived(page.url.searchParams.get('q') ?? '');
 </script>
 
 <main class="min-h-page-content p-4">
@@ -32,39 +22,27 @@
 
 	<div class="classic flex flex-wrap items-baseline gap-x-4">
 		<h2>Posts</h2>
-		<form
-			class="my-0 ml-auto flex h-6 grow gap-2 sm:grow-0"
-			onsubmit={(e) => {
-				update_query('q', searchQuery);
-				e.preventDefault();
-			}}
-		>
-			<input class="my-0 h-6 grow" bind:value={searchQuery} type="search" />
-			<button type="submit" class="my-0">Search</button>
-		</form>
+		<div class="ml-auto"></div>
+		<SearchBar />
 	</div>
 
 	{#if author_posts.posts.length === 0}
 		{#if searchQuery !== ''}
-			<p class="text-ink-muted">No post matching query: "{searchQuery}"</p>
-			<br/>
-			<a class="no-underline hover:underline cursor-pointer" href="/u/{author.hid}">[Clear filters]</a>
+			<span class="text-ink-muted">No post matching query: "{searchQuery}"</span>
 		{:else}
 			<p class="text-ink-muted">No posts yet.</p>
 		{/if}
 	{:else}
 		<ul class="flex flex-wrap items-center justify-center gap-4 sm:justify-start">
 			{#each author_posts.posts as post, index}
-				<li
-					class="grid h-38 w-full gap-2 overflow-hidden rounded-2xl border px-4 py-3 sm:h-36 sm:w-96"
-					style="grid-template-columns: auto 1fr; grid-template-rows: auto 1fr auto;"
-				>
-					<span class="col-1 row-span-2 mr-1 w-4 text-right font-bold"
+				<li class="relative flow-root w-full space-y-4 px-4 py-3 pl-8 sm:h-36">
+					<span class="absolute left-0 w-4 text-right font-bold"
 						>{index + 1 + (author_posts.page - 1) * author_posts.per_page}.</span
 					>
 
-					<a href="/posts/{post.hid}" class="font-semibold underline">{post.Title}</a>
-					<p class="my-0 text-sm text-ink-light">{post.Summary.slice(0, 96)}...</p>
+					<a href="/posts/{post.hid}" class="font-semibold underline"><h2>{post.Title}</h2></a>
+
+					<p class="text-sm text-ink-light">{post.Summary.slice(0, 106)}...</p>
 					<div class="col-2 row-3 m-0 flex justify-between text-xs text-ink-muted">
 						<span>
 							Updated: {humanizeDate(post.UpdatedAt)}

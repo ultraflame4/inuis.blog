@@ -1,3 +1,5 @@
+import { goto } from '$app/navigation';
+import { page } from '$app/state';
 import { format, formatDistanceToNow, isToday, isYesterday, parseISO } from 'date-fns';
 
 
@@ -36,4 +38,22 @@ export function humanizeDate(date: Date | string): string {
 
 export function waitTimeout(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+
+/**
+ * Updates the current page's search params (queries) with the key and value
+ * @param key Query key
+ * @param value Value to set to. If null or undefined, removes it from the search params.
+ */
+export async function updateSearchParams(key: string, value: string | null | undefined) {
+    // await invalidate('data:posts')
+    const searchParams = new URLSearchParams(page.url.searchParams);
+    if (!nullish(value)) {
+        searchParams.set(key, value);
+    }
+    else {
+        searchParams.delete(key)
+    }
+    await goto(`?${searchParams.toString()}`, { replaceState: true });
 }
