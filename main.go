@@ -9,8 +9,6 @@ import (
 	"github.com/ultraflame4/inuis/internal/app"
 	"github.com/ultraflame4/inuis/models"
 	"github.com/ultraflame4/inuis/routers"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
 )
 
 //go:embed all:embed
@@ -18,9 +16,13 @@ var frontendFS embed.FS
 
 
 func main() {
+	app_config := app.GetConfig()
+	
 	slog.Info("Connecting to database...")
-	db, err := gorm.Open(sqlite.Open("data.db"), &gorm.Config{})
+	
+	db, err := app_config.ConnectDatabase()
 	if err != nil {
+		slog.Error("Failed to open connection to database.", "error",err)
 		panic("failed to connect database")
 	}
 	ctx := context.Background()
@@ -32,7 +34,7 @@ func main() {
 	app.PurgeExpiredInviteCodes(db, ctx)
 	slog.Info("Purged expired invite codes.")
 
-	aconfig := app.GetConfig()
+
 	if app.CountUsersWithRole("admin", db, ctx) == 0 {
 		slog.Info("No admin users found! Generating invite code for admin user!")
 		inviteCode, err := app.GetAdminInviteCode(db, ctx)
@@ -40,7 +42,7 @@ func main() {
 			slog.Error("Failed to generate [admin] invite code", "error", err)
 		} else {
 			slog.Info("Generated [admin] invite code", "code", inviteCode)
-			adminSetupURL := aconfig.PublicServerAddr() + "/signup?invite=" + inviteCode
+			adminSetupURL := app_config.PublicServerAddr() + "/signup?invite=" + inviteCode
 			fmt.Printf(`
 ╔═══════════════════════════════════════════════════════════════════════════════════════╗
 ║                                      Admin Setup                                      ║
@@ -59,5 +61,5 @@ func main() {
 	}
 
 	router := routers.InitRouter(db, frontendFS)
-	router.Run(aconfig.ServerAddress()) // listens on 0.0.0.0:8080 by default
+	router.Run(app_config.ServerAddress()) // listens on 0.0.0.0:8080 by default
 }

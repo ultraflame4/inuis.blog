@@ -3,11 +3,16 @@ package app
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
 
+	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
@@ -42,19 +47,36 @@ type Config struct {
 	// Require New users need an invite code to create an account
 	//
 	// The enviromental variable is parsed using `strconv.ParseBool` (https://pkg.go.dev/strconv#ParseBool)
-	// 
+	//
 	// If parsing fails, require invite code will be enabled as a precautionary measure.
 	RequireInviteCode bool
 	// Disable signups and creation of new accounts
-	// 
+	//
 	// The enviromental variable is parsed using `strconv.ParseBool` (https://pkg.go.dev/strconv#ParseBool)
-	// 
+	//
 	// If parsing fails, it will be disabled as a precautionary measure.
 	ALLOW_SIGNUP bool
+
+	// Driver for database to use. (sqlite, postgres, etc.)
+	//
+	// Defaults to sqlite
+	DATABASE_DRIVER string
+
+	// URL for the database, including its password, username and host.
+	// Supported drivers & examples:
+	//   sqlite:   "/app.db" (Relative to DATA_DIR)
+	//   postgres: "host=localhost user=gorm password=gorm dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai"
+	//   mysql:    "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local"
+	//
+	//   refer https://github.com/go-sql-driver/mysql#dsn-data-source-name for details
+	//
+	// Examples were taken from https://gorm.io/docs/connecting_to_the_database.html
+	DATABASE_URL string
 }
 
 // Load config from env
 func readConfigFromEnv() Config {
+	println("Reading app configuration from env...")
 	// Returns the maximum age of a session in seconds
 	sessionMaxAge := func() int {
 		maxAge, err := strconv.Atoi(getEnv("MAX_SESSION_AGE", "3600"))
@@ -72,7 +94,8 @@ func readConfigFromEnv() Config {
 	if err != nil {
 		allowSignup = true
 	}
-	return Config{
+
+	c := Config{
 		Host:              getEnv("HOST", "localhost"),
 		Port:              getEnv("PORT", "8080"),
 		ProxiedAddress:    getEnvOrNil("PROXIED_ADDR"),
@@ -81,8 +104,16 @@ func readConfigFromEnv() Config {
 		BrandName:         BrandName,
 		CopyrightName:     getEnv("COPYRIGHT_NAME", BrandName),
 		RequireInviteCode: requireInviteCode,
-		ALLOW_SIGNUP: allowSignup,
+		ALLOW_SIGNUP:      allowSignup,
+		DATABASE_DRIVER:   getEnv("DATABASE_DRIVER", "sqlite"),
+		DATABASE_URL:      getEnv("DATABASE_URL", "data.db"),
 	}
+
+	// Ensure data directory exists
+	os.MkdirAll(c.DataDirectory, 0755)
+	slog.Info("Created/Found data directory at", "path", c.DataDirectory)
+
+	return c
 }
 
 var (
@@ -123,4 +154,29 @@ func (c *Config) PublicServerAddr() string {
 
 func (c *Config) IsAdminless(db *gorm.DB, ctx context.Context) bool {
 	return CountUsersWithRole("admin", db, ctx) == 0
+}
+
+func (c *Config) ConnectDatabase() (*gorm.DB, error) {
+	driver := c.DATABASE_DRIVER
+	url := c.DATABASE_URL
+
+	var dialector gorm.Dialector
+
+	switch driver {
+	case "sqlite":
+		fp := filepath.Join(c.DataDirectory, url)
+		slog.Info("Opening sqlite database at", "file", fp)
+		dialector = sqlite.Open(fp)
+
+	case "postgres":
+		dialector = postgres.Open(url)
+
+	case "mysql":
+		dialector = mysql.Open(url)
+
+	default:
+		return nil, fmt.Errorf("unsupported database driver: %q", driver)
+	}
+
+	return gorm.Open(dialector, &gorm.Config{})
 }

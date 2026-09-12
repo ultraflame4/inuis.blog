@@ -1,5 +1,5 @@
 set dotenv-load := true
-export DATA_DIR := "./data"
+export DATA_DIR := "./temp/data"
 
 _:
     just --list
