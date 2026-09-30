@@ -12,6 +12,7 @@ This is a minimal, self-hostable blogging platform for developers, writers, and 
 - Easy import / export of data
 - Easy to integrate (Public) API for fetching posts.
 - Embed capabilities
+- Feels private
 
 
 # Setup Behaviour
