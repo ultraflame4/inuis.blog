@@ -6,6 +6,14 @@ No trackers, minimal JavaScript and some CSS
 
 This is a minimal, self-hostable blogging platform for developers, writers, and anyone else who wants to share their thoughts, in a fast and simple way.
 
+# Key Goals
+- Self hostable
+- Cheap to run
+- Easy import / export of data
+- Easy to integrate (Public) API for fetching posts.
+- Embed capabilities
+
+
 # Setup Behaviour
 
 1. On first startup, the server will generate a single-use invite code.
@@ -61,4 +69,3 @@ Your best bet is to use a reverse proxy, or hide behind cloudflare to configure 
 
 # API Routes
 See [API_SPECS.md](API_SPECS.md) for details on the API routes.
-
