@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import MarkdownContent from '$lib/MarkdownContent.svelte';
 	import { humanizeDate } from '$lib/utils.js';
 
@@ -22,7 +23,7 @@
 			<span class="font-semibold">Author</span>: <a href="/u/{author.hid}">@{author.Username}</a>
 		</p>
 		{#if author.hid === data.user?.hid}
-			<a href="/me/editor?hid={data.post_data.hid}" class="underline">/edit</a>
+			<a href={resolve(`/me/editor?hid=${data.post_data.hid}`)} target="_blank" class="underline">/edit</a>
 		{/if}
 
 		<div class="mr-auto"></div>

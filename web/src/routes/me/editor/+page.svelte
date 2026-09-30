@@ -111,11 +111,8 @@
 
 <main
 	class="grid h-page-content overflow-hidden p-4"
-	style="grid-template-rows: auto auto 1fr auto;"
+	style="grid-template-rows: auto 1fr auto;"
 >
-	<nav>
-		<a href="/me">&lt&lt; Back</a>
-	</nav>
 	<div class="my-4 flex flex-wrap items-center gap-4 text-sm">
 		<h2 class="text-base font-bold">Title: {title}</h2>
 		<div class="ml-auto"></div>

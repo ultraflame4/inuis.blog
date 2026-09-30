@@ -20,12 +20,9 @@
 		<a class=" m-0" href="/login">Login</a>
 	{/if}
 </header>
-<aside class="w-32 border-r border-r-divider min-h-page-content float-left mr-8">
-
-</aside>
 {@render children()}
 
-<footer class="flex h-(--footer-height) items-center justify-center text-center text-sm">
+<footer class="flex h-(--footer-height) items-center justify-center text-center text-sm border-t border-divider text-ink-muted">
 	<p>
 		<span class="font-serif">&copy;&nbsp;</span>{data.app_meta.copyright_name}
 		{new Date().getFullYear()} | Powered with 💖 by
