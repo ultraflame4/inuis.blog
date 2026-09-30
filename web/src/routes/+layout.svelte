@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
-<header class="mx-4 flex h-(--navbar-height) items-center gap-2">
+<header class="px-4 flex h-(--navbar-height) items-center gap-2 border-b border-b-divider">
 	<h1 class="text-xl text-ink"><a href="/">[{data.app_meta.brand_name}]</a></h1>
 
 	{#if !!data.user}

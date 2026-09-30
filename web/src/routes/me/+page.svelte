@@ -39,10 +39,10 @@
 	<ul class="flex flex-wrap items-center justify-center gap-4 sm:justify-start">
 		{#each data.user_posts.items as post, index}
 			<li
-				class="grid h-38 w-full gap-2 overflow-hidden rounded-2xl border px-4 py-3 sm:h-36 sm:w-96"
+				class="grid h-38 w-full gap-2 overflow-hidden border px-4 py-3 sm:h-36 sm:w-96"
 				style="grid-template-columns: auto 1fr; grid-template-rows: auto 1fr auto;"
 			>
-				<span class="col-1 row-span-2 mr-1 w-4 text-right font-bold"
+				<span class="col-1 row-span-2 mr-1 w-4 text-right"
 					>{index + 1 + (data.user_posts.page - 1) * data.user_posts.per_page}.</span
 				>
 
