@@ -20,7 +20,7 @@
 		</p>
 	</div>
 
-	<div class="classic flex flex-wrap items-baseline gap-x-4">
+	<div class=" flex flex-wrap items-baseline gap-x-4">
 		<h2>Posts</h2>
 		<div class="ml-auto"></div>
 		<SearchBar />

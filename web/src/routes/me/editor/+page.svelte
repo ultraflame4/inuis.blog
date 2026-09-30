@@ -118,7 +118,6 @@
 	</nav>
 	<div class="my-4 flex flex-wrap items-center gap-4 text-sm">
 		<h2 class="text-base font-bold">Title: {title}</h2>
-		<a href="/posts/{post_hid}" class="my-0">View Post</a>
 		<div class="ml-auto"></div>
 		<span class="text-sm" class:font-bold={unsaved_changes}>
 			{#if unsaved_changes}
@@ -128,12 +127,13 @@
 			{/if}
 		</span>
 
-		<button class="w-32" class:hidden={!showPreview} onclick={() => enablePreview(false)}>
-			Switch Editor
+		<button class="btn" class:hidden={!showPreview} onclick={() => enablePreview(false)}>
+			Editor
 		</button>
-		<button class="w-32" class:hidden={showPreview} onclick={() => enablePreview(true)}>
-			Switch Preview
+		<button class="btn" class:hidden={showPreview} onclick={() => enablePreview(true)}>
+			Preview
 		</button>
+		<a href="/posts/{post_hid}" class="btn">View Post</a>
 	</div>
 	<Editor
 		bind:view
@@ -154,7 +154,7 @@
 		<MarkdownContent source={preview_content} />
 	</div>
 	<div class="mt-4 flex flex-wrap text-sm">
-		<button class="text-danger disabled:text-inherit" disabled={!can_delete} onclick={delete_post}>
+		<button class="btn btn-danger disabled:text-inherit" disabled={!can_delete} onclick={delete_post}>
 			{#if published}
 				Cannot delete published posts. Make it private first.
 			{:else if post_hid == null}
@@ -168,6 +168,7 @@
 		<div class="flex gap-2">
 			{#if !published}
 				<button
+				    class="btn"
 					disabled={publishing_post != null || deleting_post != null}
 					onclick={() => publish_post(true)}
 				>
@@ -175,13 +176,14 @@
 				</button>
 			{:else}
 				<button
+				    class="btn"
 					disabled={publishing_post != null || deleting_post != null}
 					onclick={() => publish_post(false)}
 				>
 					Make Private
 				</button>
 			{/if}
-			<button disabled={saving_post != null || deleting_post != null} onclick={save_post}>
+			<button class="btn" disabled={saving_post != null || deleting_post != null} onclick={save_post}>
 				Save
 			</button>
 		</div>

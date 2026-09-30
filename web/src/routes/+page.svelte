@@ -1,4 +1,4 @@
-<main class="classic min-h-page-content">
+<main class=" min-h-page-content">
 	<h1>I.N.U.I.S <span class="align-top text-sm">(It's not ugly, it's simple)</span></h1>
 	<hr />
 	<h2>A tiny, no-nonsense, fast blogging platform</h2>

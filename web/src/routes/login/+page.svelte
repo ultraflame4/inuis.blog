@@ -4,16 +4,15 @@
 	import { onMount } from 'svelte';
 
 	const { data } = $props();
-	const providers = $derived(data['providers'])
-
+	const providers = $derived(data['providers']);
 </script>
 
-<div class="w-full min-h-page-content flex items-center justify-center">
-	<main class="mx-auto border border-ink p-8 flex flex-col gap-4">
-		<h2 class="classic my-0">Log In</h2>
+<div class="flex min-h-page-content w-full items-center justify-center">
+	<main class="mx-auto flex flex-col gap-4 border border-ink p-8">
+		<h2 class=" my-0">Log In</h2>
 		<span>Hello there!</span>
 		<p>Sign in with your preferred provider below.</p>
-		<nav class="w-full mx-auto my-2">
+		<nav class="mx-auto my-2 w-full">
 			<ul class="flex flex-col gap-2">
 				{#each providers as provider}
 					<li class="block">

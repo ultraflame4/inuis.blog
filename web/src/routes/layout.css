@@ -3,92 +3,32 @@
 
 @layer base {
 	html {
-		@apply bg-paper text-ink font-mono;
+		@apply bg-paper font-mono text-ink;
 	}
 
-
-	.classic *,
-	.classic {
-		font-weight: revert;
-		font-size: revert;
-		text-decoration: revert;
-		@apply my-4;
+	* {
+		box-sizing: border-box;
+		transition: inherit;
 	}
-
-	input,
-	button {
-        @apply rounded-none border bg-paper-muted px-2 h-7.5 min-w-14 text-ink
-	}
-
-	button:hover {
-		@apply bg-paper-subtle;
-	}
-	button:active {
-		@apply bg-paper;
-	}
-
-	button:disabled {
-		@apply cursor-not-allowed bg-paper;
-	}
-
-	main.classic {
-		@apply m-0 box-border flow-root px-4;
-	}
-
 	hr {
-		@apply my-4;
+		border-color: var(--color-divider);
 	}
-
-	nav > a {
-		text-decoration: revert;
-		/*color: revert*/
+	select {
+		@apply rounded-full border bg-paper-muted p-1 px-1.5;
 	}
-
-	code {
-        @apply bg-paper-subtle px-2 py-0.5 rounded-md
-	}
-
-
-	a{
-		@apply text-link underline;
-	}
-
-	a:hover {
-		@apply text-link-hover;
-	}
-
-	h1 > a,
-	h2 > a,
-	h3 > a,
-	h4 > a,
-	h5 > a,
-	h6 > a {
-		@apply text-ink no-underline;
+	button {
+		@apply cursor-pointer;
 	}
 }
 
 :root {
+    font-size: 0.9rem;
 	--navbar-height: calc(13 * var(--spacing));
 	--footer-height: calc(12 * var(--spacing));
 }
 
-* {
-	box-sizing: border-box;
-	transition: inherit;
-}
-
-hr {
-	border-color: var(--color-divider);
-}
-select {
-	@apply rounded-full border bg-paper-muted p-1 px-1.5;
-}
-button {
-	@apply cursor-pointer;
-}
-
 kbd {
-	@apply mx-0.5 rounded-sm border border-ink-muted bg-paper-muted px-1 font-mono text-xs;
+	@apply mx-0.5 border border-ink-muted bg-paper-muted px-1 font-mono text-xs;
 	-webkit-box-shadow: 1px 1px 0px 0px var(--color-ink-muted);
 	box-shadow: 1px 1px 0px 0px var(--color-ink-muted);
 }
@@ -179,4 +119,12 @@ kbd {
 
 @utility border {
 	border-color: var(--color-divider);
+}
+
+@utility btn{
+    @apply border-divider border px-3 py-1 bg-paper-muted hover:bg-paper-subtle;
+}
+
+@utility btn-danger{
+    @apply  text-danger border-danger hover:bg-danger hover:text-ink
 }

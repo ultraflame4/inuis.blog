@@ -7,11 +7,11 @@
 	const author = $derived(data.post_data.User);
 </script>
 
-<main class="px-4">
-	<header class="flex flex-wrap gap-x-4">
+<main class="px-4 mt-4">
+	<header class="flex flex-wrap gap-x-4 space-y-4">
 		{#if !data.post_data.AllowPublic}
 			<div
-				class="my-4 py-2 w-full border border-danger text-center text-danger"
+				class="py-2 w-full border border-danger text-center text-danger"
 				title="This post has not been published can cannot be viewed publicly"
 			>
 				<span class="tracking-widest">[PRIVATE POST]</span>

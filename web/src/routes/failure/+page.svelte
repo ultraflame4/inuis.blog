@@ -137,7 +137,7 @@
 </script>
 
 <main class="min-h-page-content space-y-4 p-4 text-center">
-	<h2 class="classic text-center capitalize">{title}</h2>
+	<h2 class=" text-center capitalize">{title}</h2>
 	<h3 class="text-center">
 		<code class="border border-divider-light px-2 py-1 text-link">{fail_reason}</code>
 	</h3>
@@ -157,7 +157,7 @@
 			{/each}
 		</div>
 	{:else}
-		<div class="classic text-center font-mono">
+		<div class=" text-center font-mono">
 			<h3>[Game Over]</h3>
 			<p>No identity providers detected.</p>
 			<p>Please contact the administrator to recover access.</p>
@@ -166,7 +166,7 @@
 
 	<div class="flex justify-center gap-2">
 		{#each links as link}
-			<a href={link.href} class="classic text-center font-mono no-underline hover:underline"
+			<a href={link.href} class=" text-center font-mono no-underline hover:underline"
 				>[{link.label ?? link.href}]</a
 			>
 		{/each}
@@ -174,6 +174,6 @@
 
 	{#if show_close}
 		<br />
-		<button class="px-4 text-danger" onclick={() => window.close()}>Close</button>
+		<button class="btn px-4 text-danger" onclick={() => window.close()}>Close</button>
 	{/if}
 </main>

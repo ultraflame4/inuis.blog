@@ -6,19 +6,19 @@
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
-<header class="px-4 flex h-(--navbar-height) items-center gap-2 border-b border-b-divider">
+<header class="flex h-(--navbar-height) items-center gap-2 border-b border-b-divider px-4">
 	<h1 class="text-xl text-ink"><a href="/">[{data.app_meta.brand_name}]</a></h1>
 
 	{#if !!data.user}
-		<a class="classic m-0" href="/me">/me</a>
+		<a class=" m-0" href="/me">/me</a>
 		<div class="ml-auto"></div>
-		<a class="classic m-0 text-ink" href="/me/settings">Settings</a>
+		<a class=" m-0 text-ink" href="/me/settings">Settings</a>
 	{:else}
 		<div class="ml-auto"></div>
 		{#if data.app_meta.allow_signup}
-			<a class="classic m-0" href="/signup">Signup</a>
+			<a class=" m-0" href="/signup">Signup</a>
 		{/if}
-		<a class="classic m-0" href="/login">Login</a>
+		<a class=" m-0" href="/login">Login</a>
 	{/if}
 </header>
 {@render children()}

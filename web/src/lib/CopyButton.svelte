@@ -1,6 +1,4 @@
-
 <script lang="ts">
-
 	interface Props {
 		text: string;
 	}
@@ -16,21 +14,21 @@
 	}
 
 	function resetState() {
-    	if (timeout) clearTimeout(timeout);
-    	timeout = setTimeout(() => {
-    		isCopied = false;
-    	}, 1000);
+		if (timeout) clearTimeout(timeout);
+		timeout = setTimeout(() => {
+			isCopied = false;
+		}, 1000);
 	}
 </script>
 
 <button
-		class="classic md-escape my-0 border-paper font-mono data-copied:text-success"
-		data-copied={isCopied || undefined}
-		onclick={() => copyCode(text)}
-	>
-		{#if isCopied}
-			Copied!
-		{:else}
-			Copy
-		{/if}
-	</button>
+	class="btn md-escape my-0 border-paper font-mono data-copied:text-success"
+	data-copied={isCopied || undefined}
+	onclick={() => copyCode(text)}
+>
+	{#if isCopied}
+		Copied!
+	{:else}
+		Copy
+	{/if}
+</button>

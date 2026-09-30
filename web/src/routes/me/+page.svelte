@@ -12,17 +12,16 @@
 	const update_query = updateSearchParams;
 </script>
 
-<main class="min-h-page-content p-4">
-	<p class="my-4 text-lg">
+<main class="min-h-page-content p-4 space-y-4">
+	<p class="my-8 text-lg">
 		Welcome back: <code>{data.user.Username}</code>
 	</p>
 
-	<div class="classic flex flex-wrap items-baseline gap-x-4">
-		<h2>Your Posts</h2>
+	<div class=" flex flex-wrap items-center gap-x-4">
+		<h2 class="text-2xl font-bold">Your Posts</h2>
 
 		<select
 			id="posts-filter"
-			class="relative bottom-0.5"
 			onchange={(e) => update_query('filter', e.currentTarget.value)}
 			value={page.url.searchParams.get('filter') ?? 'all'}
 		>
@@ -32,7 +31,7 @@
 		</select>
 		<div class="mr-auto h-4 w-0 border bg-black sm:mr-0"></div>
 
-		<a href="/me/editor" class="self-center">/New Post</a>
+		<a href="/me/editor" class="btn">New Post</a>
 		<div class="ml-auto"></div>
 		<SearchBar />
 	</div>

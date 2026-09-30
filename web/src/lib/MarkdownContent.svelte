@@ -41,40 +41,40 @@
 	$effect(() => {
 		console.log('highlightCode', source);
 		highlightCode();
-		document.querySelectorAll('blockquote:has(> .cm-md-alert) > p:not(.cm-md-alert)').forEach((el) => {
-			el.innerHTML = stripAlertPrefix(el.innerHTML) ?? '';
-		});
+		document
+			.querySelectorAll('blockquote:has(> .cm-md-alert) > p:not(.cm-md-alert)')
+			.forEach((el) => {
+				el.innerHTML = stripAlertPrefix(el.innerHTML) ?? '';
+			});
 	});
-
 
 	function selectCode(ev: MouseEvent) {
 		const target = ev.target as HTMLElement;
-		const pre = target.parentElement!.parentElement!.querySelector("pre")
-		const selection = window.getSelection()
-		const range = document.createRange()
-		if (!pre) throw new Error('no pre')
-		if (!selection) throw new Error('no selection')
-		
-		range.selectNodeContents(pre)
-		selection.removeAllRanges()
-		selection.addRange(range)
+		const pre = target.parentElement!.parentElement!.querySelector('pre');
+		const selection = window.getSelection();
+		const range = document.createRange();
+		if (!pre) throw new Error('no pre');
+		if (!selection) throw new Error('no selection');
+
+		range.selectNodeContents(pre);
+		selection.removeAllRanges();
+		selection.addRange(range);
 	}
 
-
 	function extractAlert(text: Nullish<string>) {
-	    if (!text) return null;
-	    const s = text.toLowerCase()
-		if (s.startsWith('[!note]')) return "note";
-		if (s.startsWith('[!tip]')) return "tip";
-		if (s.startsWith('[!important]')) return "important";
-		if (s.startsWith('[!warning]')) return "warn";
-		if (s.startsWith('[!caution]')) return "caution";
-		return null
+		if (!text) return null;
+		const s = text.toLowerCase();
+		if (s.startsWith('[!note]')) return 'note';
+		if (s.startsWith('[!tip]')) return 'tip';
+		if (s.startsWith('[!important]')) return 'important';
+		if (s.startsWith('[!warning]')) return 'warn';
+		if (s.startsWith('[!caution]')) return 'caution';
+		return null;
 	}
 </script>
 
-<div class="cm-md-content h-fit max-w-full overflow-hidden" >
-	<SvelteMarkdown {source} >
+<div class="cm-md-content h-fit max-w-full overflow-hidden">
+	<SvelteMarkdown {source}>
 		{#snippet heading({ depth, children, text, slug })}
 			<a href="#__{slug(text)}">
 				{#if depth === 1}
@@ -104,30 +104,34 @@
 		{#snippet code({ lang, text })}
 			<div class="md-escape group relative">
 				<div
-					class="md-escape absolute top-1 right-1 opacity-0 drop-shadow-2xl group-hover:opacity-100"
+					class="md-escape absolute top-1 right-1 opacity-0 drop-shadow-2xl group-hover:opacity-100 text-xs"
 				>
-					<button class="classic md-escape my-0 border-paper font-mono" onclick={selectCode}>
+					<button class="btn md-escape my-0 border-paper font-mono" onclick={selectCode}>
 						Select
 					</button>
-					<CopyButton text={text} />
+					<CopyButton {text} />
 				</div>
 
 				<pre class="shiki-highlightme" data-lang={lang}><code>{text}</code></pre>
 			</div>
 		{/snippet}
-		{#snippet image({text, href, title})}
-			<img src={href} alt={text} title={title} />
+		{#snippet image({ text, href, title })}
+			<img src={href} alt={text} {title} />
 		{/snippet}
-		{#snippet html_img({attributes})}
-			<img {...attributes} style:height="{attributes['height']}px;" style:width="{attributes['width']}px;"/>
+		{#snippet html_img({ attributes })}
+			<img
+				{...attributes}
+				style:height="{attributes['height']}px;"
+				style:width="{attributes['width']}px;"
+			/>
 		{/snippet}
-		{#snippet blockquote({text, raw, children})}
+		{#snippet blockquote({ text, raw, children })}
 			<blockquote>
-			    {#if extractAlert(text)}
-			        {@const alert_tip = extractAlert(text)}
+				{#if extractAlert(text)}
+					{@const alert_tip = extractAlert(text)}
 					<p class="cm-md-alert alert-{alert_tip}">{alert_tip}</p>
 				{/if}
-			    {@render children?.()}
+				{@render children?.()}
 			</blockquote>
 		{/snippet}
 	</SvelteMarkdown>

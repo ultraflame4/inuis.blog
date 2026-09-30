@@ -7,14 +7,14 @@
 </script>
 
 <form
-	class="my-0 flex h-7 grow gap-2 sm:grow-0"
+	class="my-0 flex h-9 grow gap-2 sm:grow-0"
 	onsubmit={(e) => {
 		update_query('q', searchQuery);
 		e.preventDefault();
 	}}
 >
 	<button
-		class="my-0 cursor-pointer no-underline hover:underline"
+		class="btn h-full align-middle"
 		class:hidden={searchQuery.length == 0}
 		onclick={(e) => {
 			update_query('q', null);
@@ -23,6 +23,6 @@
 	>
 		Clear
 	</button>
-	<input class="my-0 h-full grow" bind:value={searchQuery} type="search" />
-	<button type="submit" class="my-0 h-full">Search</button>
+	<input class="btn my-0 h-full grow px-1 focus:border-accent outline-none" bind:value={searchQuery} type="search" />
+	<button type="submit" class="btn h-full align-middle">Search</button>
 </form>

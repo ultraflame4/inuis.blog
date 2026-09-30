@@ -41,16 +41,16 @@
 	}
 </script>
 
-<main class="px-4">
+<main class="m-4 space-y-4 flow-root">
 	<h2 class="text-xl font-bold">Account Details</h2>
-	<p class="classic">Username: <code>{data.user.Username}</code></p>
-	<p class="classic">
+	<p class="">Username: <code>{data.user.Username}</code></p>
+	<p class="">
 		Created at:
 		<code>{data.user.CreatedAt}</code>
 		<small>({humanizeDate(data.user.CreatedAt)} )</small>
 	</p>
 	<h2 class="text-xl font-bold">Account Options</h2>
-	<ul class="classic">
+	<ul class="">
 		<li>
 			<label for="inp-change-username">Update Username:</label>
 			<input id="inp-change-username" type="text" placeholder={data.user.Username} />
@@ -60,9 +60,7 @@
 	</ul>
 	<hr />
 	<h2 class="text-xl font-bold">Connect Identity Providers</h2>
-	<p class="classic">
-		Connect with more identity providers to add more ways to login to your account.
-	</p>
+	<p class="">Connect with more identity providers to add more ways to login to your account.</p>
 	<ul class="space-y-2">
 		{#each providers as p}
 			<li class="flex h-full items-center gap-4">
@@ -76,9 +74,9 @@
 					/>
 					<button
 						onclick={() => disconnectProvider(p)}
-						class="border-none bg-transparent h-fit cursor-pointer text-danger hover:underline"
+						class="btn btn-danger h-fit"
 					>
-						[Disconnect]
+						Disconnect
 					</button>
 				{:else}
 					<OidcLoginButton provider_id={p} intent={'add_identity'} prefix="Connect to" />
@@ -92,11 +90,10 @@
 		any other form of integration. (i.e cross-posting etc.)
 	</p>
 
-	<hr />
 
-	<h2 class="text-xl font-bold">Advanced Options</h2>
-	<ul class="classic">
-		<li class="text-danger"><a href="/api/me/logout/all">Logout Everywhere</a></li>
-		<li class="text-danger"><a href="/todo">Delete Account</a></li>
+	<h2 class="text-xl font-bold mb-4">Advanced Options</h2>
+	<ul class="space-y-4">
+		<li class="btn btn-danger w-fit"><a href="/api/me/logout/all">Logout Everywhere</a></li>
+		<li class="btn btn-danger w-fit"><a href="/todo">Delete Account</a></li>
 	</ul>
 </main>
