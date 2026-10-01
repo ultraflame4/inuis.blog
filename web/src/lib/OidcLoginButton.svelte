@@ -39,11 +39,16 @@
 
 <a
 	href={getHref()}
-	class="flex w-64 overflow-hidden rounded-xl border border-ink p-4
+	class="flex w-64 overflow-hidden rounded-sm border-dashed border border-ink p-4
 	    text-sm font-semibold text-nowrap text-ellipsis no-underline
-		 data-disabled:border-divider data-disabled:text-divider data-disabled:cursor-default {className}"
+		text-ink-muted hover:underline
+		 data-disabled:cursor-default data-disabled:border-divider data-disabled:text-divider {className}"
 	data-disabled={disabled || !invite_valid || undefined}
 >
-	<span class="mr-auto underline">{prefix ?? 'Sign in with'}</span>
-	<span class="mx-auto font-bold text-ink capitalize">[{provider}]</span>
+	<span class="mr-auto text-ink-light">{prefix ?? 'Sign in with'}</span>
+
+	<span class="mx-auto text-ink-muted">
+	    [<span class="font-bold text-ink capitalize">{provider}</span>]
+	</span>
+
 </a>

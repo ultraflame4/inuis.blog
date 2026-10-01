@@ -15,9 +15,9 @@
 	{:else}
 		<div class="ml-auto"></div>
 		{#if data.app_meta.allow_signup}
-			<a class=" m-0" href="/signup">Signup</a>
+			<a class="btn m-0" href="/signup">Signup</a>
 		{/if}
-		<a class=" m-0" href="/login">Login</a>
+		<a class="btn m-0" href="/login">Login</a>
 	{/if}
 </header>
 {@render children()}
