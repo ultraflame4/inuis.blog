@@ -12,11 +12,11 @@
 	const links_bottom: SidebarRoute[] = [{ path: '/me/settings', label: 'Settings' }];
 </script>
 
-<aside class="float-left mr-8 min-h-page-content w-48 border-r border-r-divider relative">
+<aside class="float-left h-page-content w-48 border-r border-r-divider">
 	{#snippet sidebar_routes(routes: SidebarRoute[])}
 		{#each routes as route}
 			<a
-				class="border border-transparent p-2
+				class="border border-transparent px-3 py-2
 			 hover:border-divider
 			 data-active:border-divider data-active:bg-paper-muted"
 				href="{base}{route.path}"
@@ -24,10 +24,12 @@
 			>
 		{/each}
 	{/snippet}
-	<nav class="flex flex-col h-full gap-2 p-2 absolute w-full">
+	<nav class="flex flex-col h-full gap-2 px-2 py-4 w-full">
 		{@render sidebar_routes(links_top)}
 		<div class="my-auto"></div>
 		{@render sidebar_routes(links_bottom)}
 	</nav>
 </aside>
-{@render children()}
+<div class="ml-48 h-fit min-h-page-content">
+    {@render children()}
+</div>

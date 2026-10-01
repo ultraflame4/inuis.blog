@@ -1,6 +1,7 @@
 <script lang="ts">
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
+	import { base } from '$app/paths';
 	let { data, children } = $props();
 </script>
 
@@ -10,14 +11,18 @@
 	{#if !data.user}
 		<div class="ml-auto"></div>
 		{#if data.app_meta.allow_signup}
-			<a class="btn m-0" href="/signup">Signup</a>
+			<a class="m-0 btn" href="{base}/signup">Signup</a>
 		{/if}
-		<a class="btn m-0" href="/login">Login</a>
+		<a class="m-0 btn" href="{base}/login">Login</a>
+	{:else}
+		<a class="m-0" href="{base}/me">/me</a>
 	{/if}
 </header>
 {@render children()}
 
-<footer class="flex h-(--footer-height) items-center justify-center text-center text-sm border-t border-divider text-ink-muted">
+<footer
+	class="flex h-(--footer-height) items-center justify-center border-t border-divider text-center text-sm text-ink-muted"
+>
 	<p>
 		<span class="font-serif">&copy;&nbsp;</span>{data.app_meta.copyright_name}
 		{new Date().getFullYear()} | Powered with 💖 by
