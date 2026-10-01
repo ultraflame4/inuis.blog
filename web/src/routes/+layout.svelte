@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
-<header class="flex h-(--navbar-height) items-center gap-2 border-b border-b-divider px-4">
+<header class="flex h-(--navbar-height) items-center gap-2 border-b border-b-divider px-4 sticky top-0 z-20 bg-paper">
 	<h1 class="text-xl text-ink"><a href="/">[{data.app_meta.brand_name}]</a></h1>
 	{#if !data.user}
 		<div class="ml-auto"></div>
@@ -21,7 +21,7 @@
 {@render children()}
 
 <footer
-	class="flex h-(--footer-height) items-center justify-center border-t border-divider text-center text-sm text-ink-muted"
+	class="flex h-(--footer-height) items-center justify-center border-t border-divider text-center text-sm text-ink-muted z-20 bottom-0 sticky bg-paper"
 >
 	<p>
 		<span class="font-serif">&copy;&nbsp;</span>{data.app_meta.copyright_name}
