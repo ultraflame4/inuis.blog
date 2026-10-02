@@ -14,6 +14,7 @@
 	let published = $derived(data.published);
 
 	let showPreview = $state(false);
+	let is_new = $derived(post_hid == null);
 	let unsaved_changes = $derived(false);
 	let title = $state('');
 	let view = $state<EditorView | undefined>();
@@ -64,6 +65,15 @@
 	}
 
 	async function publish_post(make_public: boolean) {
+		if (is_new) {
+			if (
+				!confirm(
+					"Publish Immediately? You are highly recommended to 'Save' first before publishing straightaway."
+				)
+			) {
+				return;
+			}
+		}
 		async function _publish_post() {
 			await save_post();
 			const url = new URL(`/api/me/posts/${post_hid}/publish`, window.location.origin);
@@ -106,8 +116,8 @@
 	};
 	beforeNavigate((navigation) => {
 		if (!unsaved_changes) return;
-		if (navigation.from?.route.id !== "/me/editor") return;
-		console.log(navigation.from?.route.id, navigation.to?.route.id)
+		if (navigation.from?.route.id !== '/me/editor') return;
+		console.log(navigation.from?.route.id, navigation.to?.route.id);
 		const confirmed = confirm('You have unsaved changes. Leave this page?');
 
 		if (!confirmed) {
@@ -118,25 +128,44 @@
 
 <svelte:window on:beforeunload={warn_unsaved} />
 
-<main class="grid size-full absolute overflow-hidden p-4" style="grid-template-rows: auto 1fr auto;">
-	<div class="my-4 flex flex-wrap items-center gap-4 text-sm">
-		<h2 class="text-base font-bold border border-divider py-1 px-2">Title: {title}</h2>
+<main
+	class="absolute grid size-full overflow-hidden p-4"
+	style="grid-template-rows: auto 1fr auto;"
+>
+	<div class="my-4 flex flex-wrap items-center gap-3 text-sm">
+		<h2 class="border border-divider px-2 py-1 text-base font-bold">Title: {title}</h2>
+
 		<div class="ml-auto"></div>
-		<span class="text-sm" class:font-bold={unsaved_changes}>
-			{#if unsaved_changes}
+		<span class="text-sm" class:font-bold={unsaved_changes || is_new}>
+			{#if is_new}
+				[New Post]
+			{:else if unsaved_changes}
 				[Unsaved changes]
 			{:else}
 				[Up to date]
 			{/if}
 		</span>
+		<button class="btn" disabled={saving_post != null || deleting_post != null} onclick={save_post}>
+			{is_new ? 'Save new' : 'Save'}
+		</button>
 
-		<button class="btn" class:hidden={!showPreview} onclick={() => enablePreview(false)}>
-			Editor
-		</button>
-		<button class="btn" class:hidden={showPreview} onclick={() => enablePreview(true)}>
-			Preview
-		</button>
-		<a href="/posts/{post_hid}" class="btn">View Post</a>
+		{#if !published}
+			<button
+				class="btn"
+				disabled={publishing_post != null || deleting_post != null}
+				onclick={() => publish_post(true)}
+			>
+				Publish
+			</button>
+		{:else}
+			<button
+				class="btn"
+				disabled={publishing_post != null || deleting_post != null}
+				onclick={() => publish_post(false)}
+			>
+				Make Private
+			</button>
+		{/if}
 	</div>
 	<Editor
 		bind:view
@@ -156,7 +185,19 @@
 	>
 		<MarkdownContent source={preview_content} />
 	</div>
-	<div class="mt-4 flex flex-wrap text-sm">
+	<div class="mt-4 flex flex-wrap gap-3 text-sm">
+		<button class="btn" class:hidden={!showPreview} onclick={() => enablePreview(false)}>
+			Editor
+		</button>
+		<button class="btn" class:hidden={showPreview} onclick={() => enablePreview(true)}>
+			Preview
+		</button>
+		<div class="flex gap-2">
+			{#if !is_new}
+				<a href="/posts/{post_hid}" class="btn">View Post</a>
+			{/if}
+		</div>
+		<div class="my-0 mr-auto"></div>
 		<button
 			class="btn btn-danger disabled:text-inherit"
 			disabled={!can_delete}
@@ -170,33 +211,5 @@
 				Delete Post
 			{/if}
 		</button>
-		<div class="my-0 mr-auto"></div>
-
-		<div class="flex gap-2">
-			{#if !published}
-				<button
-					class="btn"
-					disabled={publishing_post != null || deleting_post != null}
-					onclick={() => publish_post(true)}
-				>
-					Publish
-				</button>
-			{:else}
-				<button
-					class="btn"
-					disabled={publishing_post != null || deleting_post != null}
-					onclick={() => publish_post(false)}
-				>
-					Make Private
-				</button>
-			{/if}
-			<button
-				class="btn"
-				disabled={saving_post != null || deleting_post != null}
-				onclick={save_post}
-			>
-				Save
-			</button>
-		</div>
 	</div>
 </main>
