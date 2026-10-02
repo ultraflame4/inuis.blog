@@ -37,16 +37,8 @@
 	async function save_post() {
 		async function _save_post() {
 			if (!view) return;
-			const url = new URL(`/api/me/posts/save`, window.location.origin);
-			if (post_hid) url.searchParams.set('hid', post_hid);
 
-			console.log(url.toString());
-			const resp = await fetch(url, {
-				method: 'POST',
-				body: asFormData({
-					content: view.state.doc.toString()
-				})
-			});
+			const resp = await api.savePost(fetch, post_hid, view.state.doc.toString());
 
 			if (resp.ok) {
 				unsaved_changes = false;

@@ -73,6 +73,7 @@ func InitRouter(db *gorm.DB, frontendFS embed.FS) *gin.Engine {
 		_me.GET("/logout/all", handlers.LogoutEverywhere)
 		_me.GET("/oidc-providers", handlers.ListConnectedOidcProviders)
 		_me.GET("/oidc/:oidc/disconnect", handlers.UserDisconnectOidcProvider)
+		_me.POST("/posts/preview_meta", handlers.PreviewContentMetadata)
 		_me.POST("/posts/save", handlers.SavePost)
 		_me.GET("/posts/:hid", handlers.GetPost)
 		_me.DELETE("/posts/:hid", handlers.DeletePost)

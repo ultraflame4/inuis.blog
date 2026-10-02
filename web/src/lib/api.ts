@@ -42,7 +42,11 @@ export namespace api {
         AllowPublic: boolean
 
     }
-
+    export interface PostMetadata {
+        title: string
+        summary: string
+        tags: string[]
+    }
     export interface AppMeta {
         brand_name: string;
         copyright_name: string;
@@ -194,6 +198,37 @@ export namespace api {
         }
         const data = await res.json();
         return data["user"] as UserInfo;
+    }
+
+
+    export async function savePost(f: FetchLike, post_hid: string | undefined | null, content: string) {
+
+        const url = new URL(`/api/me/posts/save`, window.location.origin);
+        if (post_hid) url.searchParams.set('hid', post_hid);
+        return await fetch(url, {
+            method: 'POST',
+            body: asFormData({
+                content
+            })
+        })
+    }
+
+    export async function previewPostMetadata(f: FetchLike, content: string) {
+
+        const url = new URL(`/api/me/posts/save`, window.location.origin);
+
+        const resp = await fetch(url, {
+            method: 'POST',
+            body: asFormData({
+                content
+            })
+        });
+        if (!resp.ok) {
+            console.error("Request failed save post! \nStatus: " + resp.status, "\nBody:\n" + await resp.text())
+            throw new Error('Request failed!');
+        }
+        const data = await resp.json()
+        return data["post_meta"] as PostMetadata
     }
 
     export interface PostSummary {
