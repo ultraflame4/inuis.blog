@@ -14,6 +14,7 @@
 		{ path: '/me/editor', label: 'Editor' }
 	];
 	const links_bottom: SidebarRoute[] = [{ path: '/me/settings', label: 'Settings' }];
+
 </script>
 
 <aside
@@ -26,10 +27,12 @@
 			 hover:border-divider
 			 data-active:border-divider data-active:bg-paper-muted"
 				href="{base}{route.path}"
-				onclick={() =>
+				onclick={(e) => {
+					e.preventDefault();
 					goto(route.path, {
 						replaceState: true
-					})}
+					});
+				}}
 				data-active={page.route.id === route.path || undefined}>{route.label}</a
 			>
 		{/each}

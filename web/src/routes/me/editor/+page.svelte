@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { EditorView } from 'codemirror';
 	import { asFormData } from '$lib/utils';
-	import { goto } from '$app/navigation';
+	import { beforeNavigate, goto } from '$app/navigation';
 	import { api } from '$lib/api.js';
 
 	import MarkdownContent from '$lib/MarkdownContent.svelte';
@@ -18,13 +18,6 @@
 	let title = $state('');
 	let view = $state<EditorView | undefined>();
 	let preview_content = $state('');
-
-	const warn_unsaved = (e: BeforeUnloadEvent) => {
-		if (unsaved_changes) {
-			e.preventDefault();
-			return 'You have unsaved changes!';
-		}
-	};
 
 	function updateTitle(view: EditorView) {
 		let t = view.state.doc.lineAt(0).text;
@@ -105,14 +98,27 @@
 		showPreview = x;
 		preview_content = view?.state.doc.toString() ?? '';
 	}
+	const warn_unsaved = (e: BeforeUnloadEvent) => {
+		if (unsaved_changes) {
+			e.preventDefault();
+			return 'You have unsaved changes!';
+		}
+	};
+	beforeNavigate((navigation) => {
+		if (!unsaved_changes) return;
+		if (navigation.from?.route.id !== "/me/editor") return;
+		console.log(navigation.from?.route.id, navigation.to?.route.id)
+		const confirmed = confirm('You have unsaved changes. Leave this page?');
+
+		if (!confirmed) {
+			navigation.cancel();
+		}
+	});
 </script>
 
 <svelte:window on:beforeunload={warn_unsaved} />
 
-<main
-	class="grid h-page-content overflow-hidden p-4"
-	style="grid-template-rows: auto 1fr auto;"
->
+<main class="grid h-page-content overflow-hidden p-4" style="grid-template-rows: auto 1fr auto;">
 	<div class="my-4 flex flex-wrap items-center gap-4 text-sm">
 		<h2 class="text-base font-bold">Title: {title}</h2>
 		<div class="ml-auto"></div>
@@ -151,7 +157,11 @@
 		<MarkdownContent source={preview_content} />
 	</div>
 	<div class="mt-4 flex flex-wrap text-sm">
-		<button class="btn btn-danger disabled:text-inherit" disabled={!can_delete} onclick={delete_post}>
+		<button
+			class="btn btn-danger disabled:text-inherit"
+			disabled={!can_delete}
+			onclick={delete_post}
+		>
 			{#if published}
 				Cannot delete published posts. Make it private first.
 			{:else if post_hid == null}
@@ -165,7 +175,7 @@
 		<div class="flex gap-2">
 			{#if !published}
 				<button
-				    class="btn"
+					class="btn"
 					disabled={publishing_post != null || deleting_post != null}
 					onclick={() => publish_post(true)}
 				>
@@ -173,14 +183,18 @@
 				</button>
 			{:else}
 				<button
-				    class="btn"
+					class="btn"
 					disabled={publishing_post != null || deleting_post != null}
 					onclick={() => publish_post(false)}
 				>
 					Make Private
 				</button>
 			{/if}
-			<button class="btn" disabled={saving_post != null || deleting_post != null} onclick={save_post}>
+			<button
+				class="btn"
+				disabled={saving_post != null || deleting_post != null}
+				onclick={save_post}
+			>
 				Save
 			</button>
 		</div>
