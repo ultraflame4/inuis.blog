@@ -136,7 +136,6 @@
 	class="absolute grid size-full overflow-hidden p-4"
 	style="grid-template-rows: auto 1fr auto;"
 >
-    {content_offset}
 	<div class="my-4 flex flex-wrap items-center gap-3 text-sm">
 		<h2 class="border border-divider px-2 py-1 text-base font-bold">Title: {title}</h2>
 
