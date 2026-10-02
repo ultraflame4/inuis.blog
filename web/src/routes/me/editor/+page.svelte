@@ -3,6 +3,7 @@
 	import { asFormData } from '$lib/utils';
 	import { beforeNavigate, goto } from '$app/navigation';
 	import { api } from '$lib/api.js';
+	// namespace import required for tree shaking
 
 	import MarkdownContent from '$lib/MarkdownContent.svelte';
 
@@ -16,14 +17,20 @@
 	let showPreview = $state(false);
 	let is_new = $derived(post_hid == null);
 	let unsaved_changes = $derived(false);
-	let title = $state('');
+
+	let post_meta = $state<api.PostMetadata | null>(null);
+	let title = $derived(post_meta?.title ?? '...');
+
 	let view = $state<EditorView | undefined>();
 	let preview_content = $state('');
 
-	function updateTitle(view: EditorView) {
-		let t = view.state.doc.lineAt(0).text;
-		t = t.startsWith('#') ? t.slice(1) : t;
-		title = t.trim();
+	const _metaUpdater = new api.PreviewPostContentMetadataFactory(async (meta) => {
+		post_meta = meta;
+	});
+
+	function updateMeta(view: EditorView) {
+		let content = view.state.doc.toString();
+		_metaUpdater.update(fetch, content);
 	}
 
 	let saving_post = $state<Promise<void> | null>(null);
@@ -165,7 +172,7 @@
 		initialContent={data.content}
 		update={(view, changed) => {
 			if (changed) unsaved_changes = true;
-			updateTitle(view);
+			updateMeta(view);
 		}}
 		handleSave={save_post}
 	/>

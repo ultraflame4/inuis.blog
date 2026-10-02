@@ -57,3 +57,12 @@ export async function updateSearchParams(key: string, value: string | null | und
     }
     await goto(`?${searchParams.toString()}`, { replaceState: true });
 }
+
+export async function createDebouncedFetch(info: RequestInfo | URL, init?: RequestInit) {
+    const controller = new AbortController()
+
+
+    return {
+        cancel: () => controller.abort()
+    }
+}

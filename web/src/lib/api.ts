@@ -1,3 +1,4 @@
+import * as _ from "lodash-es";
 import { asFormData } from "./utils";
 
 export namespace api {
@@ -213,15 +214,15 @@ export namespace api {
         })
     }
 
-    export async function previewPostMetadata(f: FetchLike, content: string) {
-
-        const url = new URL(`/api/me/posts/save`, window.location.origin);
+    export async function previewPostContentMetadata(f: FetchLike, signal: AbortSignal, content: string) {
+        const url = new URL(`/api/me/posts/preview_meta`, window.location.origin);
 
         const resp = await fetch(url, {
             method: 'POST',
             body: asFormData({
                 content
-            })
+            }),
+            signal
         });
         if (!resp.ok) {
             console.error("Request failed save post! \nStatus: " + resp.status, "\nBody:\n" + await resp.text())
@@ -229,6 +230,38 @@ export namespace api {
         }
         const data = await resp.json()
         return data["post_meta"] as PostMetadata
+    }
+
+
+    /**
+     * Utility type that wraps around `api.previewPostContentMetadata`.
+     * 
+     * This implements an AbortController and debounce to auto debounce updates, and cancel ongoing requests.
+     */
+    export class PreviewPostContentMetadataFactory {
+        public controller: AbortController = new AbortController()
+        public _update: (f: FetchLike, content: string) => void
+        constructor(updater: (meta: PostMetadata) => Promise<void>) {
+
+            this._update = _.debounce(async (f: FetchLike, content: string) => {
+                const data = await this.fetch(f, content)
+                await updater(data)
+            }, 200)
+        }
+        private fetch(f: FetchLike, content: string) {
+            this.controller.abort()
+            this.controller = new AbortController()
+            return api.previewPostContentMetadata(f, this.controller.signal, content)
+        }
+
+        public update(f: FetchLike, content: string) {
+            // Immediately abort any ongoing requests
+            this.controller.abort()
+            // Restart update
+            this._update(f, content)
+        }
+
+
     }
 
     export interface PostSummary {
