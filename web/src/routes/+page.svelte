@@ -1,8 +1,8 @@
 <main class="px-4 mt-4 space-y-4">
 	<h1 class="text-3xl font-bold">I.N.U.I.S <span class="align-top text-sm">(It's not ugly, it's simple)</span></h1>
 
-	<h2 class="text-xl">A tiny, no-nonsense, fast blogging platform</h2>
-	<h3 class="font-bold">No trackers, minimal JavaScript and some CSS</h3>
+	<h2 class="text-xl">A tiny, no-nonsense, fast(ish) blogging platform</h2>
+	<h3 class="font-bold">No trackers, lots of JavaScript and some CSS</h3>
 	<p>
 		This is a minimal, self-hostable private blogging platform for anyone else who
 		just wants to share their thoughts, in a fast and simple way.
