@@ -14,7 +14,7 @@
 	let published = $derived(data.published);
 
 	let showPreview = $state(false);
-	let unsaved_changes = $derived(post_hid == null);
+	let unsaved_changes = $derived(false);
 	let title = $state('');
 	let view = $state<EditorView | undefined>();
 	let preview_content = $state('');

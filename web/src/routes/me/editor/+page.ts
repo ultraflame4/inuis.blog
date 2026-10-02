@@ -7,7 +7,7 @@ export const load: PageLoad = async (e) => {
     const data = await e.parent();
     const post_hid = e.url.searchParams.get('hid');
 
-    let content = '# Example post title\nSome text content'
+    let content = '# Untitled New Post\nThe beginnings of a new post!'
     let published = false
     if (!nullish(post_hid)) {
 
