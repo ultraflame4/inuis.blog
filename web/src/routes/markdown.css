@@ -89,7 +89,7 @@
 
 .cm-md-content blockquote {
     --color: var(--color-divider);
-    @apply px-4 pt-8 relative border border-(--color) rounded-md overflow-clip my-4 border-l-4;
+    @apply px-4 py-4 pt-8 relative border border-(--color) rounded-md overflow-clip my-4 border-l-4;
     }
     
     .cm-md-content blockquote *:first-child {
