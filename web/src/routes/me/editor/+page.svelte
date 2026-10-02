@@ -109,7 +109,8 @@
 
 	function enablePreview(x: boolean) {
 		showPreview = x;
-		preview_content = (view?.state.doc.toString() ?? '').slice(content_offset);
+		let raw = view?.state.doc.toString() ?? ''
+		preview_content = raw.slice(content_offset);
 	}
 	const warn_unsaved = (e: BeforeUnloadEvent) => {
 		if (unsaved_changes) {

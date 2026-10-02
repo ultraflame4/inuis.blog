@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/ultraflame4/inuis/internal/app"
@@ -30,7 +31,11 @@ func (a *ApiHandler) GetPublicPost(c *gin.Context) {
 //
 // This handler should ideally be protected to prevent attacks on CPU usage coming from public.
 func (a *ApiHandler) PreviewContentMetadata(c *gin.Context) {
+	
 	content := c.PostForm("content")
+	
+	// IMPORTANT! Convert to canonical markdown
+	content = strings.ReplaceAll(content, "\r\n", "\n")
 
 	meta := app.GeneratePostMetadata(content)
 

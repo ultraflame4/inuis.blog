@@ -192,6 +192,9 @@ func (a *ApiHandler) SavePost(c *gin.Context) {
 	post_hid := c.Query("hid")
 	content := c.PostForm("content")
 
+	// IMPORTANT! Convert to canonical markdown
+	content = strings.ReplaceAll(content, "\r\n", "\n")
+
 	var post models.Post
 
 	if post_hid != "" {
