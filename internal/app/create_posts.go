@@ -21,7 +21,7 @@ var frontmatterFormat = frontmatter.NewFormat("---", "---", yaml.Unmarshal)
 
 // Generates an assortment of metadata from a post's content (markdown / frontmatter)
 func GeneratePostMetadata(raw_content string) PostMetadata {
-	md_content := raw_content
+	md_content := strings.TrimSpace(raw_content)
 	// Read frontmatter data
 	meta := PostMetadata{}
 	rest, err := frontmatter.Parse(strings.NewReader(md_content), &meta, frontmatterFormat)
