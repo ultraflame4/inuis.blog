@@ -25,3 +25,14 @@ func (a *ApiHandler) GetPublicPost(c *gin.Context) {
 		"error": "Cannot find post with hid: " + post_hid,
 	})
 }
+
+// Returns the generated Post metadata for a piece of content.
+//
+// This handler should ideally be protected to prevent attacks on CPU usage coming from public.
+func (a *ApiHandler) PreviewContentMetadata(c *gin.Context) {
+	content := c.PostForm("content")
+
+	meta := app.GeneratePostMetadata(content)
+
+	c.JSON(http.StatusOK, gin.H{"post_meta": meta})
+}

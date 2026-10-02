@@ -2,48 +2,83 @@ package app
 
 import (
 	"context"
+	"log/slog"
 	"strings"
 
+	"github.com/adrg/frontmatter"
 	"github.com/ultraflame4/inuis/models"
+	"gopkg.in/yaml.v2"
 	"gorm.io/gorm"
 )
 
 type PostMetadata struct {
-	title   string
-	summary string
+	Title   string   `json:"title"`
+	Summary string   `json:"summary"`
+	Tags    []string `json:"tags"`
 }
 
+var frontmatterFormat = frontmatter.NewFormat("---", "---", yaml.Unmarshal)
+
 // Generates an assortment of metadata from a post's content (markdown / frontmatter)
-func GeneratePostMetadata(content string) PostMetadata {
+func GeneratePostMetadata(raw_content string) PostMetadata {
+	md_content := raw_content
+	// Read frontmatter data
 	meta := PostMetadata{}
+	rest, err := frontmatter.Parse(strings.NewReader(md_content), &meta, frontmatterFormat)
+	if err != nil {
+		slog.Error("Failed to process frontmatter data!:", "error", err)
+	} else {
+		md_content = string(rest)
+	}
+
+	// Content body without metadata and title
 	body := ""
 
-	// Remove the first line of the content. (Treated as title)
-	if i := strings.IndexByte(content, '\n'); i >= 0 {
-		meta.title = content[:i]
-		body = content[i+1:]
-	} else {
-		// If i == -1. Means no newlines. The entire content is the first line.
-		meta.title = strings.Clone(content)
-		// Also means that body has no content
-		body = ""
+	// Note: The title can be defined in the frontmatter. But that only acts as the title stored in the db.
+	//       Not as the main title shown in the content / markdown.
+	//       The stored title acts as a search entry rather, and name of the post listing. Which is why we still need to
+	//       extract / remove the content title from the md_content
+	// Title extraction
+	{
+		// Extracted title. Will be used as fallback title entry
+		fb_title := ""
+		// Remove the title
+		if title_len := strings.IndexByte(md_content, '\n'); title_len >= 0 {
+			fb_title = md_content[:title_len]
+			// Remove title line from body
+			body = md_content[title_len+1:]
+		} else {
+			// If i == -1. Means no newlines. The entire content is the title
+			fb_title = strings.Clone(md_content)
+			// Also means that body has no content
+			body = ""
+		}
+		// Use as entry if not found in frontmatter
+		if len(meta.Title) == 0 {
+			// Use [1:] to remove the '#' prefix
+			meta.Title = strings.TrimPrefix(fb_title, "#")
+		}
 	}
-	meta.title = strings.TrimPrefix(meta.title, "#")
-	meta.title = strings.TrimSpace(meta.title)
 
-	// Generate summary from body
-	summary_len := 100
-	summary_body := strings.ReplaceAll(body, "\n", "")
-	meta.summary = strings.TrimSpace(summary_body[0:min(len(summary_body), summary_len)])
-	return PostMetadata{}
+	meta.Title = strings.TrimSpace(meta.Title)
+
+	// Fallback summary generation, if summary not found in frontmatter
+	if len(meta.Summary) == 0 {
+		// Generate summary from body
+		summary_len := 100
+		summary_body := strings.ReplaceAll(body, "\n", "")
+		meta.Summary = strings.TrimSpace(summary_body[0:min(len(summary_body), summary_len)])
+	}
+
+	return meta
 }
 
 func CreatePost(content string, userID uint, db *gorm.DB, ctx context.Context) (models.Post, error) {
 	hid := GenerateHID()
 	meta := GeneratePostMetadata(content)
 	post := models.Post{
-		Title:   meta.title,
-		Summary: meta.summary,
+		Title:   meta.Title,
+		Summary: meta.Summary,
 		Content: content,
 		UserID:  userID,
 		HID:     hid,
@@ -76,8 +111,8 @@ func SavePost(existingPost *models.Post, content string, db *gorm.DB, ctx contex
 		return nil, nil
 	}
 	meta := GeneratePostMetadata(content)
-	existingPost.Title = meta.title
-	existingPost.Summary = meta.summary
+	existingPost.Title = meta.Title
+	existingPost.Summary = meta.Summary
 	existingPost.Content = content
 	err := db.Save(existingPost).Error
 	return existingPost, err
