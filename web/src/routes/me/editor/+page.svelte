@@ -11,6 +11,7 @@
 
 	const { data } = $props();
 
+	let content_offset = $state(data.content_offset)
 	let post_hid = $derived(data.post_hid);
 	let published = $derived(data.published);
 
@@ -26,6 +27,7 @@
 
 	const _metaUpdater = new api.PreviewPostContentMetadataFactory(async (meta) => {
 		post_meta = meta;
+		content_offset = meta.content_offset
 	});
 
 	function updateMeta(view: EditorView) {
@@ -50,10 +52,12 @@
 			if (resp.ok) {
 				unsaved_changes = false;
 				saving_post = null;
-				const data = await resp.json();
-				post_hid = data.post.hid;
+				const rdata = await resp.json();
+				const rpost = rdata.post as api.Post
+				content_offset = rpost.ContentOffset
+				post_hid = rpost.hid;
 				goto(`/me/editor?hid=${post_hid}`, {
-					replaceState: true
+					replaceState: true,
 				});
 			}
 		}
@@ -105,7 +109,7 @@
 
 	function enablePreview(x: boolean) {
 		showPreview = x;
-		preview_content = view?.state.doc.toString() ?? '';
+		preview_content = (view?.state.doc.toString() ?? '').slice(content_offset);
 	}
 	const warn_unsaved = (e: BeforeUnloadEvent) => {
 		if (unsaved_changes) {
@@ -131,6 +135,7 @@
 	class="absolute grid size-full overflow-hidden p-4"
 	style="grid-template-rows: auto 1fr auto;"
 >
+    {content_offset}
 	<div class="my-4 flex flex-wrap items-center gap-3 text-sm">
 		<h2 class="border border-divider px-2 py-1 text-base font-bold">Title: {title}</h2>
 

@@ -34,8 +34,10 @@ export namespace api {
         Title: string
         // Generated summary of post. (First few lines of the post)
         Summary: string
-        // Contents of the post in markdown. This also includes the post title.
+        // Contents of the post in markdown. This also includes the post title and metadata.
         Content: string
+        // Offset where the metadata (frontmatter ends).
+        ContentOffset: number
         // Author id of the post
         UserID: number
         // Author of the post
@@ -47,6 +49,7 @@ export namespace api {
         title: string
         summary: string
         tags: string[]
+        content_offset: number
     }
     export interface AppMeta {
         brand_name: string;

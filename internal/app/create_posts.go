@@ -12,22 +12,25 @@ import (
 )
 
 type PostMetadata struct {
-	Title   string   `json:"title"`
-	Summary string   `json:"summary"`
-	Tags    []string `json:"tags"`
+	Title         string   `json:"title"`
+	Summary       string   `json:"summary"`
+	Tags          []string `json:"tags"`
+	ContentOffset uint   `json:"content_offset"`
 }
 
 var frontmatterFormat = frontmatter.NewFormat("---", "---", yaml.Unmarshal)
 
 // Generates an assortment of metadata from a post's content (markdown / frontmatter)
-func GeneratePostMetadata(raw_content string) PostMetadata {
-	md_content := strings.TrimSpace(raw_content)
+func GeneratePostMetadata(content string) PostMetadata {
+	md_content := strings.TrimSpace(content)
 	// Read frontmatter data
 	meta := PostMetadata{}
-	rest, err := frontmatter.Parse(strings.NewReader(md_content), &meta, frontmatterFormat)
+	reader := strings.NewReader(md_content)
+	rest, err := frontmatter.Parse(reader, &meta, frontmatterFormat)
 	if err != nil {
 		slog.Error("Failed to process frontmatter data!:", "error", err)
 	} else {
+		meta.ContentOffset = uint(len(md_content) - len(rest))
 		md_content = string(rest)
 	}
 
@@ -80,6 +83,7 @@ func CreatePost(content string, userID uint, db *gorm.DB, ctx context.Context) (
 		Title:   meta.Title,
 		Summary: meta.Summary,
 		Content: content,
+		ContentOffset: meta.ContentOffset,
 		UserID:  userID,
 		HID:     hid,
 	}
@@ -113,6 +117,7 @@ func SavePost(existingPost *models.Post, content string, db *gorm.DB, ctx contex
 	meta := GeneratePostMetadata(content)
 	existingPost.Title = meta.Title
 	existingPost.Summary = meta.Summary
+	existingPost.ContentOffset = meta.ContentOffset
 	existingPost.Content = content
 	err := db.Save(existingPost).Error
 	return existingPost, err

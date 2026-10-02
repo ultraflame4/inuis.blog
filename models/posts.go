@@ -10,8 +10,11 @@ type Post struct {
 	Title string
 	// Generated summary of post. (First few lines of the post)
 	Summary string
-	// Contents of the post in markdown. This also includes the post title.
+	// Contents of the post in markdown. This also includes the post title and raw metadata
 	Content string
+	// Where the metadata of the markdown (frontmatter) ends. This is needed as Content stores the entire markdown. including the frontmatter metadata.
+	// This will also include the final newline.
+	ContentOffset uint
 	// Author id of the post
 	UserID uint
 	// Author of the post
