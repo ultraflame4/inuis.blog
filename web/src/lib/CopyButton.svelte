@@ -1,9 +1,11 @@
 <script lang="ts">
+	import { cn } from 'cn';
 	interface Props {
 		text: string;
+		class?: string;
 	}
 
-	const { text }: Props = $props();
+	const { text, class: class_ }: Props = $props();
 
 	let isCopied = $state(false);
 	let timeout = null as number | null;
@@ -22,7 +24,7 @@
 </script>
 
 <button
-	class="btn md-escape my-0 border-paper font-mono data-copied:text-success"
+	class={cn('md-escape my-0 btn btn-tiny border-paper font-mono data-copied:text-success', class_)}
 	data-copied={isCopied || undefined}
 	onclick={() => copyCode(text)}
 >

@@ -106,7 +106,7 @@
 				<div
 					class="md-escape absolute top-1 right-1 opacity-0 drop-shadow-2xl group-hover:opacity-100 text-xs"
 				>
-					<button class="btn md-escape my-0 border-paper font-mono" onclick={selectCode}>
+					<button class="btn btn-tiny md-escape my-0 border-paper font-mono relative " onclick={selectCode}>
 						Select
 					</button>
 					<CopyButton {text} />

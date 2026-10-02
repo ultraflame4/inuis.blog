@@ -54,7 +54,9 @@
 				<span>
 					[{post.AllowPublic ? 'Public' : 'Private'}]
 				</span>
-				
+				<a class="hover:underline" href="{base}/posts/{post.hid}">
+					[View]
+				</a>
 				<span class="ml-auto">
 					<!-- Created {humanizeDate(post.CreatedAt)} -->
 					Updated: {humanizeDate(post.UpdatedAt)}

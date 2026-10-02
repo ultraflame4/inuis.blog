@@ -124,7 +124,10 @@ kbd {
 @utility btn{
     @apply border-divider border px-3 py-1 bg-paper-muted hover:bg-paper-subtle;
 }
-
+/*Add tiny adjustment fixes to element with .btn class that are especially small*/
+@utility btn-tiny {
+    @apply pt-1.5;
+}
 @utility btn-danger{
     @apply  text-danger border-danger hover:bg-danger hover:text-ink
 }

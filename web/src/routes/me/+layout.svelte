@@ -43,6 +43,6 @@
 		{@render sidebar_routes(links_bottom)}
 	</nav>
 </aside>
-<div class="ml-48 h-fit min-h-page-content">
+<div class="ml-48 min-h-page-content relative">
 	{@render children()}
 </div>

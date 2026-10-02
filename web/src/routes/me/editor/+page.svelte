@@ -118,9 +118,9 @@
 
 <svelte:window on:beforeunload={warn_unsaved} />
 
-<main class="grid h-page-content overflow-hidden p-4" style="grid-template-rows: auto 1fr auto;">
+<main class="grid size-full absolute overflow-hidden p-4" style="grid-template-rows: auto 1fr auto;">
 	<div class="my-4 flex flex-wrap items-center gap-4 text-sm">
-		<h2 class="text-base font-bold">Title: {title}</h2>
+		<h2 class="text-base font-bold border border-divider py-1 px-2">Title: {title}</h2>
 		<div class="ml-auto"></div>
 		<span class="text-sm" class:font-bold={unsaved_changes}>
 			{#if unsaved_changes}
