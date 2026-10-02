@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
 
@@ -12,7 +13,9 @@
 	const links_bottom: SidebarRoute[] = [{ path: '/me/settings', label: 'Settings' }];
 </script>
 
-<aside class="fixed h-dvh w-48 border-r border-r-divider bg-paper top-0 left-0  pt-(--navbar-height)">
+<aside
+	class="fixed top-0 left-0 h-dvh w-48 border-r border-r-divider bg-paper pt-(--navbar-height)"
+>
 	{#snippet sidebar_routes(routes: SidebarRoute[])}
 		{#each routes as route}
 			<a
@@ -20,16 +23,20 @@
 			 hover:border-divider
 			 data-active:border-divider data-active:bg-paper-muted"
 				href="{base}{route.path}"
+				onclick={() =>
+					goto(route.path, {
+						replaceState: true
+					})}
 				data-active={page.route.id === route.path || undefined}>{route.label}</a
 			>
 		{/each}
 	{/snippet}
-	<nav class="flex flex-col h-full gap-2 px-2 py-4 w-full">
+	<nav class="flex h-full w-full flex-col gap-2 px-2 py-4">
 		{@render sidebar_routes(links_top)}
 		<div class="my-auto"></div>
 		{@render sidebar_routes(links_bottom)}
 	</nav>
 </aside>
 <div class="ml-48 h-fit min-h-page-content">
-    {@render children()}
+	{@render children()}
 </div>
