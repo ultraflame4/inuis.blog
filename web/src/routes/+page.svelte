@@ -1,4 +1,4 @@
-<main class="px-4 mt-4  space-y-4 min-h-page-content ">
+<main class="px-4 mt-4 space-y-4">
 	<h1 class="text-3xl font-bold">I.N.U.I.S <span class="align-top text-sm">(It's not ugly, it's simple)</span></h1>
 
 	<h2 class="text-xl">A tiny, no-nonsense, fast blogging platform</h2>

@@ -6,7 +6,9 @@
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
-<header class="flex h-(--navbar-height) items-center gap-2 border-b border-b-divider px-4 sticky top-0 z-20 bg-paper">
+<header
+	class="sticky top-0 z-20 flex h-(--navbar-height) items-center gap-2 border-b border-b-divider bg-paper px-4"
+>
 	<h1 class="text-xl text-ink"><a href="/">[{data.app_meta.brand_name}]</a></h1>
 	{#if !data.user}
 		<div class="ml-auto"></div>
@@ -18,10 +20,12 @@
 		<a class="m-0" href="{base}/me">/me</a>
 	{/if}
 </header>
-{@render children()}
+<div class="flow-root min-h-page-content">
+	{@render children()}
+</div>
 
 <footer
-	class="flex h-(--footer-height) items-center justify-center border-t border-divider text-center text-sm text-ink-muted z-20 bottom-0 sticky bg-paper"
+	class="z-20 flex h-(--footer-height) items-center justify-center border-t border-divider bg-paper text-center text-sm text-ink-muted"
 >
 	<p>
 		<span class="font-serif">&copy;&nbsp;</span>{data.app_meta.copyright_name}

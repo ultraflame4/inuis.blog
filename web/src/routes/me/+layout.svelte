@@ -12,7 +12,7 @@
 	const links_bottom: SidebarRoute[] = [{ path: '/me/settings', label: 'Settings' }];
 </script>
 
-<aside class="fixed h-dvh w-48 border border-r-divider bg-paper top-0 left-0  py-(--navbar-height)">
+<aside class="fixed h-dvh w-48 border-r border-r-divider bg-paper top-0 left-0  pt-(--navbar-height)">
 	{#snippet sidebar_routes(routes: SidebarRoute[])}
 		{#each routes as route}
 			<a
