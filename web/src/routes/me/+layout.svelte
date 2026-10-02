@@ -6,9 +6,12 @@
 	const { children } = $props();
 
 	type SidebarRoute = { path: string; label: string };
+
+	
+	
 	const links_top: SidebarRoute[] = [
 		{ path: '/me', label: 'Your Posts' },
-		{ path: '/me/editor', label: 'Create Post' }
+		{ path: '/me/editor', label: 'Editor' }
 	];
 	const links_bottom: SidebarRoute[] = [{ path: '/me/settings', label: 'Settings' }];
 </script>
