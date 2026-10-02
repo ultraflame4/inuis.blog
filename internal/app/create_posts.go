@@ -34,6 +34,9 @@ func GeneratePostMetadata(content string) PostMetadata {
 		md_content = string(rest)
 	}
 
+	// Trim whitespaces again, there may be whitespaces between the frontmatter and markdown content
+	md_content = strings.TrimSpace(md_content)
+
 	// Content body without metadata and title
 	body := ""
 
@@ -49,7 +52,7 @@ func GeneratePostMetadata(content string) PostMetadata {
 		if title_len := strings.IndexByte(md_content, '\n'); title_len >= 0 {
 			fb_title = md_content[:title_len]
 			// Remove title line from body
-			body = md_content[title_len+1:]
+			body = md_content[title_len:]
 		} else {
 			// If i == -1. Means no newlines. The entire content is the title
 			fb_title = strings.Clone(md_content)
