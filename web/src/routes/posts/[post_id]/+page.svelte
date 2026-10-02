@@ -9,7 +9,7 @@
 </script>
 
 <main class="px-4 mt-4">
-	<header class="flex flex-wrap gap-x-4 space-y-4">
+	<header class="flex flex-wrap gap-x-4 space-y-4 max-w-396 mx-auto">
 		{#if !data.post_data.AllowPublic}
 			<div
 				class="py-2 w-full border border-danger text-center text-danger"
@@ -29,7 +29,7 @@
 		<div class="mr-auto"></div>
 		<p><span class="font-semibold">Updated</span>: {humanizeDate(data.post_data.UpdatedAt)}</p>
 	</header>
-	<MarkdownContent source={body} />
+	<MarkdownContent source={body} class="max-w-396 mx-auto border px-8"/>
 	<hr />
 	<p class="text-center text-xl font-thin uppercase opacity-50">End of page</p>
 </main>

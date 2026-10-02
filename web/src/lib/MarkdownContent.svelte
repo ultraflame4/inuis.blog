@@ -3,12 +3,14 @@
 	import { codeToHtml, bundledLanguages } from 'shiki/dist/bundle-web.mjs';
 	import CopyButton from './CopyButton.svelte';
 	import type { Nullish } from './utils';
+	import { cn } from 'cn';
 
 	interface Props {
 		source: string;
+		class?: string;
 	}
 
-	const { source }: Props = $props();
+	const { source, class: _class }: Props = $props();
 
 	function highlightCode() {
 		const langs = new Set(Object.keys(bundledLanguages));
@@ -73,7 +75,7 @@
 	}
 </script>
 
-<div class="cm-md-content h-fit max-w-full overflow-hidden">
+<div class={cn("cm-md-content h-fit max-w-full overflow-hidden", _class)}>
 	<SvelteMarkdown {source}>
 		{#snippet heading({ depth, children, text, slug })}
 			<a href="#__{slug(text)}">
