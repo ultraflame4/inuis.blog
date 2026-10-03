@@ -13,11 +13,11 @@
 	{#if !data.user}
 		<div class="ml-auto"></div>
 		{#if data.app_meta.allow_signup}
-			<a class="m-0 btn" href="{resolve('')}/signup">Signup</a>
+			<a class="m-0 btn" href={resolve('/signup')}>Signup</a>
 		{/if}
-		<a class="m-0 btn" href="{resolve('')}/login">Login</a>
+		<a class="m-0 btn" href={resolve('/login')}>Login</a>
 	{:else}
-		<a class="m-0" href="{resolve('')}/me">/me</a>
+		<a class="m-0" href={resolve('/me')}>/me</a>
 	{/if}
 </header>
 <div class="flow-root min-h-page-content">
@@ -29,11 +29,9 @@
 >
 	<p>
 		<span class="font-serif">©</span>
-		{data.app_meta.copyright_name} {new Date().getFullYear()} | Powered with 💖 by 
+		{data.app_meta.copyright_name}
+		{new Date().getFullYear()} | Powered with 💖 by
 
-		<a
-			class="font-mono underline"
-			href="https://github.com/ultraflame4/inuis.blog"
-		>I.N.U.I.S</a>
+		<a class="font-mono underline" href="https://github.com/ultraflame4/inuis.blog">I.N.U.I.S</a>
 	</p>
 </footer>

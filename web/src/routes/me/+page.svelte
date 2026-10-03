@@ -47,22 +47,17 @@
 			>
 
 			<a
-				href="{resolve('')}/me/editor?hid={post.hid}"
+				href={resolve('/me/editor?hid=[hid]', post)}
 				class="font-semibold underline"
-				target="_blank"
-			>{post.Title}</a>
+				target="_blank">{post.Title}</a
+			>
 
 			<p class="my-0 text-sm text-ink-light">{post.Summary.slice(0, 96)}...</p>
 
-			<div
-				class="col-span-full row-3 m-0 flex gap-1 text-xs text-ink-muted"
-			>
+			<div class="col-span-full row-3 m-0 flex gap-1 text-xs text-ink-muted">
 				<span>[{post.AllowPublic ? 'Public' : 'Private'}]</span>
 
-				<a
-					class="hover:underline"
-					href="{resolve('')}/posts/{post.hid}"
-				>[View]</a>
+				<a class="hover:underline" href={resolve('/posts/[hid]', post)}>[View]</a>
 
 				<span class="ml-auto">
 					<!-- Created {humanizeDate(post.CreatedAt)} -->

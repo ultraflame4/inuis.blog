@@ -7,14 +7,11 @@
 
 	type SidebarRoute = { path: string; label: string };
 
-	
-	
 	const links_top: SidebarRoute[] = [
 		{ path: '/me', label: 'Your Posts' },
 		{ path: '/me/editor', label: 'Editor' }
 	];
 	const links_bottom: SidebarRoute[] = [{ path: '/me/settings', label: 'Settings' }];
-
 </script>
 
 <aside
@@ -26,7 +23,7 @@
 				class="border border-transparent px-3 py-2
 			 hover:border-divider
 			 data-active:border-divider data-active:bg-paper-muted"
-				href="{resolve('')}{route.path}"
+				href={resolve(route.path)}
 				onclick={(e) => {
 					e.preventDefault();
 					goto(route.path, {
@@ -43,6 +40,6 @@
 		{@render sidebar_routes(links_bottom)}
 	</nav>
 </aside>
-<div class="ml-48 min-h-page-content relative">
+<div class="relative ml-48 min-h-page-content">
 	{@render children()}
 </div>

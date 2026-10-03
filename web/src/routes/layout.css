@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-@import '$lib/markdown.css';
+@import '#lib/markdown.css';
 
 @layer base {
 	html {
