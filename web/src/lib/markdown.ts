@@ -172,7 +172,6 @@ export function highlightCode() {
     const langs = new Set(Object.keys(bundledLanguages));
     Array.from(document.querySelectorAll('.shiki-highlightme')).map(async (el) => {
         let lang = el.querySelector("code")?.getAttribute('data-lang') ?? '';
-        console.log('shiki', lang);
 
         if (!langs.has(lang)) {
             lang = 'text';

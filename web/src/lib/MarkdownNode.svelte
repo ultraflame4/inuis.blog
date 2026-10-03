@@ -62,7 +62,7 @@
 				<CopyButton text={"wip"} />
 			</div>
 
-			<svelte:element this={"pre"} data-lang={node.properties['data-lang']} >
+			<svelte:element this={"pre"} class="shiki-highlightme" data-lang={node.properties['data-lang']} >
                 {#each children() as child}
                     <svelte:self node={child} />
                 {/each}

@@ -13,8 +13,11 @@
 	let tree = $state<any>(undefined);
 
 	onMount(()=>{
+	    console.debug("Starting markdown render to hast")
+	    console.time("markdown to hast")
 	    tree = render_hast(source)
-		// setTimeout(highlightCode)
+	    console.timeEnd("markdown to hast")
+		setTimeout(highlightCode, 0)
 	})
 </script>
 
