@@ -69,22 +69,51 @@ export const remarkAlerts: unified.Plugin<any, mdast.Root> = () => {
                 },
                 ...node.children
             ]
-            console.log(node)
 
         })
     }
 }
 
+
+export const remarkHeading: unified.Plugin<any, mdast.Root> = () => {
+
+    return (tree) => {
+        visit(tree, "heading", (node) => {
+            const text_content = node.children.reduce((a, b) => a + (b.type == "text" ? b.value : ''), "")
+            const slugified = _.kebabCase(text_content)
+            node.data = {
+
+                hProperties: {
+                    id: "md-" + slugified,
+                }
+            }
+
+        })
+    }
+}
+
+export const remarkAnchorHeading: unified.Plugin<any, mdast.Root> = () => {
+
+    return (tree) => {
+        visit(tree, "link", (node) => {
+            if (!node.url.startsWith("#")) return
+            node.url = "#md-" + node.url.slice(1)
+        })
+    }
+}
+
+const headingRegex = /^h[0-9]/i;
 // Inserts custom attribute into the html elements
 export const rehypeInsertAttrs: unified.Plugin<any, hast.Root> = () => {
+
     return (tree) => {
         visit(tree, (node) => {
             if (node.type !== "element") return
-            if (node.tagName.startsWith("h")) {
+            if (node.tagName.match(headingRegex)) {
                 let class_ = node.properties["class"] ?? ''
-                node.properties["class"] = class_ + "cm-md-heading "
+                node.properties["class"] = class_ + "cm-md-heading hover:underline"
+                console.log(node)
             }
-
         })
     }
 }
@@ -101,6 +130,8 @@ export function render_md(content: string) {
         .use(remarkParse)
         .use(remarkFrontmatter, ['yaml', 'toml'])
         .use(remarkExtractFrontmatter)
+        .use(remarkHeading)
+        .use(remarkAnchorHeading)
         .use(remarkAlerts)
         .use(remarkDirective)
         .use(remarkIconDirective)
