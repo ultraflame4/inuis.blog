@@ -115,11 +115,7 @@ export const rehypeInsertAttrs: unified.Plugin<any, hast.Root> = () => {
         visit(tree, (node) => {
             if (node.type !== "element") return
 
-            node.properties["className"] = node.properties["className"] ?? []
 
-            if (node.tagName == "pre") {
-                node.properties.className.push("shiki-highlightme")
-            }
         })
     }
 }
