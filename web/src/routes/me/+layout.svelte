@@ -23,7 +23,7 @@
 				class="border border-transparent px-3 py-2
 			 hover:border-divider
 			 data-active:border-divider data-active:bg-paper-muted"
-				href={resolve(route.path)}
+				href={resolve(route.path as any /*tell typescript to shutup here */)}
 				onclick={(e) => {
 					e.preventDefault();
 					goto(route.path, {
