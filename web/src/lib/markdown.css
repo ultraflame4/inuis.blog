@@ -166,8 +166,11 @@
     content: "^";
 }
 
+.md-content #footnote-label {
+    @apply my-0 py-1 text-xs border-b border-divider
+}
 .md-content .footnotes ol {
-    @apply pl-1 text-xs text-ink-muted
+    @apply pl-1 text-xs text-ink-muted mt-0
 }
 
 /*Directives always create a container div element*/

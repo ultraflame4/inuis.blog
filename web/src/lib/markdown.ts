@@ -89,6 +89,7 @@ export const remarkHeading: unified.Plugin<any, mdast.Root> = () => {
 
                 hProperties: {
                     id: "h_" + slugified,
+                    className: ["md-heading"]
                 }
             }
 
@@ -116,10 +117,7 @@ export const rehypeInsertAttrs: unified.Plugin<any, hast.Root> = () => {
 
 
             node.properties["className"] = node.properties["className"] ?? []
-            if (node.tagName.match(headingRegex)) {
-
-                node.properties["className"].push("md-heading")
-
+            if (node.tagName.match(headingRegex) && node.properties.className.includes("md-heading")) {
                 node.children = [{
                     type: "element",
                     tagName: "a",
