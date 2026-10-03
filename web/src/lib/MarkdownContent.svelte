@@ -117,8 +117,8 @@
 		{#snippet html_img({ attributes })}
 			<img
 				{...attributes}
-				style:height="{attributes['height']}px;"
-				style:width="{attributes['width']}px;"
+				style:height="{attributes?.['height']}px;"
+				style:width="{attributes?.['width']}px;"
 			/>
 		{/snippet}
 		{#snippet blockquote({ text, raw, children })}
