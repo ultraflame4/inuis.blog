@@ -1,178 +1,178 @@
-.cm-md-heading {
+.md-heading {
     font-family: revert;
     font-weight: revert;
     font-size: revert;
 }
 
 @layer markdown-revert {
-    .cm-md-content *:not(.md-escape) {
+    .md-content *:not(.md-escape) {
         all: revert;
         margin: 0
     }
 
 }
 
-.cm-md-content p {
+.md-content p {
     @apply mb-4
 }
 
-.cm-md-content ol {
+.md-content ol {
     @apply pl-7 ml-4 my-4
 }
 
-.cm-md-content ul {
+.md-content ul {
     @apply pl-4 ml-4 my-4
 }
 
-.cm-md-content li>* {
+.md-content li>* {
     @apply my-0
 }
 
-.cm-md-content li {
+.md-content li {
     @apply my-1
 }
 
-.cm-md-content .cm-md-heading:hover .cm-md-heading-ref {
+.md-content .md-heading:hover .md-heading-ref {
     @apply block
 }
 
-.cm-md-content .cm-md-heading-ref {
+.md-content .md-heading-ref {
     @apply mr-2 no-underline hover:underline hidden absolute right-0
 }
-.cm-md-content .cm-md-heading {
+.md-content .md-heading {
     @apply mt-6 mb-2 relative;
 }
 
 
-.cm-md-content a {
+.md-content a {
     @apply text-link underline
 }
 
-.cm-md-content a:hover {
+.md-content a:hover {
     @apply text-link-hover
 }
 
-.cm-md-content a:visited {
+.md-content a:visited {
     @apply text-link-visited
 }
 
-.cm-md-content pre:not(.md-escape) {
+.md-content pre:not(.md-escape) {
     @apply bg-paper-muted p-2 rounded-md my-4 overflow-auto
 }
 
-.cm-md-content code {
+.md-content code {
     @apply bg-paper-muted rounded-md px-1 py-0.5 border mx-0.5
 }
 
-.cm-md-content pre code {
+.md-content pre code {
     @apply p-0 bg-transparent border-none m-0
 }
 
-.cm-md-content table {
+.md-content table {
     border-collapse: collapse;
 }
 
-.cm-md-content table,
-.cm-md-content th,
-.cm-md-content td {
+.md-content table,
+.md-content th,
+.md-content td {
     @apply border border-divider px-3 py-1
 }
 
 
 
-.cm-md-content hr {
+.md-content hr {
     border: none;
     @apply border-b border-divider my-4
 }
 
-.cm-md-content blockquote {
+.md-content blockquote {
     --color: var(--color-divider);
     @apply px-4 py-4 pt-8 relative border border-(--color) rounded-md overflow-clip my-4 border-l-4;
 }
 
-.cm-md-content blockquote *:first-child {
+.md-content blockquote *:first-child {
     @apply mt-0
 }
 
-.cm-md-content blockquote *:last-child {
+.md-content blockquote *:last-child {
     @apply mb-0
 }
 
-.cm-md-content blockquote::before {
+.md-content blockquote::before {
     content: "\201C";
     @apply font-bold text-2xl text-ink-muted absolute left-1.5 top-0.5
 }
 
-.cm-md-content blockquote .cm-md-alert {
+.md-content blockquote .md-alert {
     @apply mb-2 -mt-2 font-bold uppercase;
 }
 
 
-.cm-md-content blockquote:has(> .cm-md-alert) {
+.md-content blockquote:has(> .md-alert) {
     @apply p-4
 }
 
-.cm-md-content blockquote:has(> .cm-md-alert)::before {
+.md-content blockquote:has(> .md-alert)::before {
     content: "";
     display: none;
 }
 
-.cm-md-alert {
+.md-alert {
     @apply capitalize font-bold text-(--color);
 }
 
 
-.cm-md-content blockquote:has(> .alert-note) {
+.md-content blockquote:has(> .alert-note) {
     --color: var(--color-accent);
 }
 
-.cm-md-content blockquote:has(> .alert-tip) {
+.md-content blockquote:has(> .alert-tip) {
     --color: var(--color-success);
 }
 
-.cm-md-content blockquote:has(> .alert-important),
-.cm-md-content blockquote:has(> .alert-caution) {
+.md-content blockquote:has(> .alert-important),
+.md-content blockquote:has(> .alert-caution) {
     --color: var(--color-danger);
 }
 
-.cm-md-content blockquote:has(> .alert-warning) {
+.md-content blockquote:has(> .alert-warning) {
     --color: var(--color-warning);
 }
 
 
 
-.cm-md-content img {
+.md-content img {
     /*max-width: 100%;*/
     @apply h-auto max-w-full rounded-md p-0.5
 }
 
-.cm-md-content kbd {
+.md-content kbd {
     @apply inline-block
 }
 
-.cm-md-content .footnote-ref+.footnote-ref {
+.md-content .footnote-ref+.footnote-ref {
     @apply mx-0
 }
 
-.cm-md-content .footnote-ref {
+.md-content .footnote-ref {
     @apply ml-1
 }
 
-.cm-md-content .footnote-ref a::before {
+.md-content .footnote-ref a::before {
     content: "^";
 }
 
-.cm-md-content .footnotes ol {
+.md-content .footnotes ol {
     @apply pl-1 text-xs text-ink-muted
 }
 
 /*Directives always create a container div element*/
-.cm-md-content div:has(>.icon.remark-icon-directive) {
+.md-content div:has(>.icon.remark-icon-directive) {
     @apply inline-flex align-bottom;
 
 }
 
-.cm-md-content .icon.remark-icon-directive {
+.md-content .icon.remark-icon-directive {
 
     width: 1.3em;
 
@@ -181,7 +181,7 @@
 }
 
 
-.cm-md-content .icon.remark-icon-directive>img {
+.md-content .icon.remark-icon-directive>img {
 
     @apply w-full h-auto aspect-square bottom-0 left-0 absolute;
 }

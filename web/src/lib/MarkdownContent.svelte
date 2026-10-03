@@ -11,6 +11,6 @@
 	const rendered = $derived(render_md(source));
 </script>
 
-<div class={cn('cm-md-content h-fit max-w-full overflow-hidden', _class)}>
+<div class={cn('md-content h-fit max-w-full overflow-hidden', _class)}>
     {@html rendered}
 </div>

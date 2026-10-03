@@ -114,14 +114,14 @@ export const rehypeInsertAttrs: unified.Plugin<any, hast.Root> = () => {
             if (node.tagName.match(headingRegex)) {
 
                 node.properties["className"] = node.properties["className"] ?? []
-                node.properties["className"].push("cm-md-heading")
+                node.properties["className"].push("md-heading")
 
                 node.children = [{
                     type: "element",
                     tagName: "a",
                     properties: {
                         href: "#" + node.properties.id,
-                        className: ["cm-md-heading-ref"]
+                        className: ["md-heading-ref"]
                     },
                     children: [{
                         type: "text",
