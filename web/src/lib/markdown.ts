@@ -163,7 +163,7 @@ export const remarkCodeblock: unified.Plugin<void[], mdast.Root> = () => {
     }
 }
 
-export function render_md(content: string) {
+export function render_hast(content: string) {
     const processor = unified.unified()
         .use(remarkParse)
         .use(remarkFrontmatter, ['yaml', 'toml'])
@@ -180,8 +180,8 @@ export function render_md(content: string) {
         .use(remarkIconDirective)
         .use(remarkRehype, { allowDangerousHtml: true })
         .use(rehypeInsertAttrs)
-        .use(rehypeStringify, { allowDangerousHtml: true })
-    return processor.processSync(content);
+    // .use(rehypeStringify, { allowDangerousHtml: true })
+    return processor.runSync(processor.parse(content));
 }
 
 

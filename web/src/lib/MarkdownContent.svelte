@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { cn } from 'cn';
-	import { highlightCode, render_md } from './markdown';
+	import { highlightCode, render_hast as render_hast } from './markdown';
 	import { onMount } from 'svelte';
+    import MarkdownNode from "./MarkdownNode.svelte"
 
 	interface Props {
 		source: string;
@@ -9,14 +10,14 @@
 	}
 
 	const { source, class: _class }: Props = $props();
-	let rendered = $state<any>(undefined);
+	let tree = $state<any>(undefined);
 
 	onMount(()=>{
-	    rendered = render_md(source)
-		setTimeout(highlightCode)
+	    tree = render_hast(source)
+		// setTimeout(highlightCode)
 	})
 </script>
 
 <div class={cn('md-content h-fit max-w-full overflow-hidden', _class)}>
-    {@html rendered}
+    <MarkdownNode node={tree}/>
 </div>
