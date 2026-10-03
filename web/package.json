@@ -42,6 +42,7 @@
 		"codemirror": "^6.0.2",
 		"date-fns": "^4.4.0",
 		"marked-alert": "^2.1.2",
+		"marked-directive": "^1.0.7",
 		"shiki": "^4.4.3"
 	}
 }

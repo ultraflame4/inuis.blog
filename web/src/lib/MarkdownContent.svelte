@@ -12,6 +12,8 @@
 	import markedAlert from 'marked-alert';
 
 	import type { Snippet } from 'svelte';
+	import { createDirectives, presetDirectiveConfigs } from 'marked-directive';
+	import iconDirective from './icon-directive';
 
 	interface Props {
 		source: string;
@@ -75,7 +77,11 @@
 		meta: any;
 	} & T;
 
-	const extensions = [markedAlert(), markedFootnote()];
+	const extensions = [
+		markedAlert(),
+		// markedFootnote(),
+		createDirectives([...presetDirectiveConfigs, iconDirective])
+	];
 	const renderers = {
 		...defaultRenderers,
 		footnoteRef: FootnoteRef,
