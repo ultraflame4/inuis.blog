@@ -168,3 +168,23 @@
 .cm-md-content .footnotes ol {
     @apply pl-1 text-xs text-ink-muted
 }
+
+/*Directives always create a container div element*/
+.cm-md-content div:has(>.icon.remark-icon-directive) {
+    @apply inline-flex align-bottom;
+
+}
+
+.cm-md-content .icon.remark-icon-directive {
+
+    width: 1.3em;
+
+    color: transparent;
+    @apply mx-2 first:ml-0 relative overflow-visible inline-block;
+}
+
+
+.cm-md-content .icon.remark-icon-directive>img {
+
+    @apply w-full h-auto aspect-square bottom-0 left-0 absolute;
+}
