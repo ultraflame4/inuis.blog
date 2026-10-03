@@ -1,6 +1,6 @@
 
-import { api } from '$lib/api';
-import { nullish } from '$lib/utils';
+import { api } from '#lib/api.js';
+import { nullish } from '#lib/utils.js';
 import type { PageLoad } from './$types';
 
 

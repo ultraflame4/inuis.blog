@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { EditorView } from 'codemirror';
-	import { asFormData } from '$lib/utils';
+	import { asFormData } from '#lib/utils.js';
 	import { beforeNavigate, goto } from '$app/navigation';
-	import { api } from '$lib/api.js';
+	import { api } from '#lib/api.js';
 	// namespace import required for tree shaking
 
-	import MarkdownContent from '$lib/MarkdownContent.svelte';
+	import MarkdownContent from '#lib/MarkdownContent.svelte';
 
-	import Editor from '$lib/Editor.svelte';
+	import Editor from '#lib/Editor.svelte';
 
 	const { data } = $props();
 
@@ -119,6 +119,7 @@
 		}
 	};
 	beforeNavigate((navigation) => {
+		if (navigation.shallow) return;
 		if (!unsaved_changes) return;
 		if (navigation.from?.route.id !== '/me/editor') return;
 		console.log(navigation.from?.route.id, navigation.to?.route.id);
@@ -130,7 +131,7 @@
 	});
 </script>
 
-<svelte:window on:beforeunload={warn_unsaved} />
+<svelte:window on:beforeunload={warn_unsaved}></svelte:window>
 
 <main
 	class="absolute grid size-full overflow-hidden p-4"

@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation';
-	import { app } from '$lib';
-	import { api } from '$lib/api';
-	import OidcLoginButton from '$lib/OidcLoginButton.svelte';
-	import { humanizeDate } from '$lib/utils';
+	import { app } from '#lib';
+	import { api } from '#lib/api.js';
+	import OidcLoginButton from '#lib/OidcLoginButton.svelte';
+	import { humanizeDate } from '#lib/utils.js';
 	import { onMount } from 'svelte';
 
 	const { data } = $props();

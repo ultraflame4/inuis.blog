@@ -1,7 +1,7 @@
 <script lang="ts">
 	import './layout.css';
-	import favicon from '$lib/assets/favicon.svg';
-	import { base } from '$app/paths';
+	import favicon from '#lib/assets/favicon.svg';
+	import { resolve } from '$app/paths';
 	let { data, children } = $props();
 </script>
 
@@ -13,11 +13,11 @@
 	{#if !data.user}
 		<div class="ml-auto"></div>
 		{#if data.app_meta.allow_signup}
-			<a class="m-0 btn" href="{base}/signup">Signup</a>
+			<a class="m-0 btn" href="{resolve('')}/signup">Signup</a>
 		{/if}
-		<a class="m-0 btn" href="{base}/login">Login</a>
+		<a class="m-0 btn" href="{resolve('')}/login">Login</a>
 	{:else}
-		<a class="m-0" href="{base}/me">/me</a>
+		<a class="m-0" href="{resolve('')}/me">/me</a>
 	{/if}
 </header>
 <div class="flow-root min-h-page-content">
@@ -28,8 +28,12 @@
 	class="z-20 flex h-(--footer-height) items-center justify-center border-t border-divider bg-paper text-center text-sm text-ink-muted"
 >
 	<p>
-		<span class="font-serif">&copy;&nbsp;</span>{data.app_meta.copyright_name}
-		{new Date().getFullYear()} | Powered with 💖 by
-		<a class="font-mono underline" href="https://github.com/ultraflame4/inuis.blog">I.N.U.I.S</a>
+		<span class="font-serif">©</span>
+		{data.app_meta.copyright_name} {new Date().getFullYear()} | Powered with 💖 by 
+
+		<a
+			class="font-mono underline"
+			href="https://github.com/ultraflame4/inuis.blog"
+		>I.N.U.I.S</a>
 	</p>
 </footer>

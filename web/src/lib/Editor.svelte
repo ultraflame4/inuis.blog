@@ -5,10 +5,10 @@
 	import { indentWithTab } from '@codemirror/commands';
 	import { Compartment } from '@codemirror/state';
 	import { markdown } from '@codemirror/lang-markdown';
-	import { headingPlugin } from '$lib/editor';
+	import { headingPlugin } from '#lib/editor.js';
 	import { githubDark } from '@ddietr/codemirror-themes/github-dark';
 	import { githubLight } from '@ddietr/codemirror-themes/github-light';
-	import { useMediaQuery } from '$lib/utils.svelte.js';
+	import { useMediaQuery } from '#lib/utils.svelte.js';
 	import { languages } from '@codemirror/language-data';
 	import { nullish } from './utils';
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { updateSearchParams } from '$lib/utils';
+	import { updateSearchParams } from '#lib/utils.js';
 
 	let searchQuery = $derived(page.url.searchParams.get('q') ?? '');
 	const update_query = updateSearchParams;

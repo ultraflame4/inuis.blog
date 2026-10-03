@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 
 	const { children } = $props();
@@ -26,7 +26,7 @@
 				class="border border-transparent px-3 py-2
 			 hover:border-divider
 			 data-active:border-divider data-active:bg-paper-muted"
-				href="{base}{route.path}"
+				href="{resolve('')}{route.path}"
 				onclick={(e) => {
 					e.preventDefault();
 					goto(route.path, {

@@ -1,4 +1,4 @@
-import { api } from "$lib/api";
+import { api } from "#lib/api.js";
 import type { PageLoad } from "./$types";
 
 export const load: PageLoad = async ({ url, ...event }) => {

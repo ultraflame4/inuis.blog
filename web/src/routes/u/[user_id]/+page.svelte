@@ -1,8 +1,8 @@
 <script lang="ts">
-	import PageNumbers from '$lib/PageNumbers.svelte';
+	import PageNumbers from '#lib/PageNumbers.svelte';
 	import { page } from '$app/state';
-	import { humanizeDate, updateSearchParams } from '$lib/utils';
-	import SearchBar from '$lib/SearchBar.svelte';
+	import { humanizeDate, updateSearchParams } from '#lib/utils.js';
+	import SearchBar from '#lib/SearchBar.svelte';
 
 	const { data } = $props();
 

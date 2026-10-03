@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import MarkdownContent from '$lib/MarkdownContent.svelte';
-	import { humanizeDate } from '$lib/utils.js';
+	import MarkdownContent from '#lib/MarkdownContent.svelte';
+	import { humanizeDate } from '#lib/utils.js';
 
 	const { data } = $props();
 	const post_data = $derived(data.post_data);
@@ -30,7 +30,10 @@
 			<span class="font-semibold">Author</span>: <a href="/u/{author.hid}">@{author.Username}</a>
 		</p>
 		{#if author.hid === data.user?.hid}
-			<a href={resolve(`/me/editor?hid=${post_data.hid}`)} class="underline">/edit</a>
+			<a
+				href={resolve(`me/editor?hid=${post_data.hid}`)}
+				class="underline"
+			>/edit</a>
 		{/if}
 
 		<div class="mr-auto"></div>

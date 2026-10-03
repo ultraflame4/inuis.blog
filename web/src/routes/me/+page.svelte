@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { goto, invalidate } from '$app/navigation';
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import { api } from '$lib/api.js';
-	import PageNumbers from '$lib/PageNumbers.svelte';
-	import SearchBar from '$lib/SearchBar.svelte';
-	import { humanizeDate, nullish, updateSearchParams } from '$lib/utils';
+	import { api } from '#lib/api.js';
+	import PageNumbers from '#lib/PageNumbers.svelte';
+	import SearchBar from '#lib/SearchBar.svelte';
+	import { humanizeDate, nullish, updateSearchParams } from '#lib/utils.js';
 
 	const { data } = $props();
 
@@ -46,17 +46,24 @@
 				>{index + 1 + (data.user_posts.page - 1) * data.user_posts.per_page}.</span
 			>
 
-			<a href="{base}/me/editor?hid={post.hid}" class="font-semibold underline" target="_blank"
-				>{post.Title}</a
-			>
+			<a
+				href="{resolve('')}/me/editor?hid={post.hid}"
+				class="font-semibold underline"
+				target="_blank"
+			>{post.Title}</a>
+
 			<p class="my-0 text-sm text-ink-light">{post.Summary.slice(0, 96)}...</p>
-			<div class="col-span-full row-3 m-0 flex gap-1 text-xs text-ink-muted">
-				<span>
-					[{post.AllowPublic ? 'Public' : 'Private'}]
-				</span>
-				<a class="hover:underline" href="{base}/posts/{post.hid}">
-					[View]
-				</a>
+
+			<div
+				class="col-span-full row-3 m-0 flex gap-1 text-xs text-ink-muted"
+			>
+				<span>[{post.AllowPublic ? 'Public' : 'Private'}]</span>
+
+				<a
+					class="hover:underline"
+					href="{resolve('')}/posts/{post.hid}"
+				>[View]</a>
+
 				<span class="ml-auto">
 					<!-- Created {humanizeDate(post.CreatedAt)} -->
 					Updated: {humanizeDate(post.UpdatedAt)}

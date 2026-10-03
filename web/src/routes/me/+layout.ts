@@ -1,5 +1,5 @@
 // app/+layout.ts
-import { nullish } from '$lib/utils.js';
+import { nullish } from '#lib/utils.js';
 import { redirect } from '@sveltejs/kit';
 
 

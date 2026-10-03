@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import OidcLoginButton from '$lib/OidcLoginButton.svelte';
+	import OidcLoginButton from '#lib/OidcLoginButton.svelte';
 
 	const { data } = $props();
 

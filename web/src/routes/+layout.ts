@@ -1,5 +1,5 @@
 import type { LayoutLoad } from './$types';
-import { api } from '$lib/api';
+import { api } from '#lib/api.js';
 export const load: LayoutLoad = async (event) => {
 
     const { user } = await api.fetchSession(event.fetch)

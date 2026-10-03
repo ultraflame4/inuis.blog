@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { api } from '$lib/api';
-	import OidcLoginButton from '$lib/OidcLoginButton.svelte';
+	import { api } from '#lib/api.js';
+	import OidcLoginButton from '#lib/OidcLoginButton.svelte';
 	import { onMount } from 'svelte';
 
 	let providers: string[] = $state([]);
