@@ -84,7 +84,7 @@ export const remarkHeading: unified.Plugin<any, mdast.Root> = () => {
             node.data = {
 
                 hProperties: {
-                    id: "md-" + slugified,
+                    id: "h-" + slugified,
                 }
             }
 
@@ -97,7 +97,7 @@ export const remarkAnchorHeading: unified.Plugin<any, mdast.Root> = () => {
     return (tree) => {
         visit(tree, "link", (node) => {
             if (!node.url.startsWith("#")) return
-            node.url = "#md-" + node.url.slice(1)
+            node.url = "#h-" + node.url.slice(1)
         })
     }
 }
@@ -109,10 +109,29 @@ export const rehypeInsertAttrs: unified.Plugin<any, hast.Root> = () => {
     return (tree) => {
         visit(tree, (node) => {
             if (node.type !== "element") return
+            // Avoid reqursion
+
             if (node.tagName.match(headingRegex)) {
-                let class_ = node.properties["class"] ?? ''
-                node.properties["class"] = class_ + "cm-md-heading hover:underline"
-                console.log(node)
+
+                node.properties["className"] = node.properties["className"] ?? []
+                node.properties["className"].push("cm-md-heading")
+
+                node.children = [{
+                    type: "element",
+                    tagName: "a",
+                    properties: {
+                        href: "#" + node.properties.id,
+                        className: ["cm-md-heading-ref"]
+                    },
+                    children: [{
+                        type: "text",
+                        value: "#"
+                    }]
+                },
+                ...node.children
+                ]
+
+
             }
         })
     }

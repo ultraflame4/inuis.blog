@@ -32,30 +32,27 @@
     @apply my-1
 }
 
+.cm-md-content .cm-md-heading:hover .cm-md-heading-ref {
+    @apply block
+}
+
+.cm-md-content .cm-md-heading-ref {
+    @apply mr-2 no-underline hover:underline hidden absolute right-0
+}
 .cm-md-content .cm-md-heading {
-    @apply mt-6 mb-2;
-}
-
-.cm-md-content a:has(.cm-md-heading) {
-    color: var(--color-ink);
-    text-decoration: none;
-
-}
-
-.cm-md-content a:has(.cm-md-heading):hover {
-    text-decoration: underline;
+    @apply mt-6 mb-2 relative;
 }
 
 
-.cm-md-content a:not(:has(.cm-md-heading)) {
+.cm-md-content a {
     @apply text-link underline
 }
 
-.cm-md-content a:not(:has(.cm-md-heading)):hover {
+.cm-md-content a:hover {
     @apply text-link-hover
 }
 
-.cm-md-content a:not(:has(.cm-md-heading)):visited {
+.cm-md-content a:visited {
     @apply text-link-visited
 }
 
