@@ -24,7 +24,7 @@
 </script>
 
 <button
-	class={cn('md-escape my-0 btn btn-tiny border-paper font-mono data-copied:text-success', class_)}
+	class={cn('md-escape my-0 btn btn-tiny border-divider font-mono data-copied:text-success', class_)}
 	data-copied={isCopied || undefined}
 	onclick={() => copyCode(text)}
 >
