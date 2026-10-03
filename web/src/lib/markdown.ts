@@ -10,6 +10,9 @@ import remarkRehype from 'remark-rehype';
 import rehypeStringify from 'rehype-stringify';
 import remarkDirective from 'remark-directive';
 import remarkFrontmatter from 'remark-frontmatter';
+
+import { codeToHtml, bundledLanguages } from 'shiki/dist/bundle-web.mjs';
+
 import { matter } from 'vfile-matter';
 
 
@@ -84,7 +87,7 @@ export const remarkHeading: unified.Plugin<any, mdast.Root> = () => {
             node.data = {
 
                 hProperties: {
-                    id: "h-" + slugified,
+                    id: "h_" + slugified,
                 }
             }
 
@@ -97,7 +100,7 @@ export const remarkAnchorHeading: unified.Plugin<any, mdast.Root> = () => {
     return (tree) => {
         visit(tree, "link", (node) => {
             if (!node.url.startsWith("#")) return
-            node.url = "#h-" + node.url.slice(1)
+            node.url = "#h_" + node.url.slice(1)
         })
     }
 }
@@ -109,11 +112,11 @@ export const rehypeInsertAttrs: unified.Plugin<any, hast.Root> = () => {
     return (tree) => {
         visit(tree, (node) => {
             if (node.type !== "element") return
-            // Avoid reqursion
 
+
+            node.properties["className"] = node.properties["className"] ?? []
             if (node.tagName.match(headingRegex)) {
 
-                node.properties["className"] = node.properties["className"] ?? []
                 node.properties["className"].push("md-heading")
 
                 node.children = [{
@@ -130,8 +133,10 @@ export const rehypeInsertAttrs: unified.Plugin<any, hast.Root> = () => {
                 },
                 ...node.children
                 ]
+            }
 
-
+            if (node.tagName == "pre") {
+                node.properties.className.push("shiki-highlightme")
             }
         })
     }
@@ -144,6 +149,21 @@ export const remarkExtractFrontmatter: unified.Plugin<void[], mdast.Root> = () =
     }
 }
 
+
+export const remarkCodeblock: unified.Plugin<void[], mdast.Root> = () => {
+    return (tree, file) => {
+        visit(tree, "code", (node) => {
+            console.log(node.lang, node.meta)
+            node.meta
+            node.data = {
+                hProperties: {
+                    "data-lang": node.lang
+                }
+            }
+        })
+    }
+}
+
 export function render_md(content: string) {
     const processor = unified.unified()
         .use(remarkParse)
@@ -151,6 +171,7 @@ export function render_md(content: string) {
         .use(remarkExtractFrontmatter)
         .use(remarkHeading)
         .use(remarkAnchorHeading)
+        .use(remarkCodeblock)
         .use(remarkAlerts)
         .use(remarkDirective)
         .use(remarkIconDirective)
@@ -158,4 +179,28 @@ export function render_md(content: string) {
         .use(rehypeInsertAttrs)
         .use(rehypeStringify, { allowDangerousHtml: true })
     return processor.processSync(content);
+}
+
+
+export function highlightCode() {
+    const langs = new Set(Object.keys(bundledLanguages));
+    Array.from(document.querySelectorAll('.shiki-highlightme')).map(async (el) => {
+        let lang = el.querySelector("code")?.getAttribute('data-lang') ?? '';
+        console.log('shiki', lang);
+
+        if (!langs.has(lang)) {
+            lang = 'text';
+        }
+
+        const text = el.querySelector('code')!.textContent;
+        el.classList.remove('shiki-highlightme');
+        el.classList.add('shiki-highlighted');
+        try {
+            const html = await codeToHtml(text, { lang, theme: 'github-dark' });
+            // console.log('html', html);
+            el.outerHTML = html;
+        } catch (e) {
+            console.log('shiki', e);
+        }
+    });
 }

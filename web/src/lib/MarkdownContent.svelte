@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { cn } from 'cn';
-	import { render_md } from './markdown';
+	import { highlightCode, render_md } from './markdown';
+	import { onMount } from 'svelte';
 
 	interface Props {
 		source: string;
@@ -8,7 +9,12 @@
 	}
 
 	const { source, class: _class }: Props = $props();
-	const rendered = $derived(render_md(source));
+	let rendered = $state<any>(undefined);
+
+	onMount(()=>{
+	    rendered = render_md(source)
+		setTimeout(highlightCode)
+	})
 </script>
 
 <div class={cn('md-content h-fit max-w-full overflow-hidden', _class)}>
