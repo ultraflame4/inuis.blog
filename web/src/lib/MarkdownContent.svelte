@@ -4,6 +4,8 @@
 	import CopyButton from './CopyButton.svelte';
 	import type { Nullish } from './utils';
 	import { cn } from 'cn';
+	import markedAlert from 'marked-alert';
+	import type { Snippet } from 'svelte';
 
 	interface Props {
 		source: string;
@@ -62,21 +64,10 @@
 		selection.removeAllRanges();
 		selection.addRange(range);
 	}
-
-	function extractAlert(text: Nullish<string>) {
-		if (!text) return null;
-		const s = text.toLowerCase();
-		if (s.startsWith('[!note]')) return 'note';
-		if (s.startsWith('[!tip]')) return 'tip';
-		if (s.startsWith('[!important]')) return 'important';
-		if (s.startsWith('[!warning]')) return 'warn';
-		if (s.startsWith('[!caution]')) return 'caution';
-		return null;
-	}
 </script>
 
-<div class={cn("cm-md-content h-fit max-w-full overflow-hidden", _class)}>
-	<SvelteMarkdown {source}>
+<div class={cn('cm-md-content h-fit max-w-full overflow-hidden', _class)}>
+	<SvelteMarkdown {source} extensions={[markedAlert()]}>
 		{#snippet heading({ depth, children, text, slug })}
 			<a href="#__{slug(text)}">
 				{#if depth === 1}
@@ -106,9 +97,12 @@
 		{#snippet code({ lang, text })}
 			<div class="md-escape group relative">
 				<div
-					class="md-escape absolute top-1 right-1 opacity-0 drop-shadow-2xl group-hover:opacity-100 text-xs"
+					class="md-escape absolute top-1 right-1 text-xs opacity-0 drop-shadow-2xl group-hover:opacity-100"
 				>
-					<button class="btn btn-tiny md-escape my-0 border-paper font-mono relative " onclick={selectCode}>
+					<button
+						class="md-escape relative my-0 btn border-paper btn-tiny font-mono"
+						onclick={selectCode}
+					>
 						Select
 					</button>
 					<CopyButton {text} />
@@ -129,10 +123,15 @@
 		{/snippet}
 		{#snippet blockquote({ text, raw, children })}
 			<blockquote>
-				{#if extractAlert(text)}
-					{@const alert_tip = extractAlert(text)}
-					<p class="cm-md-alert alert-{alert_tip}">{alert_tip}</p>
-				{/if}
+				{@render children?.()}
+			</blockquote>
+		{/snippet}
+		{#snippet alert({ meta, children }: { children: Snippet, meta: any })}
+			{@const variant: string = meta['variant']}
+			{@const title: string = meta['title']}
+			<blockquote>
+				<p class="cm-md-alert alert-{variant}">{title}</p>
+
 				{@render children?.()}
 			</blockquote>
 		{/snippet}
