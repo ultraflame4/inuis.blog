@@ -1,11 +1,13 @@
 <script lang="ts">
-    import type { Snippet } from 'svelte';
     import type * as hast from 'hast';
 	import CopyButton from './CopyButton.svelte';
+	import MarkdownNode from "./MarkdownNode.svelte";
 
     type Node =  hast.Nodes
-
-    let {node}: {node?: Node;} = $props();
+    interface Props {
+        node?: Node;
+    }
+    let {node}: Props = $props();
 
     // Cast to any here because I can't be arsed to manually do type checks.
     // Its either they have children or don't.
@@ -64,7 +66,7 @@
 </script>
 
 {#snippet _self(node: Node)}
-    <svelte:self node={node} />
+    <MarkdownNode node={node} />
 {/snippet}
 
 {#if node === undefined}
@@ -113,12 +115,16 @@
 		</div>
 		
     {:else}
-        
-        <svelte:element this={node.tagName!} {...ele_props}>
-            {#each children() as child}
-                {@render _self(child)}
-            {/each}
-        </svelte:element>
+        <!-- If check here because svelte will complain if we try to set the children, even if the children is empty -->
+        {#if node.children.length > 0}
+            <svelte:element this={node.tagName} {...ele_props}>
+                {#each children() as child}
+                    {@render _self(child)}
+                {/each}
+            </svelte:element>
+        {:else}
+            <svelte:element this={node.tagName} {...ele_props}/>
+        {/if}
     {/if}
 
 {/if}
