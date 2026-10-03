@@ -11,7 +11,7 @@
 
 	const { data } = $props();
 
-	let content_offset = $state(data.content_offset)
+	let content_offset = $state(data.content_offset);
 	let post_hid = $derived(data.post_hid);
 	let published = $derived(data.published);
 
@@ -27,7 +27,7 @@
 
 	const _metaUpdater = new api.PreviewPostContentMetadataFactory(async (meta) => {
 		post_meta = meta;
-		content_offset = meta.content_offset
+		content_offset = meta.content_offset;
 	});
 
 	function updateMeta(view: EditorView) {
@@ -53,11 +53,11 @@
 				unsaved_changes = false;
 				saving_post = null;
 				const rdata = await resp.json();
-				const rpost = rdata.post as api.Post
-				content_offset = rpost.ContentOffset
+				const rpost = rdata.post as api.Post;
+				content_offset = rpost.ContentOffset;
 				post_hid = rpost.hid;
 				goto(`/me/editor?hid=${post_hid}`, {
-					replaceState: true,
+					replaceState: true
 				});
 			}
 		}
@@ -109,7 +109,7 @@
 
 	function enablePreview(x: boolean) {
 		showPreview = x;
-		let raw = view?.state.doc.toString() ?? ''
+		let raw = view?.state.doc.toString() ?? '';
 		preview_content = raw.slice(content_offset);
 	}
 	const warn_unsaved = (e: BeforeUnloadEvent) => {
@@ -140,6 +140,7 @@
 		<h2 class="border border-divider px-2 py-1 text-base font-bold">Title: {title}</h2>
 
 		<div class="ml-auto"></div>
+
 		<span class="text-sm" class:font-bold={unsaved_changes || is_new}>
 			{#if is_new}
 				[New Post]
@@ -149,27 +150,18 @@
 				[Up to date]
 			{/if}
 		</span>
-		<button class="btn" disabled={saving_post != null || deleting_post != null} onclick={save_post}>
-			{is_new ? 'Save new' : 'Save'}
-		</button>
 
-		{#if !published}
-			<button
-				class="btn"
-				disabled={publishing_post != null || deleting_post != null}
-				onclick={() => publish_post(true)}
-			>
-				Publish
-			</button>
-		{:else}
-			<button
-				class="btn"
-				disabled={publishing_post != null || deleting_post != null}
-				onclick={() => publish_post(false)}
-			>
-				Make Private
-			</button>
-		{/if}
+		<button class="btn" class:hidden={!showPreview} onclick={() => enablePreview(false)}>
+			Edit
+		</button>
+		<button class="btn" class:hidden={showPreview} onclick={() => enablePreview(true)}>
+			Preview
+		</button>
+		<div class="flex gap-2">
+			{#if !is_new}
+				<a href="/posts/{post_hid}" class="btn">View Page ↗</a>
+			{/if}
+		</div>
 	</div>
 	<Editor
 		bind:view
@@ -190,17 +182,27 @@
 		<MarkdownContent source={preview_content} />
 	</div>
 	<div class="mt-4 flex flex-wrap gap-3 text-sm">
-		<button class="btn" class:hidden={!showPreview} onclick={() => enablePreview(false)}>
-			Editor
+		<button class="btn" disabled={saving_post != null || deleting_post != null} onclick={save_post}>
+			{is_new ? 'Save new' : 'Save'}
 		</button>
-		<button class="btn" class:hidden={showPreview} onclick={() => enablePreview(true)}>
-			Preview
-		</button>
-		<div class="flex gap-2">
-			{#if !is_new}
-				<a href="/posts/{post_hid}" class="btn">View Post</a>
-			{/if}
-		</div>
+		{#if !published}
+			<button
+				class="btn"
+				disabled={publishing_post != null || deleting_post != null}
+				onclick={() => publish_post(true)}
+			>
+				Publish
+			</button>
+		{:else}
+			<button
+				class="btn"
+				disabled={publishing_post != null || deleting_post != null}
+				onclick={() => publish_post(false)}
+			>
+				Make Private
+			</button>
+		{/if}
+
 		<div class="my-0 mr-auto"></div>
 		<button
 			class="btn btn-danger disabled:text-inherit"

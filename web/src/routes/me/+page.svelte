@@ -39,7 +39,7 @@
 	</div>
 	{#snippet post_entry(post: api.PostSummary, index: number)}
 		<li
-			class="grid h-38 w-full gap-2 overflow-hidden border px-3 py-2 sm:h-36 sm:w-96"
+			class="grid h-42 w-full gap-2 overflow-hidden border px-3 py-2 sm:h-42 sm:w-100"
 			style="grid-template-columns: auto 1fr; grid-template-rows: auto 1fr auto;"
 		>
 			<span class="col-1 row-span-2 mr-1 w-4 text-right"
