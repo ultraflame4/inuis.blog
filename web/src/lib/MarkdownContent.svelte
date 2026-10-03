@@ -11,13 +11,12 @@
 
 	const { source, class: _class }: Props = $props();
 	let tree = $state<any>(undefined);
-
+    console.debug("Starting markdown render to hast")
+    console.time("markdown to hast")
+    tree = render_hast(source)
+    console.timeEnd("markdown to hast")
 	onMount(()=>{
-	    console.debug("Starting markdown render to hast")
-	    console.time("markdown to hast")
-	    tree = render_hast(source)
-	    console.timeEnd("markdown to hast")
-		setTimeout(highlightCode, 0)
+		highlightCode()
 	})
 </script>
 
