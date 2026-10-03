@@ -6,6 +6,7 @@ import { redirect } from '@sveltejs/kit';
 export const load = async (event) => {
     const data = await event.parent()
     const user = data.user
+    console.log("User:", user)
     if (nullish(user)) {
         throw redirect(302, '/')
     }
