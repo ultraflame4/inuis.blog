@@ -107,7 +107,7 @@ export const remarkAnchorHeading: unified.Plugin<any, mdast.Root> = () => {
     }
 }
 
-const headingRegex = /^h[0-9]/i;
+
 // Inserts custom attribute into the html elements
 export const rehypeInsertAttrs: unified.Plugin<any, hast.Root> = () => {
 
@@ -115,24 +115,7 @@ export const rehypeInsertAttrs: unified.Plugin<any, hast.Root> = () => {
         visit(tree, (node) => {
             if (node.type !== "element") return
 
-
             node.properties["className"] = node.properties["className"] ?? []
-            if (node.tagName.match(headingRegex) && node.properties.className.includes("md-heading")) {
-                node.children = [{
-                    type: "element",
-                    tagName: "a",
-                    properties: {
-                        href: "#" + node.properties.id,
-                        className: ["md-heading-ref"]
-                    },
-                    children: [{
-                        type: "text",
-                        value: "#"
-                    }]
-                },
-                ...node.children
-                ]
-            }
 
             if (node.tagName == "pre") {
                 node.properties.className.push("shiki-highlightme")

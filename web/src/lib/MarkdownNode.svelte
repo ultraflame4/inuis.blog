@@ -25,7 +25,9 @@
     <!-- Intercept rendering calls here -->
     {#if node.properties?.className?.includes("md-heading")}
         <!-- <svelte:element this={node.tagName!} {...node.properties}> -->
-        <h1 class="md-heading">
+        
+        <h1 class="md-heading" id={node.properties.id}>
+            <a class="md-heading-ref" href="#{node.properties.id}">#</a>
             {#each children() as child}
                 <svelte:self node={child} />
             {/each}
