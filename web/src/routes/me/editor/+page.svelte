@@ -159,7 +159,7 @@
 		</button>
 		<div class="flex gap-2">
 			{#if !is_new}
-				<a href="/posts/{post_hid}" class="btn">View Page ↗</a>
+				<a href="/posts/{post_hid}" target="_blank" class="btn">View Page ↗</a>
 			{/if}
 		</div>
 	</div>
