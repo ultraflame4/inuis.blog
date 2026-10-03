@@ -57,7 +57,7 @@
 }
 
 .md-content pre:not(.md-escape) {
-    @apply bg-paper-muted p-2 rounded-md my-4 overflow-auto
+    @apply bg-paper-muted p-2 rounded-md my-4 overflow-auto border
 }
 
 .md-content code {
