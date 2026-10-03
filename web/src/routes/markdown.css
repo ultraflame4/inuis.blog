@@ -19,6 +19,7 @@
 .cm-md-content ol {
     @apply pl-7 ml-4 my-4
 }
+
 .cm-md-content ul {
     @apply pl-4 ml-4 my-4
 }
@@ -90,14 +91,14 @@
 .cm-md-content blockquote {
     --color: var(--color-divider);
     @apply px-4 py-4 pt-8 relative border border-(--color) rounded-md overflow-clip my-4 border-l-4;
-    }
-    
-    .cm-md-content blockquote *:first-child {
-        @apply mt-0
-    }
-    
-    .cm-md-content blockquote *:last-child {
-        @apply mb-0
+}
+
+.cm-md-content blockquote *:first-child {
+    @apply mt-0
+}
+
+.cm-md-content blockquote *:last-child {
+    @apply mb-0
 }
 
 .cm-md-content blockquote::before {
@@ -150,4 +151,20 @@
 
 .cm-md-content kbd {
     @apply inline-block
+}
+
+.cm-md-content .footnote-ref+.footnote-ref {
+    @apply mx-0
+}
+
+.cm-md-content .footnote-ref {
+    @apply ml-1
+}
+
+.cm-md-content .footnote-ref a::before {
+    content: "^";
+}
+
+.cm-md-content .footnotes ol {
+    @apply pl-1 text-xs text-ink-muted
 }

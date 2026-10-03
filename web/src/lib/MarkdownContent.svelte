@@ -1,10 +1,16 @@
 <script lang="ts">
-	import SvelteMarkdown from '@humanspeak/svelte-markdown';
+	import SvelteMarkdown, { defaultRenderers } from '@humanspeak/svelte-markdown';
+	import {
+		markedFootnote,
+		FootnoteRef,
+		FootnoteSection
+	} from '@humanspeak/svelte-markdown/extensions/footnote';
 	import { codeToHtml, bundledLanguages } from 'shiki/dist/bundle-web.mjs';
 	import CopyButton from './CopyButton.svelte';
 	import type { Nullish } from './utils';
 	import { cn } from 'cn';
 	import markedAlert from 'marked-alert';
+
 	import type { Snippet } from 'svelte';
 
 	interface Props {
@@ -64,10 +70,21 @@
 		selection.removeAllRanges();
 		selection.addRange(range);
 	}
+	type GenericRendererProp<T extends Record<string, any> = {}> = {
+		children: Snippet;
+		meta: any;
+	} & T;
+
+	const extensions = [markedAlert(), markedFootnote()];
+	const renderers = {
+		...defaultRenderers,
+		footnoteRef: FootnoteRef,
+		footnoteSection: FootnoteSection
+	};
 </script>
 
 <div class={cn('cm-md-content h-fit max-w-full overflow-hidden', _class)}>
-	<SvelteMarkdown {source} extensions={[markedAlert()]}>
+	<SvelteMarkdown {source} {extensions} {renderers}>
 		{#snippet heading({ depth, children, text, slug })}
 			<a href="#__{slug(text)}">
 				{#if depth === 1}
@@ -126,7 +143,7 @@
 				{@render children?.()}
 			</blockquote>
 		{/snippet}
-		{#snippet alert({ meta, children }: { children: Snippet, meta: any })}
+		{#snippet alert({ meta, children }: GenericRendererProp)}
 			{@const variant: string = meta['variant']}
 			{@const title: string = meta['title']}
 			<blockquote>
