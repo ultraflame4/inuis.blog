@@ -78,16 +78,17 @@
     {/each}
 
 {:else if node.type === 'element'}
+    <!-- Type casted to any here to get rid of long type hint -->
+    {@const ele_props: any = asProps(node.properties)}
     <!-- Intercept rendering calls here -->
     {#if node.properties?.className?.includes("md-heading")}
         <!-- <svelte:element this={node.tagName!} {...node.properties}> -->
-        
-        <h1 class="md-heading" id={node.properties.id}>
+        <svelte:element {...ele_props} this={node.tagName} class="md-heading" id={node.properties.id}>
             <a class="md-heading-ref" href="#{node.properties.id}">#</a>
             {#each children() as child}
                 {@render _self(child)}
             {/each}
-        </h1>
+        </svelte:element>
         
     {:else if node.tagName=="pre"}
   		
@@ -104,7 +105,7 @@
 				<CopyButton text={"wip"} />
 			</div>
 
-			<svelte:element this={"pre"} class="shiki-highlightme" data-lang={node.properties['data-lang']} >
+			<svelte:element {...ele_props} this={"pre"} class="shiki-highlightme"  >
                 {#each children() as child}
                     {@render _self(child)}
                 {/each}
@@ -113,7 +114,7 @@
 		
     {:else}
         
-        <svelte:element this={node.tagName!} {...asProps(node.properties)}>
+        <svelte:element this={node.tagName!} {...ele_props}>
             {#each children() as child}
                 {@render _self(child)}
             {/each}
