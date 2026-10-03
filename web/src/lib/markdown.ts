@@ -6,6 +6,7 @@ import type * as mdast from 'mdast';
 import * as _ from 'lodash-es';
 import type * as hast from 'hast'
 import remarkParse from 'remark-parse';
+import remarkGfm from 'remark-gfm';
 import remarkRehype from 'remark-rehype';
 import rehypeStringify from 'rehype-stringify';
 import remarkDirective from 'remark-directive';
@@ -173,6 +174,10 @@ export function render_md(content: string) {
         .use(remarkAnchorHeading)
         .use(remarkCodeblock)
         .use(remarkAlerts)
+        .use(remarkGfm, {
+            singleTilde: true,
+
+        })
         .use(remarkDirective)
         .use(remarkIconDirective)
         .use(remarkRehype, { allowDangerousHtml: true })

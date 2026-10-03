@@ -39,6 +39,7 @@
 .md-content .md-heading-ref {
     @apply mr-2 no-underline hover:underline hidden absolute right-0
 }
+
 .md-content .md-heading {
     @apply mt-6 mb-2 relative;
 }
@@ -150,15 +151,18 @@
     @apply inline-block
 }
 
-.md-content .footnote-ref+.footnote-ref {
-    @apply mx-0
+.md-content sup:has(>[data-footnote-ref])+sup:has(>[data-footnote-ref]) {
+    @apply ml-0
 }
-
-.md-content .footnote-ref {
+.md-content sup:has(>[data-footnote-ref]) {
     @apply ml-1
 }
 
-.md-content .footnote-ref a::before {
+.md-content [data-footnote-ref] {
+    @apply no-underline
+}
+
+.md-content [data-footnote-ref]::before {
     content: "^";
 }
 
