@@ -68,7 +68,7 @@ export const remarkAlerts: unified.Plugin<any, mdast.Root> = () => {
             node.children = [
                 {
                     type: "html",
-                    value: `<p class="cm-md-alert alert-${variant}">${variant}</p>`
+                    value: `<p class="md-alert alert-${variant}">${variant}</p>`
                 },
                 ...node.children
             ]
