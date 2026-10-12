@@ -1,64 +1,63 @@
 <script lang="ts">
-    import type * as hast from 'hast';
+	import type * as hast from 'hast';
 	import CopyButton from './CopyButton.svelte';
-	import MarkdownNode from "./MarkdownNode.svelte";
+	import MarkdownNode from './MarkdownNode.svelte';
 
-    type Node =  hast.Nodes
-    interface Props {
-        node?: Node;
-    }
-    let {node}: Props = $props();
+	type Node = hast.Nodes;
+	interface Props {
+		node?: Node;
+	}
+	let { node }: Props = $props();
 
-    // Cast to any here because I can't be arsed to manually do type checks.
-    // Its either they have children or don't.
-    const children = () => (node as any)?.children ?? [];
+	// Cast to any here because I can't be arsed to manually do type checks.
+	// Its either they have children or don't.
+	const children = () => (node as any)?.children ?? [];
 
-    function asProps(properties: hast.Element['properties']) {
-        return {
-            id: properties.id,
-            class: Array.isArray(properties.className)
-                ? properties.className.join(' ')
-                : properties.className,
-    
-            title: properties.title,
-            style: properties.style,
-    
-            href: properties.href,
-            target: properties.target,
-            rel: properties.rel,
-    
-            src: properties.src,
-            alt: properties.alt,
-            width: properties.width,
-            height: properties.height,
-    
-            disabled: properties.disabled,
-            checked: properties.checked,
-            selected: properties.selected,
-            readonly: properties.readOnly,
-    
-            name: properties.name,
-            value: properties.value,
-            placeholder: properties.placeholder,
-    
-            role: properties.role,
-    
-            ...Object.fromEntries(
-                Object.entries(properties).filter(([key]) =>
-                    key.startsWith('data-') ||
-                    key.startsWith('aria-')
-                )
-            )
-        }
-    }
-   	function selectCode(ev: MouseEvent) {
+	function asProps(properties: hast.Element['properties']) {
+		return {
+			id: properties.id,
+			class: Array.isArray(properties.className)
+				? properties.className.join(' ')
+				: properties.className,
+
+			title: properties.title,
+			style: properties.style,
+
+			href: properties.href,
+			target: properties.target,
+			rel: properties.rel,
+
+			src: properties.src,
+			alt: properties.alt,
+			width: properties.width,
+			height: properties.height,
+
+			disabled: properties.disabled,
+			checked: properties.checked,
+			selected: properties.selected,
+			readonly: properties.readOnly,
+
+			name: properties.name,
+			value: properties.value,
+			placeholder: properties.placeholder,
+
+			role: properties.role,
+
+			...Object.fromEntries(
+				Object.entries(properties).filter(
+					([key]) => key.startsWith('data-') || key.startsWith('aria-')
+				)
+			)
+		};
+	}
+	function selectCode(ev: MouseEvent) {
 		const target = ev.target as HTMLElement;
 		const pre = target.parentElement!.parentElement!.querySelector('pre');
 		const selection = window.getSelection();
 		const range = document.createRange();
 		if (!pre) throw new Error('no pre');
 		if (!selection) throw new Error('no selection');
-   
+
 		range.selectNodeContents(pre);
 		selection.removeAllRanges();
 		selection.addRange(range);
@@ -66,34 +65,32 @@
 </script>
 
 {#snippet _self(node: Node)}
-    <MarkdownNode node={node} />
+	<MarkdownNode {node} />
 {/snippet}
 
 {#if node === undefined}
-    <p></p>
+	<p></p>
+{:else if node.type === 'raw'}
+	{@html node.value}
 {:else if node.type === 'text'}
-    {node.value}
-
+	{node.value}
 {:else if node.type === 'root'}
-    {#each children() as child}
-        {@render _self(child)}
-    {/each}
-
+	{#each children() as child}
+		{@render _self(child)}
+	{/each}
 {:else if node.type === 'element'}
-    <!-- Type casted to any here to get rid of long type hint -->
-    {@const ele_props: any = asProps(node.properties)}
-    <!-- Intercept rendering calls here -->
-    {#if node.properties?.className?.includes("md-heading")}
-        <!-- <svelte:element this={node.tagName!} {...node.properties}> -->
-        <svelte:element {...ele_props} this={node.tagName} class="md-heading" id={node.properties.id}>
-            <a class="md-heading-ref" href="#{node.properties.id}">#</a>
-            {#each children() as child}
-                {@render _self(child)}
-            {/each}
-        </svelte:element>
-        
-    {:else if node.tagName=="pre"}
-  		
+	<!-- Type casted to any here to get rid of long type hint -->
+	{@const ele_props: any = asProps(node.properties)}
+	<!-- Intercept rendering calls here -->
+	{#if node.properties?.className?.includes('md-heading')}
+		<!-- <svelte:element this={node.tagName!} {...node.properties}> -->
+		<svelte:element this={node.tagName} {...ele_props} class="md-heading" id={node.properties.id}>
+			<a class="md-heading-ref" href="#{node.properties.id}">#</a>
+			{#each children() as child}
+				{@render _self(child)}
+			{/each}
+		</svelte:element>
+	{:else if node.tagName == 'pre'}
 		<div class="md-escape group relative">
 			<div
 				class="md-escape absolute top-1.5 right-2 text-xs opacity-0 drop-shadow-2xl group-hover:opacity-100"
@@ -104,27 +101,25 @@
 				>
 					Select
 				</button>
-				<CopyButton text={"wip"} />
+				<CopyButton text={'wip'} />
 			</div>
 
-			<svelte:element {...ele_props} this={"pre"} class="shiki-highlightme"  >
-                {#each children() as child}
-                    {@render _self(child)}
-                {/each}
-            </svelte:element>
+			<svelte:element this={"pre"} {...ele_props} class="shiki-highlightme">
+				{#each children() as child}
+					{@render _self(child)}
+				{/each}
+			</svelte:element>
 		</div>
-		
-    {:else}
-        <!-- If check here because svelte will complain if we try to set the children, even if the children is empty -->
-        {#if node.children.length > 0}
-            <svelte:element this={node.tagName} {...ele_props}>
-                {#each children() as child}
-                    {@render _self(child)}
-                {/each}
-            </svelte:element>
-        {:else}
-            <svelte:element this={node.tagName} {...ele_props}/>
-        {/if}
-    {/if}
-
+	{:else}
+		<!-- If check here because svelte will complain if we try to set the children, even if the children is empty -->
+		{#if node.children.length > 0}
+			<svelte:element this={node.tagName} {...ele_props}>
+				{#each children() as child}
+					{@render _self(child)}
+				{/each}
+			</svelte:element>
+		{:else}
+			<svelte:element this={node.tagName} {...ele_props} />
+		{/if}
+	{/if}
 {/if}
