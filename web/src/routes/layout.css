@@ -22,9 +22,10 @@
 }
 
 :root {
-    font-size: 0.9rem;
+    /*font-size: 0.9rem;*/
 	--navbar-height: calc(13 * var(--spacing));
 	--footer-height: calc(12 * var(--spacing));
+    @apply text-[0.8rem] md:text-[0.9rem];
 }
 
 kbd {

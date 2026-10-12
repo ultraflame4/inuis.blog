@@ -4,6 +4,29 @@
     font-size: revert;
 }
 
+h1.md-heading {
+    @apply text-2xl
+}
+
+h2.md-heading {
+    @apply text-xl
+}
+
+h3.md-heading {
+    @apply text-lg
+}
+
+h4.md-heading {
+    @apply text-base
+}
+
+h5.md-heading {
+    @apply text-sm
+}
+
+h6.md-heading {
+    @apply text-xs
+}
 @layer markdown-revert {
     .md-content *:not(.md-escape) {
         all: revert;
@@ -154,6 +177,7 @@
 .md-content sup:has(>[data-footnote-ref])+sup:has(>[data-footnote-ref]) {
     @apply ml-0
 }
+
 .md-content sup:has(>[data-footnote-ref]) {
     @apply ml-1
 }
@@ -169,6 +193,7 @@
 .md-content #footnote-label {
     @apply my-0 py-1 text-xs border-b border-divider
 }
+
 .md-content .footnotes ol {
     @apply pl-1 text-xs text-ink-muted mt-0
 }
