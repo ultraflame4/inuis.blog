@@ -7,7 +7,7 @@
 	const providers = $derived(data['providers']);
 </script>
 
-<div class="flex min-h-page-content w-full items-center justify-center">
+<div class="flex min-h-page-content w-full items-center justify-center px-8">
 	<main class="mx-auto flex flex-col gap-4 border border-divider p-8">
 		<h2 class="text-2xl font-bold my-0">Log In</h2>
 		<span>Hello there!</span>

@@ -5,7 +5,7 @@
 	import { api } from '#lib/api.js';
 	// namespace import required for tree shaking
 
-	import MarkdownContent from '#lib/MarkdownContent.svelte';
+	import {MarkdownContent} from '#lib/markdown';
 
 	import Editor from '#lib/Editor.svelte';
 

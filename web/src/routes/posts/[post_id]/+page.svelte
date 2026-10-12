@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import MarkdownContent from '#lib/MarkdownContent.svelte';
+	import { MarkdownContent } from '#lib/markdown';
 	import { humanizeDate } from '#lib/utils.js';
 
 	const { data } = $props();
@@ -11,7 +11,6 @@
 
 <main class="mt-4 space-y-2 px-4">
 	<header class="mx-auto flex max-w-396 flex-wrap space-y-4 gap-x-4">
-
 		{#if !post_data.AllowPublic}
 			<div
 				class="w-full border border-danger py-2 text-center text-danger"
@@ -22,7 +21,6 @@
 			</div>
 		{/if}
 
-
 		<p class="w-full">
 			<span class="font-semibold">Title</span>: {post_data.Title ?? 'Untitled Post'}
 		</p>
@@ -30,10 +28,7 @@
 			<span class="font-semibold">Author</span>: <a href="/u/{author.hid}">@{author.Username}</a>
 		</p>
 		{#if author.hid === data.user?.hid}
-			<a
-				href={resolve(`me/editor?hid=${post_data.hid}`)}
-				class="underline"
-			>/edit</a>
+			<a href={resolve(`me/editor?hid=${post_data.hid}`)} class="underline">/edit</a>
 		{/if}
 
 		<div class="mr-auto"></div>
