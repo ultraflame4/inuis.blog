@@ -16,7 +16,7 @@
 	let sidebar_open = $state(false);
 </script>
 
-<div class="fixed top-0 right-0 z-20 h-(--navbar-height) p-2 md:hidden">
+<div class="absolute top-0 right-0 z-20 h-(--navbar-height) p-2 md:hidden">
 	<button class="h-full btn" onclick={() => (sidebar_open = !sidebar_open)}>Menu</button>
 </div>
 <aside
