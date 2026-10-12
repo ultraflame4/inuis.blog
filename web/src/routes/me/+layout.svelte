@@ -12,10 +12,16 @@
 		{ path: '/me/editor', label: 'Editor' }
 	];
 	const links_bottom: SidebarRoute[] = [{ path: '/me/settings', label: 'Settings' }];
+
+	let sidebar_open = $state(false);
 </script>
 
+<div class="fixed top-0 right-0 z-20 h-(--navbar-height) p-2 md:hidden">
+	<button class="h-full btn" onclick={() => (sidebar_open = !sidebar_open)}>Menu</button>
+</div>
 <aside
-	class="fixed top-0 left-0 h-dvh w-48 border-r border-r-divider bg-paper pt-(--navbar-height)"
+	class="fixed top-0 right-full z-10 h-dvh w-48 border-r border-r-divider bg-paper pt-(--navbar-height) md:left-0"
+	class:left-0={sidebar_open}
 >
 	{#snippet sidebar_routes(routes: SidebarRoute[])}
 		{#each routes as route}
@@ -40,6 +46,7 @@
 		{@render sidebar_routes(links_bottom)}
 	</nav>
 </aside>
-<div class="relative ml-48 min-h-page-content">
+
+<div class="relative min-h-page-content md:ml-48">
 	{@render children()}
 </div>
