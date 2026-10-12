@@ -28,6 +28,7 @@ h5.md-heading {
 h6.md-heading {
     @apply max-md:text-xs
 }
+
 @layer markdown-revert {
     .md-content *:not(.md-escape) {
         all: revert;
@@ -86,7 +87,7 @@ h6.md-heading {
 }
 
 .md-content code {
-    @apply bg-paper-muted rounded-md px-1 py-0.5 border mx-0.5
+    @apply bg-paper-muted rounded-md px-1 py-0.5 border mx-0.5 text-sm
 }
 
 .md-content pre code {
@@ -146,9 +147,12 @@ h6.md-heading {
     @apply capitalize font-bold text-(--color);
 }
 
+.md-content blockquote:has(> .md-alert) {
+    --color: var(--color-ink-muted);
+}
 
 .md-content blockquote:has(> .alert-note) {
-    --color: var(--color-accent);
+    --color: var(--color-ink-muted);
 }
 
 .md-content blockquote:has(> .alert-tip) {
