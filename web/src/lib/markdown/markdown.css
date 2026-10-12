@@ -2,30 +2,31 @@
     font-family: revert;
     font-weight: revert;
     font-size: revert;
+
 }
 
 h1.md-heading {
-    @apply text-2xl
+    @apply max-md:text-2xl
 }
 
 h2.md-heading {
-    @apply text-xl
+    @apply max-md:text-xl
 }
 
 h3.md-heading {
-    @apply text-lg
+    @apply max-md:text-lg
 }
 
 h4.md-heading {
-    @apply text-base
+    @apply max-md:text-base
 }
 
 h5.md-heading {
-    @apply text-sm
+    @apply max-md:text-sm
 }
 
 h6.md-heading {
-    @apply text-xs
+    @apply max-md:text-xs
 }
 @layer markdown-revert {
     .md-content *:not(.md-escape) {
@@ -64,7 +65,7 @@ h6.md-heading {
 }
 
 .md-content .md-heading {
-    @apply mt-6 mb-2 relative;
+    @apply mt-6 mb-3 md:mb-2 relative;
 }
 
 

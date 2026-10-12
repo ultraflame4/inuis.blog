@@ -9,7 +9,7 @@
 	const author = $derived(post_data.User);
 </script>
 
-<main class="mt-4 space-y-2 px-4">
+<main class="mt-4 space-y-4 px-4">
 	<header class="mx-auto flex max-w-396 flex-wrap space-y-4 gap-x-4">
 		{#if !post_data.AllowPublic}
 			<div
@@ -34,6 +34,6 @@
 		<div class="mr-auto"></div>
 		<p><span class="font-semibold">Updated</span>: {humanizeDate(post_data.UpdatedAt)}</p>
 	</header>
-	<MarkdownContent source={body} class="mx-auto max-w-396 border px-8" />
+	<MarkdownContent source={body} class="mx-auto max-w-396 border px-4 md:px-8" />
 	<div class="my-8"></div>
 </main>
