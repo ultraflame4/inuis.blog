@@ -19,7 +19,7 @@ No trackers, minimal JavaScript, and some CSS. Self-hostable, cheap to run, and 
 | [Configuration](docs/configuration.md) | Environment variables and settings |
 | [Deployment](docs/deployment.md) | Single-server and multi-server setups |
 | [Identity Providers](docs/identity-providers.md) | OIDC provider setup |
-| [User Management](docs/user-management.md) | Signup, invite codes, admin setup |
+| [User Management](docs/user-manage.md) | Signup, invite codes, admin setup |
 | [API Reference](docs/api.md) | Route overview → [full specs](API_SPECS.md) |
 
 ## Quick Start
