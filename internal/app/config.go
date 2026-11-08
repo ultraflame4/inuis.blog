@@ -72,6 +72,16 @@ type Config struct {
 	//
 	// Examples were taken from https://gorm.io/docs/connecting_to_the_database.html
 	DATABASE_URL string
+
+	// Enables auto app initialisation of database.
+	//
+	// This will:
+	// - Auto migrate of database.
+	// - Automatic setup of admin user. (On first start)
+	//
+	// Set this to false if there is more than 1 backend server (e.g. edge servers) where you don't want
+	// uncontrolled modification of the database.
+	AUTO_INIT bool
 }
 
 // Load config from env
@@ -95,6 +105,12 @@ func readConfigFromEnv() Config {
 		allowSignup = true
 	}
 
+	autoInit, err := strconv.ParseBool(strings.ToLower(getEnv("AUTO_INIT", "true")))
+	if err != nil {
+		autoInit = true
+	}
+
+	
 	c := Config{
 		Host:              getEnv("HOST", "localhost"),
 		Port:              getEnv("PORT", "8080"),
@@ -107,6 +123,7 @@ func readConfigFromEnv() Config {
 		ALLOW_SIGNUP:      allowSignup,
 		DATABASE_DRIVER:   getEnv("DATABASE_DRIVER", "sqlite"),
 		DATABASE_URL:      getEnv("DATABASE_URL", "data.db"),
+		AUTO_INIT:       autoInit,
 	}
 
 	// Ensure data directory exists
