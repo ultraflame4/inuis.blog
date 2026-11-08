@@ -29,3 +29,11 @@ go run main.go
 ```
 
 On first startup, a single-use invite code is printed to the logs. Use it to create your admin account.
+
+
+# Images
+![main menu](docs/blob/image.png)
+![user home](docs/blob/image_1.png)
+![editor](docs/blob/image_2.png)
+![editor](docs/blob/image_2.png)
+![example post](docs/blob/image_3.png)
