@@ -10,7 +10,7 @@ No trackers, minimal JavaScript, and some CSS. Self-hostable, cheap to run, and 
 - **Cheap to run** — minimal resource footprint
 - **Public API** — Fetch posts easily for integration into portfolio websites. (*only for published posts)
 - **Private** — Pen your thoughts freely. Don't worry about public judgement.
-- 
+ 
 ## Documentation
 
 | Section | Description |
