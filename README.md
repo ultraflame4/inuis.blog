@@ -1,96 +1,31 @@
 # I.N.U.I.S (It's not ugly, it's simple)
 
-A tiny, no-nonsense, fast blogging platform written in go.
+A tiny, no-nonsense, fast blogging platform written in Go.
 
-No trackers, minimal JavaScript and some CSS
+No trackers, minimal JavaScript, and some CSS. Self-hostable, cheap to run, and feels private.
 
-This is a minimal, self-hostable blogging platform for developers, writers, and anyone else who wants to share their thoughts, in a fast and simple way.
+## Key Goals
 
-# Key Goals
-- Self hostable
-- Cheap to run
-- Easy import / export of data
-- Easy to integrate (Public) API for fetching posts.
-- Embed capabilities
-- Feels private
+- **Self-hostable** — easily self hostable as a single binary.
+- **Cheap to run** — minimal resource footprint
+- **Public API** — Fetch posts easily for integration into portfolio websites. (*only for published posts)
+- **Private** — Pen your thoughts freely. Don't worry about public judgement.
+- 
+## Documentation
 
+| Section | Description |
+|---|---|
+| [Getting Started](docs/getting-started.md) | Overview, first startup, quick start |
+| [Configuration](docs/configuration.md) | Environment variables and settings |
+| [Deployment](docs/deployment.md) | Single-server and multi-server setups |
+| [Identity Providers](docs/identity-providers.md) | OIDC provider setup |
+| [User Management](docs/user-management.md) | Signup, invite codes, admin setup |
+| [API Reference](docs/api.md) | Route overview → [full specs](API_SPECS.md) |
 
-# Setup Behaviour
+## Quick Start
 
-1. On first startup, the server will generate a single-use invite code.
-2. Use this code to sign up as the first admin user.
-
-
-# Edge / Multi-Server Deployment
-
-`inuis` was built with a single server deployment in mind.
-On every startup, it will auto migrate, and try to init admin users if needed.
-
-When running with multiple backend servers, you likely want
-to disable that to prevent uncontrolled database migration and state.
-
-Just set `AUTO_INIT` to `false`
-
-Example (postgres):
-```env
-# .env
-DATABASE_DRIVER="postgres"
-DATABASE_URL="your postgres dsn" # See https://gorm.io/docs/connecting_to_the_database.html#PostgreSQL
-AUTO_INIT=false
-```
-
-## Identity Providers
-To prevent weird behaviour, you should ensure that all the `OIDC_*` env variables set
-are the same across all instances.
-
-
-# Notices
-
-## User Signup Behaviour
-Users can only login/signup and be authenticated via an external Identity Provider like Google.
-
-Server owners can enable "invite only" mode, which requires invite codes for all signups.
-
-If there are no admin users, invite codes are required even when "invite only" mode is not enabled.
-
-### Invite Codes
-- On startup, server will check for presence of admin users.
-- If no admin users are found, invite codes are required to sign up.
-- A single-use \[admin\] invite code is also generated / retrieved from the database.
-    - This code is used to create the first (admin) user.
-
-#### Single-Use Invite Codes
-- Invite codes are single use by default.
-
-# Configuration
-
-All configuration is done via environment variables.
-
-## Adding an Identity Provider
-Identity providers are used to authenticate users. 
-Any identity provider that supports OpenID Connect can be used.
-
-To add an identity provider, you just need to specify the OIDC config via environment variables.
-The server will automatically scan environment variables starting with `OIDC_` to configure OIDC providers.
-
-You need to set the following environment variables to configure an OIDC provider:
-- `OIDC_<PROVIDER_NAME>_URL`: URL of the OIDC provider. This is used to get the oidc address.
-  - Example: `https://accounts.google.com` will resolve to `https://accounts.google.com/.well-known/openid-configuration`
-  - DO NOT PUT the DISCOVERY address! (Use the portion WITHOUT `/.well-known/openid_configuration`)!
-- `OIDC_<PROVIDER_NAME>_CLIENT_ID`: Client ID for OIDC provider.
-- `OIDC_<PROVIDER_NAME>_CLIENT_SECRET`: Client secret for OIDC provider. If this is not set, the PKCE flow will be used instead.
-
-Example for Google:
 ```bash
-OIDC_GOOGLE_URL="https://accounts.google.com"
-OIDC_GOOGLE_CLIENT="...google app client id..."
-OIDC_GOOGLE_SECRET="...google app client secret..."
+go run main.go
 ```
 
-## Robots.txt
-Unfortunately, there is no plans to make robots.txt configurable yet.
-
-Your best bet is to use a reverse proxy, or hide behind cloudflare to configure the crawling behaviour.
-
-# API Routes
-See [API_SPECS.md](API_SPECS.md) for details on the API routes.
+On first startup, a single-use invite code is printed to the logs. Use it to create your admin account.
