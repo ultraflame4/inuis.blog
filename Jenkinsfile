@@ -3,13 +3,13 @@ pipeline {
     tools { go '1.26' }
 
     stages {
-        stage('Fetch') {
-            steps {
-                // Get some code from a GitHub repository
-                git branch: 'main', url: 'https://github.com/ultraflame4/inuis.blog.git'
-
-            }
-        }
+//         stage('Fetch') {
+//             steps {
+//                 // Get some code from a GitHub repository
+//                 git branch: 'main', url: 'https://github.com/ultraflame4/inuis.blog.git'
+// 
+//             }
+//         }
        stage('Build Client') {
             steps {
                 dir('web') {
