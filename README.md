@@ -20,6 +20,30 @@ This is a minimal, self-hostable blogging platform for developers, writers, and 
 1. On first startup, the server will generate a single-use invite code.
 2. Use this code to sign up as the first admin user.
 
+
+# Edge / Multi-Server Deployment
+
+`inuis` was built with a single server deployment in mind.
+On every startup, it will auto migrate, and try to init admin users if needed.
+
+When running with multiple backend servers, you likely want
+to disable that to prevent uncontrolled database migration and state.
+
+Just set `AUTO_INIT` to `false`
+
+Example (postgres):
+```env
+# .env
+DATABASE_DRIVER="postgres"
+DATABASE_URL="your postgres dsn" # See https://gorm.io/docs/connecting_to_the_database.html#PostgreSQL
+AUTO_INIT=false
+```
+
+## Identity Providers
+To prevent weird behaviour, you should ensure that all the `OIDC_*` env variables set
+are the same across all instances.
+
+
 # Notices
 
 ## User Signup Behaviour
