@@ -44,7 +44,7 @@ pipeline {
             steps {
                 
                 script{
-                    env.LD_FLAGS = "-X main.version=${env.GIT_TAG} -X main.build=${env.BUILD_DATE}"
+                    env.LD_FLAGS = "-X 'main.version=${env.GIT_TAG}' -X 'main.build=\"${env.BUILD_DATE}\"'"
                     env.BIN_NAME = "inuis-${env.GIT_TAG}"
                 }
             
