@@ -43,9 +43,9 @@ pipeline {
         stage('Build Go') {
             steps {
                 
-                environment{
-                    LD_FLAGS = "-X main.version=${GIT_TAG} -X main.build=${BUILD_DATE}"
-                    BIN_NAME = "inuis-${GIT_TAG}"
+                script{
+                    env.LD_FLAGS = "-X main.version=${env.GIT_TAG} -X main.build=${env.BUILD_DATE}"
+                    env.BIN_NAME = "inuis-${env.GIT_TAG}"
                 }
             
                 sh 'mkdir -p ./bin'
