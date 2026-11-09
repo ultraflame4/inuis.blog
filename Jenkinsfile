@@ -8,11 +8,11 @@ pipeline {
             steps {
                 script {
                     env.GIT_COMMIT_HASH = sh (script: "git log -n 1 --pretty=format:'%H'", returnStdout: true).trim()
-                    env.GIT_TAG = sh (script: "git describe --exact-match --tags", returnStdout: true).trim()
+                    env.APP_VERSION = sh (script: "cat ./VERSION", returnStdout: true).trim()
                     env.BUILD_DATE = sh (script: "date", returnStdout: true).trim()
                 }
                 echo "GIT_COMMIT: ${GIT_COMMIT_HASH}"
-                echo "GIT_TAG: ${GIT_TAG}"
+                echo "VERSION: ${APP_VERSION}"
                 echo "BUILD_DATE: ${BUILD_DATE}"
             }
         }
@@ -44,8 +44,8 @@ pipeline {
             steps {
                 
                 script{
-                    env.LD_FLAGS = "-X 'main.version=${env.GIT_TAG}' -X 'main.build=${env.BUILD_DATE}'"
-                    env.BIN_NAME = "inuis-${env.GIT_TAG}"
+                    env.LD_FLAGS = "-X 'main.version=${env.APP_VERSION}' -X 'main.build=${env.BUILD_DATE}' -X 'main.commit=${env.GIT_COMMIT_HASH}'"
+                    env.BIN_NAME = "inuis-app"
                 }
             
                 sh 'mkdir -p ./bin'

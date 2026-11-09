@@ -17,6 +17,7 @@ var frontendFS embed.FS
 
 var (
     version string
+    commit string
     build   string
 )
 
@@ -64,7 +65,7 @@ func init_app_db(db *gorm.DB){
 func main() {
 	app_config := app.GetConfig()
 
-	slog.Info("inuis.blog", "version", version,"build",build)
+	slog.Info("inuis.blog", "version", version,"build",build, "commit", commit)
 	slog.Info("Connecting to database...")
 	
 	db, err := app_config.ConnectDatabase()
