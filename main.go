@@ -15,6 +15,10 @@ import (
 //go:embed all:embed
 var frontendFS embed.FS
 
+var (
+    version string
+    build   string
+)
 
 
 // Automatically inits and migrates database if needed.
@@ -59,7 +63,8 @@ func init_app_db(db *gorm.DB){
 
 func main() {
 	app_config := app.GetConfig()
-	
+
+	slog.Info("inuis.blog", "version", version,"build",build)
 	slog.Info("Connecting to database...")
 	
 	db, err := app_config.ConnectDatabase()

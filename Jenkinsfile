@@ -3,13 +3,17 @@ pipeline {
     tools { go '1.26' }
 
     stages {
-//         stage('Fetch') {
-//             steps {
-//                 // Get some code from a GitHub repository
-//                 git branch: 'main', url: 'https://github.com/ultraflame4/inuis.blog.git'
-// 
-//             }
-//         }
+        stage('Prepare') {
+            steps {
+                GIT_COMMIT_HASH = sh (script: "git log -n 1 --pretty=format:'%H'", returnStdout: true)
+                GIT_TAG = sh (script: "git describe --exact-match --tags'", returnStdout: true)
+                BUILD_DATE = sh (script: "date'", returnStdout: true)
+                
+                echo "GIT_COMMIT: ${GIT_COMMIT_HASH}"
+                echo "GIT_TAG: ${GIT_TAG}"
+                echo "BUILD_DATE: ${BUILD_DATE}"
+            }
+        }
        stage('Build Client') {
             steps {
                 dir('web') {
@@ -36,9 +40,14 @@ pipeline {
         }
         stage('Build Go') {
             steps {
+                
+
                 sh 'mkdir -p ./bin'
-                sh 'go build -o ./bin/app .'
-                archiveArtifacts artifacts: 'bin/app', followSymlinks: false
+                LD_FLAGS = "-X main.version=${GIT_TAG} -X main.build=${BUILD_DATE}"
+                BIN_NAME = "inuis-${GIT_TAG}"
+                echo "LD_FLAGS: ${LD_FLAGS}" 
+                sh "go build -o ./bin/${BIN_NAME} .   -ldflags \"${LD_FLAGS}\""
+                archiveArtifacts artifacts: "bin/${BIN_NAME}", followSymlinks: false
             }
         }
     }
