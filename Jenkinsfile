@@ -51,7 +51,7 @@ pipeline {
                 sh 'mkdir -p ./bin'
            
                 echo "LD_FLAGS: ${LD_FLAGS}" 
-                sh 'go build -ldflags=\\"${LD_FLAGS}\\" -o ./bin/${BIN_NAME} . '
+                sh 'go build -ldflags=\"${LD_FLAGS}\" -o ./bin/${BIN_NAME} . '
                 archiveArtifacts artifacts: "bin/${BIN_NAME}", followSymlinks: false
             }
         }
