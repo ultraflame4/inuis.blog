@@ -7,9 +7,9 @@ pipeline {
         stage('Check') {
             steps {
                 script {
-                    env.GIT_COMMIT_HASH = sh (script: "git log -n 1 --pretty=format:'%H'", returnStdout: true).trim
-                    env.GIT_TAG = sh (script: "git describe --exact-match --tags'", returnStdout: true).trim
-                    env.BUILD_DATE = sh (script: "date'", returnStdout: true).trim
+                    env.GIT_COMMIT_HASH = sh (script: "git log -n 1 --pretty=format:'%H'", returnStdout: true).trim()
+                    env.GIT_TAG = sh (script: "git describe --exact-match --tags'", returnStdout: true).trim()
+                    env.BUILD_DATE = sh (script: "date'", returnStdout: true).trim()
                 }
                 echo "GIT_COMMIT: ${GIT_COMMIT_HASH}"
                 echo "GIT_TAG: ${GIT_TAG}"
