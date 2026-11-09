@@ -44,14 +44,14 @@ pipeline {
             steps {
                 
                 script{
-                    env.LD_FLAGS = "-X 'main.version=${env.GIT_TAG}' -X 'main.build=\"${env.BUILD_DATE}\"'"
+                    env.LD_FLAGS = "-ldflags=\"-X 'main.version=${env.GIT_TAG}' -X 'main.build=\"${env.BUILD_DATE}\"'\""
                     env.BIN_NAME = "inuis-${env.GIT_TAG}"
                 }
             
                 sh 'mkdir -p ./bin'
            
                 echo "LD_FLAGS: ${LD_FLAGS}" 
-                sh "go build -o ./bin/${BIN_NAME} .   -ldflags \"${LD_FLAGS}\""
+                sh "go build -o ./bin/${BIN_NAME} . ${LD_FLAGS}"
                 archiveArtifacts artifacts: "bin/${BIN_NAME}", followSymlinks: false
             }
         }
