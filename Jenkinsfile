@@ -2,13 +2,15 @@ pipeline {
     agent any
     tools { go '1.26' }
 
+    
     stages {
-        stage('Prepare') {
+        stage('Check') {
             steps {
-                GIT_COMMIT_HASH = sh (script: "git log -n 1 --pretty=format:'%H'", returnStdout: true)
-                GIT_TAG = sh (script: "git describe --exact-match --tags'", returnStdout: true)
-                BUILD_DATE = sh (script: "date'", returnStdout: true)
-                
+                script {
+                    env.GIT_COMMIT_HASH = sh (script: "git log -n 1 --pretty=format:'%H'", returnStdout: true).trim
+                    env.GIT_TAG = sh (script: "git describe --exact-match --tags'", returnStdout: true).trim
+                    env.BUILD_DATE = sh (script: "date'", returnStdout: true).trim
+                }
                 echo "GIT_COMMIT: ${GIT_COMMIT_HASH}"
                 echo "GIT_TAG: ${GIT_TAG}"
                 echo "BUILD_DATE: ${BUILD_DATE}"
@@ -41,10 +43,13 @@ pipeline {
         stage('Build Go') {
             steps {
                 
-
+                environment{
+                    LD_FLAGS = "-X main.version=${GIT_TAG} -X main.build=${BUILD_DATE}"
+                    BIN_NAME = "inuis-${GIT_TAG}"
+                }
+            
                 sh 'mkdir -p ./bin'
-                LD_FLAGS = "-X main.version=${GIT_TAG} -X main.build=${BUILD_DATE}"
-                BIN_NAME = "inuis-${GIT_TAG}"
+           
                 echo "LD_FLAGS: ${LD_FLAGS}" 
                 sh "go build -o ./bin/${BIN_NAME} .   -ldflags \"${LD_FLAGS}\""
                 archiveArtifacts artifacts: "bin/${BIN_NAME}", followSymlinks: false
